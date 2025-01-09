@@ -1,9 +1,10 @@
 import React from 'react';
-import { CSSTransition } from 'react-transition-group';
 import uploadRequest from './request';
 import { UploaderProps, STATUS, UploadItem, UploadRequestReturn } from './interface';
-import { isNumber, isFunction, isFile } from '../_util/is';
+import { isNumber, isFunction, isFile, isObject } from '../_util/is';
 import TriggerNode from './trigger-node';
+import { isAcceptFile } from './util';
+import ArcoCSSTransition from '../_util/CSSTransition';
 
 export type UploaderType = {
   upload: (file: UploadItem) => void;
@@ -15,7 +16,7 @@ export type UploaderType = {
 type UploaderState = {
   uploadRequests: { [key: string]: UploadRequestReturn };
 };
-class Uploader extends React.Component<UploaderProps, UploaderState> {
+class Uploader extends React.Component<React.PropsWithChildren<UploaderProps>, UploaderState> {
   inputRef: HTMLInputElement | null;
 
   constructor(props) {
@@ -65,9 +66,17 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
   // 删除上传（手动上传时，文件会出现在上传列表，但属于init状态）
   delete = this.deleteReq;
 
-  updateFileStatus = (file: UploadItem) => {
+  updateFileStatus = (file: UploadItem, fileList = this.props.fileList) => {
     const { onFileStatusChange } = this.props;
-    onFileStatusChange && onFileStatusChange(file);
+    const key = 'uid' in file ? 'uid' : 'name';
+
+    onFileStatusChange &&
+      onFileStatusChange(
+        fileList.map((item) => {
+          return item[key] === file[key] ? file : item;
+        }),
+        file
+      );
   };
 
   getTargetFile = (file: UploadItem) => {
@@ -78,8 +87,8 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
   };
 
   // 执行上传
-  doUpload = (file: UploadItem) => {
-    const { action, headers, name, data, withCredentials, customRequest } = this.props;
+  doUpload = async (file: UploadItem) => {
+    const { action, headers, name, data, withCredentials, customRequest, method } = this.props;
     const onProgress = (percent: number, event?: ProgressEvent) => {
       const targetFile = this.getTargetFile(file);
       if (targetFile) {
@@ -126,9 +135,9 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
 
     let request;
     if (action) {
-      request = uploadRequest({ ...options, action });
+      request = uploadRequest({ ...options, action, method });
     } else if (customRequest) {
-      request = customRequest(options);
+      request = await customRequest(options);
     }
 
     this.setState({
@@ -141,10 +150,11 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
 
   handleFiles = (files: File[]) => {
     const { limit, fileList, onExceedLimit, autoUpload } = this.props;
-    if (isNumber(limit) && (limit as number) < fileList.length + files.length) {
+    if (isNumber(limit) && limit < fileList.length + files.length) {
       return onExceedLimit && onExceedLimit(files, fileList);
     }
     const asyncUpload = (file: File, index: number) => {
+      const list = this.props.fileList || [];
       const upload: UploadItem = {
         uid: `${String(+new Date())}${index}`,
         originFile: file,
@@ -153,8 +163,10 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
         name: file.name,
       };
 
+      list.push(upload);
+
       // 更新上传状态为 init
-      this.updateFileStatus(upload);
+      this.updateFileStatus(upload, list);
 
       if (autoUpload) {
         /**
@@ -171,20 +183,23 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
     };
 
     files.forEach((file, index) => {
-      if (isFunction(this.props.beforeUpload)) {
-        // 只有在beforeUpload返回值 === false 时，取消上传操作
-        Promise.resolve(this.props.beforeUpload(file, files))
-          .then((val) => {
-            if (val !== false) {
-              const newFile = isFile(val) ? val : file;
-              asyncUpload(newFile as File, index);
-            }
-          })
-          .catch((e) => {
-            console.error(e);
-          });
-      } else {
-        asyncUpload(file, index);
+      if (isAcceptFile(file, this.props.accept)) {
+        // windows can upload file type not in accept bug
+        if (isFunction(this.props.beforeUpload)) {
+          // 只有在beforeUpload返回值 === false 时，取消上传操作
+          Promise.resolve(this.props.beforeUpload(file, files))
+            .then((val) => {
+              if (val !== false) {
+                const newFile = isFile(val) ? val : file;
+                asyncUpload(newFile as File, index);
+              }
+            })
+            .catch((e) => {
+              console.error(e);
+            });
+        } else {
+          asyncUpload(file, index);
+        }
       }
     });
   };
@@ -199,9 +214,11 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
       disabled,
       drag,
       listType,
-      fileList,
+      hide,
       directory,
-      limit,
+      onDrop,
+      onDragOver,
+      onDragLeave,
     } = this.props;
 
     return (
@@ -211,9 +228,9 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
           ref={(node) => (this.inputRef = node)}
           style={{ display: 'none' }}
           type="file"
-          accept={accept}
+          accept={isObject(accept) ? accept?.type : accept}
           multiple={multiple}
-          {...(directory ? { webkitdirectory: 'webkitdirectory', directory: 'directory' } : {})}
+          {...(directory ? { webkitdirectory: 'true' } : {})}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             const files = e.target.files;
             if (files) {
@@ -222,10 +239,13 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
               this.inputRef.value = '';
             }
           }}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         />
-        <CSSTransition
+        <ArcoCSSTransition
           key="trigger-node"
-          in={!(isNumber(limit) && limit <= fileList.length)}
+          in={!hide}
           timeout={100}
           unmountOnExit
           classNames="fadeIn"
@@ -238,15 +258,18 @@ class Uploader extends React.Component<UploaderProps, UploaderState> {
             disabled={disabled}
             drag={drag}
             listType={listType}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
             onDragFiles={this.handleFiles}
             onClick={() => {
               !disabled && this.inputRef && this.inputRef.click();
             }}
             prefixCls={prefixCls}
           >
-            {children}
+            {isFunction(children) ? children({ fileList: this.props.fileList }) : children}
           </TriggerNode>
-        </CSSTransition>
+        </ArcoCSSTransition>
         {tip && listType !== 'picture-card' && !drag ? (
           <div key="trigger-tip" className={`${prefixCls}-trigger-tip`}>
             {tip}

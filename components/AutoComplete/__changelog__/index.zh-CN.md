@@ -1,3 +1,27 @@
+## 2.64.1
+
+2024-10-28
+
+### 🐛 问题修复
+
+- 修复 `AutoComplete` 下拉框未完全对齐 bug。([#2804](https://github.com/arco-design/arco-design/pull/2804))
+
+## 2.31.0
+
+2022-03-25
+
+### 🆕 功能升级
+
+- `AutoComplete` 组件 `triggerElement` 属性允许传入函数以自定义组件触发节点。([#686](https://github.com/arco-design/arco-design/pull/686))
+
+## 2.25.1
+
+2021-11-26
+
+### 💎 优化
+
+- `AutoComplete` 组件 `onPressEnter` 回调新增 `activeOption` 参数以区分回车键按下时下拉列表是否存在激活的选项。([#223](https://github.com/arco-design/arco-design/pull/223))
+
 ## 2.15.3
 
 2021-05-21

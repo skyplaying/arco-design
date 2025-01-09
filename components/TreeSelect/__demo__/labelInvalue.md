@@ -1,6 +1,6 @@
 ---
 order: 1
-title: 
+title:
   zh-CN: 设置 value 格式
   en-US: Value Format
 ---
@@ -14,13 +14,13 @@ title:
 When `labelInValue` is `true`, the format of `value` is: `{ label: string, value: string }`.
 
 ```js
+import React from 'react';
 import { TreeSelect } from '@arco-design/web-react';
-import { IconCalendar } from '@arco-design/web-react/icon';
+import { IconStar  } from '@arco-design/web-react/icon';
 
 const treeData = [
   {
     key: 'node1',
-    icon: <IconCalendar />,
     title: 'Trunk',
     children: [
       {
@@ -32,7 +32,6 @@ const treeData = [
   {
     key: 'node3',
     title: 'Trunk2',
-    icon: <IconCalendar />,
     children: [
       {
         key: 'node4',
@@ -46,23 +45,27 @@ const treeData = [
   },
 ];
 
-class Demo extends React.Component {
-  handleChange = (value) => {
-    console.log(value);
-  };
+const App = () => {
+  const [value, setValue] = React.useState({
+    value: 'node2',
+    label: <span><IconStar/> Leaf</span>,
+  });
 
-  render() {
-    return (
-      <TreeSelect
-        labelInValue={true}
-        treeData={treeData}
-        defaultValue={{ value: 'node2', label: 'Leaf' }}
-        onChange={this.handleChange}
-        style={{ width: 300 }}
-      />
-    );
-  }
+  return (
+    <TreeSelect
+      labelInValue={true}
+      treeData={treeData}
+      value={value}
+      onChange={(v) => {
+        setValue(v ? {
+          value: v.value,
+          label: <span><IconStar/> {v.label}</span>
+        } : v)
+      }}
+      style={{ width: 300 }}
+    />
+  )
 }
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```

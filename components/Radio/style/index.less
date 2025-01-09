@@ -13,8 +13,14 @@
     top: 0;
     left: 0;
 
-    &:focus + .@{prefix}-radio-icon-hover::before {
+    &:focus-visible + .@{prefix}-radio-icon-hover::before {
       background-color: @icon-hover-color-bg;
+      opacity: 1;
+    }
+
+    &:focus-visible + .@{prefix}-radio-button-inner {
+      box-shadow: inset 0 0 0 2px @radio-color-box-shadow;
+      border-radius: inherit;
     }
   }
 }
@@ -78,7 +84,7 @@
 
     &::after {
       transform: scale(0.4);
-      background-color: var(--color-white);
+      background-color: var(~'@{arco-cssvars-prefix}-color-white');
     }
   }
 
@@ -193,7 +199,7 @@
   }
 
   // 按钮下层的背景色
-  &:after {
+  &::after {
     content: ' ';
     display: block;
     position: absolute;
@@ -207,13 +213,13 @@
   }
 
   &:first-of-type::after {
-    border-top-left-radius: @radio-button-border-radius;
-    border-bottom-left-radius: @radio-button-border-radius;
+    border-top-left-radius: @radio-button-bg-border-radius;
+    border-bottom-left-radius: @radio-button-bg-border-radius;
   }
 
   &:last-of-type::after {
-    border-top-right-radius: @radio-button-border-radius;
-    border-bottom-right-radius: @radio-button-border-radius;
+    border-top-right-radius: @radio-button-bg-border-radius;
+    border-bottom-right-radius: @radio-button-bg-border-radius;
   }
 
   &:hover {
@@ -226,6 +232,7 @@
     color: @radio-button-color-text_active;
     font-weight: @radio-button-font-text-weight_active;
   }
+
   &.@{radio-prefix-cls}-disabled {
     cursor: not-allowed;
     background-color: @radio-button-color-bg_disabled;
@@ -283,13 +290,41 @@
 
 // dark mode
 
-@{arco-theme-tag}[arco-theme='dark'] {
-  .@{radio-prefix-cls}-button.@{radio-prefix-cls}-checked,
-  .@{radio-prefix-cls}-button:not(.@{radio-prefix-cls}-disabled):hover {
-    background-color: @radio-button-color-bg_active_dark;
+@{arco-theme-tag} {
+  &[arco-theme='dark'] {
+    .@{radio-prefix-cls}-button.@{radio-prefix-cls}-checked,
+    .@{radio-prefix-cls}-button:not(.@{radio-prefix-cls}-disabled):hover {
+      background-color: @radio-button-color-bg_active_dark;
+    }
+
+    .@{radio-prefix-cls}-button::after {
+      background-color: @radio-group-button-color-bg_dark;
+    }
+  }
+}
+
+.@{radio-prefix-cls}-rtl {
+  padding-left: 0;
+  padding-right: (@radio-size-mask-height / 2) - (@radio-layout-height / 2);
+
+  .@{radio-prefix-cls} {
+    &-text {
+      margin-left: 0;
+      margin-right: @radio-margin-text-left;
+    }
+  }
+}
+
+.@{radio-prefix-cls}-group-rtl {
+  .@{radio-prefix-cls} {
+    margin-right: 0;
+    margin-left: @radio-group-margin-right;
   }
 
-  .@{radio-prefix-cls}-button::after {
-    background-color: @radio-group-button-color-bg_dark;
+  &.@{radio-prefix-cls}-group-direction-vertical {
+    .@{radio-prefix-cls} {
+      margin-right: unset;
+      margin-left: 0;
+    }
   }
 }

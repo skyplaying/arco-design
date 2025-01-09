@@ -5,9 +5,10 @@ import { padStart } from '../_util/pad';
 import { getColumnsFromFormat } from './util';
 import cs from '../_util/classNames';
 import { ConfigContext } from '../ConfigProvider';
-import { dayjs, getNow, getDayjsValue } from '../_util/dayjs';
+import { dayjs, getNow, getDayjsValue, toLocal } from '../_util/dayjs';
 import Button from '../Button';
 import TimeColumn from './time-column';
+import PickerContext from './context';
 
 interface InnerTimePickerProps extends TimePickerProps {
   confirmBtnDisabled?: boolean;
@@ -28,7 +29,7 @@ interface InnerTimePickerProps extends TimePickerProps {
 const AMPM = ['am', 'pm'];
 
 function isUse12Hours(props: InnerTimePickerProps) {
-  return props.use12Hours || getColumnsFromFormat(props.format).use12Hours;
+  return props.use12Hours ?? getColumnsFromFormat(props.format).use12Hours;
 }
 
 function TimePicker(props: InnerTimePickerProps) {
@@ -55,6 +56,8 @@ function TimePicker(props: InnerTimePickerProps) {
 
   const { getPrefixCls, locale } = useContext(ConfigContext);
   const prefixCls = getPrefixCls('timepicker');
+
+  const { utcOffset, timezone } = useContext(PickerContext);
 
   const valueShow = getDayjsValue(propsValueShow, format) as Dayjs;
   const ampm = valueShow && valueShow.hour() >= 12 ? 'pm' : 'am';
@@ -102,12 +105,59 @@ function TimePicker(props: InnerTimePickerProps) {
   const selectedMinute = valueShow && valueShow.minute();
   const selectedSecond = valueShow && valueShow.second();
 
+  const getDefaultStr = useCallback(
+    (type: 'hour' | 'minute' | 'second') => {
+      switch (type) {
+        case 'hour':
+          return typeof disabledHours === 'function'
+            ? padStart(HOURS.find((h) => disabledHours().indexOf(h) === -1) || 0, 2, '0')
+            : padStart(HOURS[0], 2, '0');
+        case 'minute':
+          return typeof disabledMinutes === 'function'
+            ? padStart(
+                MINUTES.find((m) => disabledMinutes(selectedHour).indexOf(m) === -1) || 0,
+                2,
+                '0'
+              )
+            : padStart(MINUTES[0], 2, '0');
+        case 'second':
+          return typeof disabledSeconds === 'function'
+            ? padStart(
+                SECONDS.find(
+                  (s) => disabledSeconds(selectedHour, selectedMinute).indexOf(s) === -1
+                ) || 0,
+                2,
+                '0'
+              )
+            : padStart(SECONDS[0], 2, '0');
+
+        default:
+          return '00';
+      }
+    },
+    [
+      HOURS,
+      MINUTES,
+      SECONDS,
+      disabledHours,
+      disabledMinutes,
+      disabledSeconds,
+      selectedHour,
+      selectedMinute,
+    ]
+  );
+
   function onHandleSelect(selectedValue: number | string, unit: string) {
     const isUpperCase = getColumnsFromFormat(format).list.indexOf('A') !== -1;
-    const _valueShow = valueShow || dayjs('00:00:00', 'HH:mm:ss');
+    const _valueShow =
+      valueShow ||
+      dayjs(
+        `${getDefaultStr('hour')}:${getDefaultStr('minute')}:${getDefaultStr('second')}`,
+        'HH:mm:ss'
+      );
     let hour = _valueShow.hour();
-    const minute = _valueShow.minute();
-    const second = _valueShow.second();
+    let minute = _valueShow.minute();
+    let second = _valueShow.second();
     const selectedAmpm = isUpperCase ? ampm.toUpperCase() : ampm;
     let valueFormat = 'HH:mm:ss';
     let newValue;
@@ -122,9 +172,27 @@ function TimePicker(props: InnerTimePickerProps) {
       hour = hour > 12 ? hour - 12 : hour;
     }
     if (unit === 'hour') {
+      if (
+        typeof disabledMinutes === 'function' &&
+        disabledMinutes(selectedValue).includes(minute)
+      ) {
+        minute = MINUTES.find((m) => disabledMinutes(selectedValue).indexOf(m) === -1) ?? 0;
+      }
+      if (
+        typeof disabledSeconds === 'function' &&
+        disabledSeconds(selectedValue, minute).includes(second)
+      ) {
+        second = SECONDS.find((s) => disabledSeconds(selectedValue, minute).indexOf(s) === -1) ?? 0;
+      }
       newValue = dayjs(`${selectedValue}:${minute}:${second} ${selectedAmpm}`, valueFormat, 'en');
     }
     if (unit === 'minute') {
+      if (
+        typeof disabledSeconds === 'function' &&
+        disabledSeconds(hour, selectedValue).includes(second)
+      ) {
+        second = SECONDS.find((s) => disabledSeconds(hour, selectedValue).indexOf(s) === -1) ?? 0;
+      }
       newValue = dayjs(`${hour}:${selectedValue}:${second} ${selectedAmpm}`, valueFormat, 'en');
     }
     if (unit === 'second') {
@@ -139,10 +207,13 @@ function TimePicker(props: InnerTimePickerProps) {
         'en'
       );
     }
-
     newValue = dayjs(newValue, valueFormat).locale(dayjs.locale());
 
-    onSelect && onSelect(newValue.format(format), newValue);
+    onSelect &&
+      onSelect(
+        toLocal(newValue, utcOffset, timezone).format(format),
+        toLocal(newValue, utcOffset, timezone)
+      );
 
     if (!isRangePicker) {
       setValueShow && setValueShow(newValue);
@@ -161,11 +232,12 @@ function TimePicker(props: InnerTimePickerProps) {
 
   function onSelectNow() {
     const now = getNow();
+    const zoneNow = getNow(utcOffset, timezone);
     onSelect && onSelect(now.format(format), now);
     if (disableConfirm) {
-      onConfirmValue(now);
+      onConfirmValue(zoneNow);
     } else {
-      setValueShow && setValueShow(now);
+      setValueShow && setValueShow(zoneNow);
     }
   }
 

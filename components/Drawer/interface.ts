@@ -1,11 +1,17 @@
-import { ReactNode, CSSProperties } from 'react';
-
+import { ReactNode, CSSProperties, MouseEvent } from 'react';
+import { ButtonProps } from '../Button';
 /**
  * @title Drawer
  */
 export interface DrawerProps {
   style?: CSSProperties;
   className?: string | string[];
+  /**
+   * @zh 设置抽屉的 zIndex
+   * @en Set the zIndex of the drawer
+   * @version 2.42.0
+   */
+  zIndex?: number;
   children?: ReactNode;
   /**
    * @zh 设置外层容器的类名
@@ -43,18 +49,30 @@ export interface DrawerProps {
    * @zh 确认按钮文案
    * @en Text of the OK button
    */
-  okText?: string;
+  okText?: ReactNode;
   /**
    * @zh 取消按钮文案
    * @en Text of the Cancel button
    */
-  cancelText?: string;
+  cancelText?: ReactNode;
+  /**
+   * @zh 确认按钮的 props
+   * @en The props of `ok` button
+   * @version 2.26.0
+   */
+  okButtonProps?: ButtonProps;
+  /**
+   * @zh 取消按钮的 props
+   * @en The props of `cancel` button
+   * @version 2.26.0
+   */
+  cancelButtonProps?: ButtonProps;
   /**
    * @zh 抽屉的方向 `top` `right` `bottom` `left`
    * @en The placement of the drawer: `top` `right` `bottom` `left`
    * @defaultValue right
    */
-  placement?: string;
+  placement?: 'top' | 'right' | 'bottom' | 'left';
   /**
    * @zh 抽屉的宽度，`placement`为 `left` `right` 时生效
    * @en The width of the drawer dialog. Only works when `placement` is `left` or `right`
@@ -92,6 +110,12 @@ export interface DrawerProps {
    */
   closable?: boolean;
   /**
+   * @zh 自定义右上角关闭按钮
+   * @en Custom the close button on top-right of the drawer dialog
+   * @version 2.49.0
+   */
+  closeIcon?: ReactNode;
+  /**
    * @zh 点击蒙层是否可以关闭
    * @en Whether to close the drawer when the mask is clicked
    * @defaultValue true
@@ -117,12 +141,12 @@ export interface DrawerProps {
    * @zh 点击确认按钮的回调
    * @en Callback when the OK button is clicked
    */
-  onOk?: () => void;
+  onOk?: (e: Event) => void;
   /**
    * @zh 关闭弹出框的回调
    * @en Callback when the Cancel button is clicked
    */
-  onCancel?: () => void;
+  onCancel?: (e: MouseEvent | Event) => void;
   /**
    * @zh 抽屉打开之后的回调
    * @en Callback when drawer is opened
@@ -147,12 +171,14 @@ export interface DrawerProps {
   /**
    * @zh 是否默认聚焦第一个可聚焦元素，只在 `focusLock` 开启时生效。
    * @en Whether to focus on the first focusable element by default. Only works when `focusLock` is turned on.
+   * @defaultValue true
    * @version 2.13.0
    */
   autoFocus?: boolean;
   /**
    * @zh 是否将焦点锁定在弹出框内。
    * @en Whether to lock the focus in the drawer box.
+   * @defaultValue true
    * @version 2.13.0
    */
   focusLock?: boolean;

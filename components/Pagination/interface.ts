@@ -75,7 +75,6 @@ export interface PaginationProps {
   /**
    * @zh 是否可以改变每页条数
    * @en Is it possible to change page size
-   * @defaultValue true
    */
   sizeCanChange?: boolean;
   /**
@@ -83,6 +82,13 @@ export interface PaginationProps {
    * @en The number of data items that can be displayed per page
    */
   sizeOptions?: number[];
+  /**
+   * @zh `current` 页与 `...` 之间的页码个数
+   * @en the number of pages between the `current` page and `...`
+   * @defaultValue 2
+   * @version 2.32.0
+   */
+  bufferSize?: number;
   /**
    * @zh 变化时的回调
    * @en Callback when page changes
@@ -96,6 +102,7 @@ export interface PaginationProps {
   /**
    * @zh `pageSize` 改变的时候重置当前页码为 `1`
    * @en When pageSize changes, resets the current page number to `1`
+   * @defaultValue true
    */
   pageSizeChangeResetCurrent?: boolean;
   /**
@@ -104,8 +111,8 @@ export interface PaginationProps {
    */
   simple?: boolean;
   /**
-   * @zh 是否显示快速跳转到某页
-   * @en Whether to display quick jump
+   * @zh 是否显示快速跳转到某页，在 `simple` 模式下默认为 true
+   * @en Whether to display quick jump. Defaults to true in `simple` mode
    */
   showJumper?: boolean;
   /**
@@ -127,6 +134,5 @@ export interface PaginationProps {
     next?: ReactNode;
     more?: ReactNode;
   };
-  bufferSize?: number;
   mini?: boolean; // 1.0
 }

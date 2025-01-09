@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode, ReactInstance } from 'react';
 
 /**
  * @title Notification
@@ -56,7 +56,24 @@ export interface NotificationProps {
   /**
    * @zh 是否显示关闭按钮
    * @en Whether to show the close button
+   * @defaultValue true
    */
   closable?: boolean;
+  /**
+   * @zh 自定义右上角关闭按钮
+   * @en Custom the close button on top-right of the drawer dialog
+   * @version 2.50.0
+   */
+  closeIcon?: ReactNode;
   type?: string;
 }
+
+type notificationHookFunction = (config: NotificationProps) => ReactInstance;
+
+export type NotificationHookReturnType = {
+  info?: notificationHookFunction;
+  success?: notificationHookFunction;
+  warning?: notificationHookFunction;
+  error?: notificationHookFunction;
+  normal?: notificationHookFunction;
+};

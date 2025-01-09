@@ -1,3 +1,43 @@
+## 2.61.0
+
+2024-03-15
+
+### 🆕 功能升级
+
+- `ConfigProvider` 组件增加 `effectGlobalModal` 属性([#2562](https://github.com/arco-design/arco-design/pull/2562))
+
+## 2.59.1
+
+2024-01-26
+
+### 🐛 问题修复
+
+- 修复 `ConfigProvider` 的默认值在 Notice  被调用时被误改的 bug。([#2511](https://github.com/arco-design/arco-design/pull/2511))
+
+## 2.41.0
+
+2022-10-28
+
+### 🆕 功能升级
+
+- 新增马来语。([#1465](https://github.com/arco-design/arco-design/pull/1465))
+
+## 2.33.0
+
+2022-05-13
+
+### 🆕 功能升级
+
+- `ConfigProvider` 组件的 `componentConfig` 支持配置 `Timeline.Item`。([#862](https://github.com/arco-design/arco-design/pull/862))
+
+## 2.28.0
+
+2022-01-07
+
+### 🆕 功能升级
+
+- 支持设置法语，意大利语，德语，西班牙语([#413](https://github.com/arco-design/arco-design/pull/413))
+
 ## 2.23.0
 
 2021-09-27

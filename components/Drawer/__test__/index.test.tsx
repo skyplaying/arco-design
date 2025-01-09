@@ -1,9 +1,10 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { act } from 'react-test-renderer';
 import mountTest from '../../../tests/mountTest';
-import Drawer from '..';
+import Drawer, { DrawerProps } from '..';
 import Button from '../../Button';
-import { $ } from '../../../tests/util';
+import { render, fireEvent } from '../../../tests/util';
+import { Esc } from '../../_util/keycode';
 
 mountTest(Drawer);
 
@@ -11,7 +12,7 @@ interface DemoTestState {
   visible: boolean;
 }
 
-class DemoTest extends React.Component<{}, DemoTestState> {
+class DemoTest extends React.Component<DrawerProps, DemoTestState> {
   constructor(props) {
     super(props);
     this.state = {
@@ -45,7 +46,7 @@ class DemoTest extends React.Component<{}, DemoTestState> {
     const { visible } = this.state;
     return (
       <>
-        <Button onClick={this.open} type="primary">
+        <Button onClick={this.open} type="primary" className="open-btn">
           Open
         </Button>
         <Drawer
@@ -56,23 +57,17 @@ class DemoTest extends React.Component<{}, DemoTestState> {
           onCancel={this.onCancel}
           afterOpen={this.afterOpen}
           afterClose={this.afterClose}
+          {...this.props}
         >
-          内容
+          <p id="test-content">内容</p>
         </Drawer>
       </>
     );
   }
 }
 
-function mountDemoTest(component: React.ReactElement) {
-  return mount<DemoTest, React.PropsWithChildren<{}>, DemoTestState>(component);
-}
-
 const openDrawer = (wrapper) => {
-  wrapper
-    .find('button')
-    .filterWhere((n) => n.text() === 'Open')
-    .simulate('click');
+  fireEvent.click(wrapper.find('.open-btn')[0]);
 };
 
 describe('Drawer', () => {
@@ -86,44 +81,146 @@ describe('Drawer', () => {
   });
 
   it('open drawer correctly', () => {
-    const wrapper = mountDemoTest(<DemoTest />);
+    const wrapper = render(<DemoTest />);
     expect(wrapper.find('.arco-drawer')).toHaveLength(0);
-    expect(wrapper.find(Drawer).props().visible).toBe(false);
     // drawer mask correctly
     expect(wrapper.find('.arco-drawer-mask').length).toBe(0);
 
-    openDrawer(wrapper);
+    act(() => {
+      openDrawer(wrapper);
+      jest.runAllTimers();
+    });
 
     expect(wrapper.find('.arco-drawer')).toHaveLength(1);
-    expect(wrapper.find(Drawer).props().visible).toBe(true);
     expect(wrapper.find('.arco-drawer-mask').length).toBe(1);
+
+    act(() => {
+      fireEvent.click(wrapper.find('.arco-drawer-close-icon').item(0));
+
+      jest.runAllTimers();
+    });
+
+    expect(
+      wrapper.find('.arco-drawer-wrapper')[0].classList.contains('arco-drawer-wrapper-hide')
+    ).toBe(true);
+    wrapper.unmount();
   });
 
   it('onConfirm and onCancel correctly', () => {
-    const wrapper = mountDemoTest(<DemoTest />);
+    const wrapper = render(<DemoTest />);
 
-    openDrawer(wrapper);
-    expect($('.arco-drawer-wrapper')[0].style.display).toBe('block');
-    wrapper
-      .find('button')
-      .filterWhere((n) => n.text() === '确定')
-      .simulate('click');
-    jest.runAllTimers();
-    expect(wrapper.find('.arco-drawer-wrapper').hasClass('arco-drawer-wrapper-hide')).toBe(true);
+    act(() => {
+      openDrawer(wrapper);
+      jest.runAllTimers();
+    });
 
-    openDrawer(wrapper);
-    expect($('.arco-drawer-wrapper')[0].style.display).toBe('block');
-    wrapper
-      .find('button')
-      .filterWhere((n) => n.text() === '取消')
-      .simulate('click');
-    jest.runAllTimers();
-    expect(wrapper.find('.arco-drawer-wrapper').hasClass('arco-drawer-wrapper-hide')).toBe(true);
+    expect(wrapper.find('.arco-drawer-wrapper')[0].style.display).toBe('block');
+    expect(wrapper.find('.arco-drawer-footer > .arco-btn-primary')[0]).toHaveTextContent('确定');
+    act(() => {
+      fireEvent.click(wrapper.find('.arco-drawer-footer>.arco-btn-primary')[0]);
+      jest.runAllTimers();
+    });
+    expect(
+      wrapper.find('.arco-drawer-wrapper')[0].classList.contains('arco-drawer-wrapper-hide')
+    ).toBe(true);
 
+    act(() => {
+      openDrawer(wrapper);
+      jest.runAllTimers();
+    });
+    expect(wrapper.find('.arco-drawer-wrapper')[0].style.display).toBe('block');
+    expect(wrapper.find('.arco-drawer-footer > .arco-btn-secondary')[0]).toHaveTextContent('取消');
+
+    act(() => {
+      fireEvent.click(wrapper.find('.arco-drawer-footer > .arco-btn-secondary')[0]);
+      jest.runAllTimers();
+    });
+
+    expect(
+      wrapper.find('.arco-drawer-wrapper')[0].classList.contains('arco-drawer-wrapper-hide')
+    ).toBe(true);
     openDrawer(wrapper);
-    expect($('.arco-drawer-wrapper')[0].style.display).toBe('block');
-    wrapper.find('.arco-drawer-mask').simulate('click');
-    jest.runAllTimers();
-    expect(wrapper.find('.arco-drawer-wrapper').hasClass('arco-drawer-wrapper-hide')).toBe(true);
+    expect(wrapper.find('.arco-drawer-wrapper')[0].style.display).toBe('block');
+    expect(wrapper.find('.arco-drawer-mask')).toHaveLength(1);
+    act(() => {
+      fireEvent.click(document?.querySelector('.arco-drawer-mask') as Element);
+      jest.runAllTimers();
+    });
+    expect(
+      wrapper.find('.arco-drawer-wrapper')[0].classList.contains('arco-drawer-wrapper-hide')
+    ).toBe(true);
+    wrapper.unmount();
+  });
+
+  it('closable=false', () => {
+    const wrapper = render(<DemoTest closable={false} />);
+    expect(wrapper.find('.arco-drawer')).toHaveLength(0);
+    // drawer mask correctly
+    expect(wrapper.find('.arco-drawer-mask').length).toBe(0);
+
+    act(() => {
+      openDrawer(wrapper);
+      jest.runAllTimers();
+    });
+
+    expect(wrapper.find('.arco-drawer')).toHaveLength(1);
+    expect(wrapper.find('.arco-drawer-close-icon').length).toBe(0);
+    wrapper.unmount();
+  });
+
+  it('closeicon=xxx', () => {
+    const wrapper = render(<DemoTest closeIcon="xxx" />);
+    expect(wrapper.find('.arco-drawer')).toHaveLength(0);
+    // drawer mask correctly
+    expect(wrapper.find('.arco-drawer-mask').length).toBe(0);
+
+    act(() => {
+      openDrawer(wrapper);
+      jest.runAllTimers();
+    });
+
+    expect(wrapper.find('.arco-drawer')).toHaveLength(1);
+    expect(wrapper.find('.arco-drawer-close-icon').length).toBe(1);
+    expect(wrapper.find('.arco-drawer-close-icon').item(0).textContent).toBe('xxx');
+
+    act(() => {
+      fireEvent.click(wrapper.find('.arco-drawer-close-icon').item(0));
+
+      jest.runAllTimers();
+    });
+
+    expect(
+      wrapper.find('.arco-drawer-wrapper')[0].classList.contains('arco-drawer-wrapper-hide')
+    ).toBe(true);
+
+    wrapper.unmount();
+  });
+
+  it('esc', () => {
+    const wrapper = render(<DemoTest />);
+    expect(wrapper.find('.arco-drawer')).toHaveLength(0);
+    // drawer mask correctly
+    expect(wrapper.find('.arco-drawer-mask').length).toBe(0);
+
+    act(() => {
+      openDrawer(wrapper);
+      jest.runAllTimers();
+    });
+
+    expect(wrapper.find('.arco-drawer')).toHaveLength(1);
+
+    act(() => {
+      fireEvent.keyDown(document.querySelector('#test-content') as HTMLElement, {
+        keyCode: Esc.code,
+      });
+
+      jest.runAllTimers();
+    });
+
+    expect(
+      wrapper.find('.arco-drawer-wrapper')[0].classList.contains('arco-drawer-wrapper-hide')
+    ).toBe(true);
+
+    wrapper.unmount();
   });
 });

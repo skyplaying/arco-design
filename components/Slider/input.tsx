@@ -1,6 +1,6 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
+import InputNumber, { InputNumberProps } from '../InputNumber';
 import cs from '../_util/classNames';
-import InputNumber from '../InputNumber';
 
 interface InputProps {
   min?: number;
@@ -10,33 +10,50 @@ interface InputProps {
   range?: boolean;
   disabled?: boolean;
   prefixCls?: string;
-  onChange: (val: number[]) => void;
+  onChange?: (val: number[]) => void;
+  extra?: InputNumberProps[];
 }
 
-const Input = function(props: InputProps) {
-  const { value, range, min, max, step, disabled, prefixCls, onChange } = props;
-  const inputProps = {
+const Input = function (props: InputProps) {
+  const { value, range, min, max, step, disabled, prefixCls, onChange, extra = [] } = props;
+  const baseProps = {
     min,
     max,
     step,
     disabled,
-    hideControl: true,
   };
-  const sortValue = [...value].sort((a, b) => a - b);
+  const [innerValue, setInnerValue] = useState(value);
+  const beginExtraProps = extra[0];
+  const endExtraProps = range ? extra[1] : extra[0];
 
-  function handleChange(val) {
-    onChange(val);
-  }
+  useEffect(() => {
+    setInnerValue(value);
+  }, [value]);
+
+  const handleChange = (val: number[]) => {
+    onChange?.(val);
+  };
+
+  const handleBlur = () => {
+    setInnerValue([...value].sort((a, b) => a - b));
+  };
 
   return (
-    <div className={cs(`${prefixCls}-input`, { [`${prefixCls}-input-group`]: range })}>
+    <div
+      className={cs(`${prefixCls}-input`, { [`${prefixCls}-input-group`]: range })}
+      onBlur={handleBlur}
+    >
       {range && [
         <InputNumber
-          value={sortValue[0]}
+          {...{ hideControl: true, ...beginExtraProps, ...baseProps }}
+          value={innerValue[0]}
           key={0}
-          {...inputProps}
-          onChange={(val) => {
-            handleChange([val, sortValue[1]]);
+          onChange={(val, reason) => {
+            // eslint-disable-next-line no-self-compare
+            if (!(isNaN(val) && val !== val)) {
+              handleChange([val, innerValue[1]]);
+              beginExtraProps?.onChange && beginExtraProps?.onChange(val, reason);
+            }
           }}
         />,
         <div key={1} className={`${prefixCls}-input-range`}>
@@ -44,11 +61,15 @@ const Input = function(props: InputProps) {
         </div>,
       ]}
       <InputNumber
+        {...{ hideControl: true, ...endExtraProps, ...baseProps }}
         key={2}
-        value={sortValue[1]}
-        {...inputProps}
-        onChange={(val) => {
-          handleChange([sortValue[0], val]);
+        value={innerValue[1]}
+        onChange={(val, reason) => {
+          // eslint-disable-next-line no-self-compare
+          if (!(isNaN(val) && val !== val)) {
+            handleChange([innerValue[0], val]);
+            endExtraProps?.onChange && endExtraProps?.onChange(val, reason);
+          }
         }}
       />
     </div>

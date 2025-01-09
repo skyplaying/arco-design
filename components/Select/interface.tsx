@@ -13,11 +13,18 @@ export type InputValueChangeReason =
   | 'tokenSeparator';
 
 export interface OptionInfo extends PropsWithChildren<OptionProps> {
-  child: ReactElement;
+  child?: ReactElement;
   _valid: boolean;
   _index: number;
   _origin: 'children' | 'options' | 'userCreatedOptions' | 'userCreatingOption';
 }
+
+export type LabeledValue = {
+  value: string | number;
+  label: ReactNode;
+};
+
+export type SelectInnerStateValue = string | number | string[] | number[];
 
 /**
  * @title Select
@@ -27,12 +34,12 @@ export interface SelectProps extends SelectViewCommonProps {
    * @zh 选择框的默认值
    * @en To set default value
    */
-  defaultValue?: string | string[] | number | number[];
+  defaultValue?: string | string[] | number | number[] | LabeledValue | LabeledValue[];
   /**
    * @zh 选择器的值（受控模式）
    * @en To set value
    */
-  value?: string | string[] | number | number[];
+  value?: string | string[] | number | number[] | LabeledValue | LabeledValue[];
   /**
    * @zh 输入框的值（受控模式）
    * @en To set input value
@@ -71,13 +78,23 @@ export interface SelectProps extends SelectViewCommonProps {
    * Customize the content that will be displayed in the Select.
    * If the `Option` corresponding to `value` does not exist, the first parameter will be `null`
    */
-  renderFormat?: (option: OptionInfo | null, value: string | number) => ReactNode;
+  renderFormat?: (option: OptionInfo | null, value: string | number | LabeledValue) => ReactNode;
   /**
    * @zh 是否默认高亮第一个选项
    * @en Whether to highlight the first option by default
    * @defaultValue true
    */
   defaultActiveFirstOption?: boolean;
+  /**
+   * @zh 是否允许通过输入创建新的选项。
+   * @en Whether to allow new options to be created by input.
+   * @version 2.13.0, `{ formatter }` in 2.54.0
+   */
+  allowCreate?:
+    | boolean
+    | {
+        formatter: (inputValue: string, creating: boolean) => SelectProps['options'][number];
+      };
   /**
    * @zh 是否在隐藏的时候销毁 DOM 结构
    * @en Whether to destroy the DOM when hiding
@@ -120,8 +137,11 @@ export interface SelectProps extends SelectViewCommonProps {
   /**
    * @zh 自定义触发元素。
    * @en The trigger element which executes the dropdown action.
+   * @version `() => ReactNode` in 2.31.0
    */
-  triggerElement?: ReactNode;
+  triggerElement?:
+    | ReactNode
+    | ((params: { value: any; option: OptionInfo | OptionInfo[] }) => ReactNode);
   /**
    * @zh 可以接受所有 `Trigger` 的 `Props`
    * @en Pass all `Trigger` component properties
@@ -154,10 +174,16 @@ export interface SelectProps extends SelectViewCommonProps {
    */
   onChange?: (value, option: OptionInfo | OptionInfo[]) => void;
   /**
-   * @zh 取消选中的时候触发的回调，(只在 `multiple` 模式下触发)。
-   * @en Called when a option is deselected.Only called for `multiple` mode.
+   * @zh 选中选项时触发的回调，(只在 `multiple` 模式下触发)。
+   * @en Called when an option is selected. Only called for `multiple` mode.
+   * @version 2.52.0
    */
-  onDeselect?: (value: OptionProps['value'], option: OptionInfo) => void;
+  onSelect?: (value: string | number | LabeledValue, option: OptionInfo) => void;
+  /**
+   * @zh 取消选中的时候触发的回调，(只在 `multiple` 模式下触发)。
+   * @en Called when an option is deselected. Only called for `multiple` mode.
+   */
+  onDeselect?: (value: string | number | LabeledValue, option: OptionInfo) => void;
   /**
    * @zh 点击清除时触发，参数是当前下拉框的展开状态。
    * @en Called when clear
@@ -205,12 +231,12 @@ export interface SelectProps extends SelectViewCommonProps {
 /**
  * @title Select.Option
  */
-export interface OptionProps
-  extends Omit<HTMLAttributes<HTMLLIElement>, 'className' | 'onMouseEnter' | 'onMouseLeave'> {
+export interface OptionProps extends Omit<HTMLAttributes<HTMLLIElement>, 'className'> {
   _key?: any;
   style?: CSSProperties;
-  children: ReactNode;
+  children?: ReactNode;
   prefixCls?: string;
+  rtl?: boolean;
   className?: string | string[];
   wrapperClassName?: string | string[];
   /**
@@ -229,13 +255,16 @@ export interface OptionProps
    * @version 2.2.0
    */
   extra?: any;
-  valueActive?: string;
-  valueSelect?: string | string[] | number | number[];
-  isMultipleMode?: boolean;
+  // Some user may use isSelectOption to hack, Do NOT change it to _isSelectOption
   isSelectOption?: boolean;
-  onMouseEnter?: (value: OptionProps['value']) => void;
-  onMouseLeave?: () => void;
-  onClickOption?: (value: OptionProps['value'], disabled: boolean) => void;
+  _isMultipleMode?: boolean;
+  _isUserCreatedOption?: boolean;
+  _isUserCreatingOption?: boolean;
+  _valueActive?: OptionProps['value'];
+  _valueSelect?: SelectInnerStateValue;
+  _onClick?: (value: OptionProps['value'], disabled: boolean) => void;
+  _onMouseEnter?: (value: OptionProps['value']) => void;
+  _onMouseLeave?: () => void;
 }
 
 /**
@@ -245,12 +274,13 @@ export interface OptGroupProps extends HTMLAttributes<HTMLLIElement> {
   _key?: any;
   children?: ReactNode;
   prefixCls?: string;
-  isSelectOptGroup?: boolean;
   /**
    * @zh 组名
    * @en Name of Group
    */
   label?: ReactNode;
+  // Some user may use isSelectOptGroup to hack, Do NOT change it to _isSelectOptGroup
+  isSelectOptGroup?: boolean;
 }
 
 /**
@@ -268,7 +298,7 @@ export type SelectHandle = {
    */
   focus: () => void;
   /**
-   * @zh 使选择框聚焦
+   * @zh 使选择框失焦
    * @en Blur Select
    */
   blur: () => void;
@@ -292,4 +322,10 @@ export type SelectHandle = {
    * @en Get the option info by its value
    */
   getOptionInfoByValue: (value: OptionProps['value']) => OptionInfo;
+  /**
+   * @zh 将下拉列表滚动至指定选项
+   * @en Scroll the drop-down list to the specified option
+   * @version 2.46.0
+   */
+  scrollIntoView: (value: OptionProps['value'], options?: ScrollIntoViewOptions) => void;
 };

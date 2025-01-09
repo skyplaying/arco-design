@@ -1,3 +1,366 @@
+## 2.65.0
+
+2024-11-29
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件里 `flat` 语法不兼容低版本浏览器 bug([#2881](https://github.com/arco-design/arco-design/pull/2881))
+
+## 2.62.1
+
+2024-05-17
+
+### 🐛 问题修复
+
+- 修复 `Form.Item` 未设置 rules 时，校验状态出现 validating 的 bug。([#2676](https://github.com/arco-design/arco-design/pull/2676))
+
+## 2.61.3
+
+2024-04-12
+
+### 🐛 问题修复
+
+- 修复 `Form` rtl 视图样式问题([#2635](https://github.com/arco-design/arco-design/pull/2635))
+- 修复 `Form.useFormContext` 组件 `isSubmitting` 有误的 bug。([#2631](https://github.com/arco-design/arco-design/pull/2631))
+- 修复 `Form` 组件 rules 未设置且 validate 方法 validateOnly 为 true 时报错问题([#2620](https://github.com/arco-design/arco-design/pull/2620))
+
+## 2.61.0
+
+2024-03-15
+
+### 🐛 问题修复
+
+- 修复 `Form.useFormContext` 未在 `Form` 组件下使用导致的内部方法调用报错的 bug。([#2590](https://github.com/arco-design/arco-design/pull/2590))
+
+## 2.60.3
+
+2024-03-08
+
+### 🐛 问题修复
+
+- 修复 `Form.useFormContext` 未在 `Form` 组件下使用导致的内部方法调用报错的 bug。([#2574](https://github.com/arco-design/arco-design/pull/2574))
+
+## 2.59.0
+
+2024-01-19
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件的 `resetFields` 方法传入非 string/array 类型 的参数时，所有表单项都被重置的 bug。([#2505](https://github.com/arco-design/arco-design/pull/2505))
+
+## 2.56.2
+
+2023-12-01
+
+### 💎 功能优化
+
+- 优化 `Form` 中 value 为大数据数组时的性能([#2397](https://github.com/arco-design/arco-design/pull/2397))
+
+## 2.56.0
+
+2023-11-17
+
+### 🆕 功能升级
+
+- `Form` 组件支持设置 `validateOnly` 进行静默校验，不做 UI 表现([#2366](https://github.com/arco-design/arco-design/pull/2366))
+
+## 2.54.3
+
+2023-10-26
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件校验通过时表现了校验成功样式的 UI 问题（该 bug 在 `2.54.2` 引入）。([#2312](https://github.com/arco-design/arco-design/pull/2312) )
+
+## 2.54.2
+
+2023-10-20
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件在 `validating` 状态样式丢失的 bug。([#2299](https://github.com/arco-design/arco-design/pull/2299) )
+- 修复 `Form.useFormContext` 状态更新导致组件卡顿的问题。([#2299](https://github.com/arco-design/arco-design/pull/2299) )
+
+## 2.52.2
+
+2023-09-01
+
+### 🐛 问题修复
+
+- 修复  `Form.Item` 组件的 `disabled` 属性覆盖了子节点的 `disabled` 属性的 bug。([#2204](https://github.com/arco-design/arco-design/pull/2204))
+
+## 2.46.3
+
+2023-04-07
+
+### 🐛 问题修复
+
+- 修复 `Form.List` 在动态增减表单项时， 直接包裹的子组件的 `onChange` 被错误触发的 bug。([#1898](https://github.com/arco-design/arco-design/pull/1898))
+
+## 2.46.2
+
+2023-03-31
+
+### 💎 功能优化
+
+- 优化 `Form.useFormContext`  未在 `<Form>` 内使用时出现页面报错导致白屏的问题。([#1884](https://github.com/arco-design/arco-design/pull/1884))
+
+## 2.46.1
+
+2023-03-24
+
+### 🐛 问题修复
+
+- 修复 `Form.List` 组件在用户对 `add/remove/move` 方法 `memo` 时，执行表现异常的 bug([#1868](https://github.com/arco-design/arco-design/pull/1868))
+
+## 2.46.0
+
+2023-03-17
+
+### 🆕 功能升级
+
+- `Form.List` 支持校验规则([#1790](https://github.com/arco-design/arco-design/pull/1790))
+
+## 2.45.1
+
+2023-03-01
+
+### 🐛 问题修复
+
+- 修复 `Form.Item` 组件在 `rerender` 时注入到自定义表单控件的 `value` 引用地址改变的 bug。([#1815](https://github.com/arco-design/arco-design/pull/1815))
+
+## 2.44.0
+
+2023-01-13
+
+### 🆕 功能升级
+
+- `Form` 支持通过 `useFormState` 获取指定字段的校验信息，校验状态([#1723](https://github.com/arco-design/arco-design/pull/1723))
+
+## 2.43.0
+
+2022-12-23
+
+### 🆕 功能升级
+
+- `Form.Item` 支持通过 `tooltip` 属性设置提示信息。([#1665](https://github.com/arco-design/arco-design/pull/1665))
+
+## 2.42.2
+
+2022-12-09
+
+### 💎 功能优化
+
+- 优化 `Form.List` 组件在通过 Form API 更新表单项数据时全部重渲染导致页面卡顿的情况。([#1638](https://github.com/arco-design/arco-design/pull/1638))
+
+## 2.41.0
+
+2022-10-28
+
+### 🆕 功能升级
+
+- `Form` 组件的 `colon` 属性支持传入 `ReactNode`。([#1455](https://github.com/arco-design/arco-design/pull/1455))
+
+### 🐛 问题修复
+
+- 修复 `Form.Item` 组件的 `shouldUpdate` 属性在重置表单项时未生效的 bug。([#1462](https://github.com/arco-design/arco-design/pull/1462))
+
+## 2.40.0
+
+2022-09-16
+
+### 💎 功能优化
+
+- 优化 `Form` 组件内置校验信息模板([#1398](https://github.com/arco-design/arco-design/pull/1398))
+
+### 🆕 功能升级
+
+- `Form.Item` 支持 `dependencies` 属性([#1397](https://github.com/arco-design/arco-design/pull/1397))
+
+### 🐛 问题修复
+
+- 修复 `Form.useWatch` 在 `field` 改变时，返回值未及时更新的 bug。([#1400](https://github.com/arco-design/arco-design/pull/1400))
+
+## 2.38.1
+
+2022-08-05
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件 `setFieldsValue` 传入的值为空数组或空对象时，设置未生效的问题。([#1186](https://github.com/arco-design/arco-design/pull/1186))
+
+## 2.37.0
+
+2022-07-08
+
+### 🆕 功能升级
+
+- `Form.useWatch` 支持监听多个字段值。([#1034](https://github.com/arco-design/arco-design/pull/1034))
+
+### 🐛 问题修复
+
+- 修复 `Form.useWatch` 在监听有初始值但未挂载的表单控件时，返回值存在 `初始值 => undefined` 的变化，导致组件更新。([#1034](https://github.com/arco-design/arco-design/pull/1034))
+- 修复 `Form.Item` 组件注入到自定义表单控件的 `onChange` 方法每次渲染都会重新声明的 bug。([#1102](https://github.com/arco-design/arco-design/pull/1102))
+
+## 2.36.1
+
+2022-07-01
+
+### 🐛 问题修复
+
+- 修复 `Form.List` 下调整表单项顺序，校验状态可能出现展示错乱的问题([#1077](https://github.com/arco-design/arco-design/pull/1077))
+
+## 2.36.0
+
+2022-06-24
+
+### 🐛 问题修复
+
+- 修复 `Form.List` 组件在移除表单项时，其他表单项校验状态丢失的 bug。([#1046](https://github.com/arco-design/arco-design/pull/1046))
+- 修复 `form.clearFields()` 方法未清空校验状态的 bug。([#1046](https://github.com/arco-design/arco-design/pull/1046))
+
+## 2.35.0
+
+2022-06-10
+
+### 🐛 问题修复
+
+- 修复在 `Form.List` 新增/删除行时，`Form.useWatch` 返回值非最新值的 bug。([#955](https://github.com/arco-design/arco-design/pull/955))
+
+## 2.34.0
+
+2022-05-27
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件通过 `setFields` 设置 `warning` 为 `null` 时，表单控件的 `warning` 状态未被清空的 bug 。([#930](https://github.com/arco-design/arco-design/pull/930))
+
+## 2.33.1
+
+2022-05-20
+
+### 🐛 问题修复
+
+- 对 `getFieldValue` 返回值的修改不应该影响 `Form` 内部的原始数据([#869](https://github.com/arco-design/arco-design/pull/869))
+
+### 🆎 类型修正
+
+- 补全`FormItemProps`中的`children`类型，以兼容React 18([#874](https://github.com/arco-design/arco-design/pull/874))
+
+## 2.33.0
+
+2022-05-13
+
+### 🆕 功能升级
+
+- `Form` 组件支持 `Form.useWatch`。([#864](https://github.com/arco-design/arco-design/pull/864))
+- `Form` 组件支持 `Form.useFormContext`。([#864](https://github.com/arco-design/arco-design/pull/864))
+
+## 2.32.2
+
+2022-04-29
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件在 React 18 严格模式下，表单项受控失效的 bug。([#823](https://github.com/arco-design/arco-design/pull/823))
+
+## 2.32.0
+
+2022-04-15
+
+### 🆕 功能升级
+
+- `Form`  组件支持通过 `validateMessages` 属性设置校验提示信息模板([#773](https://github.com/arco-design/arco-design/pull/773))
+
+### 🐛 问题修复
+
+- 修复 `Form.Item` 包裹的表单控件是由函数类型的 `children` 返回时，`onChange` 未被调用的 bug。([#760](https://github.com/arco-design/arco-design/pull/760))
+
+## 2.30.2
+
+2022-03-18
+
+### 🐛 问题修复
+
+- 修复 `Form.Provider` 导致控制台 warning 的 bug。([#646](https://github.com/arco-design/arco-design/pull/646))
+
+## 2.30.0
+
+2022-03-04
+
+### 🆕 功能升级
+
+- `Form` 组件支持通过 `Form.Provider` 组件进行多表单数据管理。([#607](https://github.com/arco-design/arco-design/pull/607))
+
+## 2.29.2
+
+2022-02-25
+
+### 🐛 问题修复
+
+- 修复 `Form.useForm` 方法传入 `form` 参数不生效的 bug。([#577](https://github.com/arco-design/arco-design/pull/577))
+
+## 2.29.0
+
+2022-02-11
+
+### 🆕 功能升级
+
+- `Form.Item` 支持通过 `hidden` 属性隐藏表单项([#509](https://github.com/arco-design/arco-design/pull/509))
+- 支持通过 `clearFields` 方法清除表单项的值([#509](https://github.com/arco-design/arco-design/pull/509))
+
+## 2.28.1
+
+2022-01-14
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件的 `scrollToFirstError` 属性在设置了 `noStyle` 的表单项上失效的 bug。([#444](https://github.com/arco-design/arco-design/pull/444))
+- 修复 `Form` 组件 `mini` 尺寸时，校验失败时，表单项出现抖动的样式问题。([#438](https://github.com/arco-design/arco-design/pull/438))
+
+## 2.28.0
+
+2022-01-07
+
+### 🆕 功能升级
+
+- `Form` 组件支持通过 `validateTrigger` 属性全局设置校验规则触发的时机([#400](https://github.com/arco-design/arco-design/pull/400))
+
+## 2.27.0
+
+2021-12-17
+
+### 💅 样式更新
+
+- 修复在带有 `validateStatus` 的 `Form.Item` 中，`InputTag` 没有校验样式的问题。([#330](https://github.com/arco-design/arco-design/pull/330))
+
+## 2.26.1
+
+2021-12-07
+
+### 🐛 问题修复
+
+- 修复 `Form` 组件教验通过时表现出 `warning` 样式的 bug。([#282](https://github.com/arco-design/arco-design/pull/282))
+
+## 2.25.0
+
+2021-11-19
+
+### 🆕 功能升级
+
+- `Form` 支持在 `rules` 中设置 `validateTrigger` 属性指定规则在特定事件触发时候执行。([#190](https://github.com/arco-design/arco-design/pull/190))
+- `Form` 支持在 `rules` 中设置 `validateLevel` 属性指定规则校验失败时仅显示 `warning` 状态，不阻塞表单提交。([#190](https://github.com/arco-design/arco-design/pull/190))
+- `Form` 组件 `rule.message` 支持使用 `ReactNode`。([#185](https://github.com/arco-design/arco-design/pull/185))
+
+## 2.24.0
+
+2021-11-05
+
+### 🐛 问题修复
+
+- 调整 `Form` 组件的 TS 定义为 `FormHTMLAttributes`([#118](https://github.com/arco-design/arco-design/pull/118))
+- 修复 `Form.List` 组件通过 `add()` 方法创建表单项，传入的默认值在该表单项带有 `initialValue` 时候未生效的 `bug` 。([#118](https://github.com/arco-design/arco-design/pull/118))
+
 ## 2.23.0
 
 2021-09-27
@@ -179,7 +542,7 @@
 
 ## 2.10.0 🏮
 
-2020-02-26
+2021-02-26
 
 ### 🆕 Feature
 

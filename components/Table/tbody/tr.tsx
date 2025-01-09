@@ -1,13 +1,15 @@
-import React, { forwardRef, ReactElement } from 'react';
+import React, { forwardRef, ReactElement, useContext } from 'react';
 import Checkbox from '../../Checkbox';
 import Radio from '../../Radio';
 import { isString, isArray } from '../../_util/is';
+import { getOriginData } from '../utils';
 import cs from '../../_util/classNames';
 import useComponent from '../hooks/useComponent';
 import IconPlus from '../../../icon/react-icon/IconPlus';
 import IconMinus from '../../../icon/react-icon/IconMinus';
 import { TbodyProps } from '../interface';
 import { INTERNAL_EXPAND_KEY, INTERNAL_SELECTION_KEY } from '../constant';
+import { ConfigContext } from '../../ConfigProvider';
 import Td from './td';
 
 type TrType<T = any> = TbodyProps<T> & {
@@ -28,17 +30,18 @@ function Tr<T>(props: TrType<T>, ref) {
     onCheckRadio,
     prefixCls,
     selectedRowKeys,
+    indeterminateKeys,
     rowClassName,
     onRow,
     rowSelection,
     indentSize = 16,
-    currentSorter,
+    activeSorters,
     virtualized,
     stickyOffsets,
     stickyClassNames,
     getRowKey,
     placeholder,
-    expandProps = {},
+    expandProps = { strictTreeData: true },
     data,
     expandedRowKeys,
     childrenColumnName,
@@ -48,21 +51,28 @@ function Tr<T>(props: TrType<T>, ref) {
     shouldRowExpand,
     level,
   } = props;
-  const { ...rowProps } = onRow && onRow(record, index);
+  const { rtl } = useContext(ConfigContext);
+  const originRecord = getOriginData(record);
+  const { ...rowProps } = (onRow && onRow(originRecord, index)) || {};
   const rowK = getRowKey(record);
   const usedSelectedRowKeys = type === 'radio' ? selectedRowKeys.slice(0, 1) : selectedRowKeys;
-  const checked = !!~usedSelectedRowKeys.indexOf(rowK);
   const trKey = rowK || index;
+
+  const checked = usedSelectedRowKeys.indexOf(rowK) > -1;
+  const expanded = expandedRowKeys.indexOf(rowK) > -1;
+  const indeterminate = indeterminateKeys.indexOf(rowK) > -1;
+
   const classNameTr = cs(
     `${prefixCls}-tr`,
     {
       [`${prefixCls}-row-checked`]: checked,
+      [`${prefixCls}-row-expanded`]: expanded,
     },
-    rowClassName && rowClassName(record, index)
+    rowClassName && rowClassName(originRecord, index)
   );
   const checkboxProps =
     rowSelection && typeof rowSelection.checkboxProps === 'function'
-      ? rowSelection.checkboxProps(record)
+      ? rowSelection.checkboxProps(originRecord)
       : {};
   const operationClassName = cs(`${prefixCls}-td`, `${prefixCls}-operation`);
   const getPrefixColClassName = (name) => {
@@ -73,7 +83,9 @@ function Tr<T>(props: TrType<T>, ref) {
   };
 
   function isChildrenNotEmpty(record) {
-    return isArray(record[childrenColumnName]) && record[childrenColumnName].length;
+    return expandProps.strictTreeData
+      ? isArray(record[childrenColumnName]) && record[childrenColumnName].length
+      : record[childrenColumnName] !== undefined;
   }
 
   // tree data
@@ -83,7 +95,7 @@ function Tr<T>(props: TrType<T>, ref) {
 
   const shouldRenderExpandRow = shouldRowExpand(record, index);
   const recordHaveChildren = isChildrenNotEmpty(record);
-  const haveTreeData = !virtualized && isDataHaveChildren() && !expandedRowRender;
+  const haveTreeData = isDataHaveChildren() && !expandedRowRender;
   const shouldRenderTreeDataExpandRow = haveTreeData && recordHaveChildren;
 
   const expandRowByClick = expandProps.expandRowByClick;
@@ -109,16 +121,16 @@ function Tr<T>(props: TrType<T>, ref) {
   function renderExpandIcon(record, rowK) {
     const { icon: expandIcon } = expandProps;
     const expanded = !!~expandedRowKeys.indexOf(rowK);
+    const onClickProps = {
+      onClick: (e) => {
+        e.stopPropagation();
+        onClickExpandBtn(rowK);
+      },
+    };
     return typeof expandIcon === 'function' ? (
-      expandIcon({ expanded, record })
+      expandIcon({ expanded, record, ...onClickProps })
     ) : (
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onClickExpandBtn(rowK);
-        }}
-        type="button"
-      >
+      <button {...onClickProps} type="button">
         {expanded ? <IconMinus /> : <IconPlus />}
       </button>
     );
@@ -138,6 +150,7 @@ function Tr<T>(props: TrType<T>, ref) {
       value={rowK}
       onChange={(check) => onCheck(check, record)}
       checked={checked}
+      indeterminate={indeterminate}
       {...checkboxProps}
     />
   );
@@ -154,14 +167,16 @@ function Tr<T>(props: TrType<T>, ref) {
   if (type === 'checkbox') {
     selectionNode = (
       <InnerComponentTd className={getPrefixColClassName('checkbox')}>
-        {renderSelectionCell ? renderSelectionCell(checkboxNode, checked, record) : checkboxNode}
+        {renderSelectionCell
+          ? renderSelectionCell(checkboxNode, checked, originRecord)
+          : checkboxNode}
       </InnerComponentTd>
     );
   }
   if (type === 'radio') {
     selectionNode = (
       <InnerComponentTd className={getPrefixColClassName('radio')}>
-        {renderSelectionCell ? renderSelectionCell(radioNode, checked, record) : radioNode}
+        {renderSelectionCell ? renderSelectionCell(radioNode, checked, originRecord) : radioNode}
       </InnerComponentTd>
     );
   }
@@ -175,7 +190,7 @@ function Tr<T>(props: TrType<T>, ref) {
         const stickyClassName: string = stickyClassNames[colIndex];
 
         if (col.$$isOperation) {
-          let node = col.node;
+          let node: any = col.node;
           let isExtraOperation = true;
 
           if (col.title === INTERNAL_SELECTION_KEY) {
@@ -202,7 +217,7 @@ function Tr<T>(props: TrType<T>, ref) {
               ...operationNode?.props?.style,
               ...(col.fixed === 'left'
                 ? {
-                    left: stickyOffset,
+                    [rtl ? 'right' : 'left']: stickyOffset,
                   }
                 : {}),
               width: col.width,
@@ -217,7 +232,7 @@ function Tr<T>(props: TrType<T>, ref) {
             prefixCls={prefixCls}
             virtualized={virtualized}
             components={components}
-            currentSorter={currentSorter}
+            currentSorter={activeSorters.find((item) => item.field === col.key)}
             placeholder={placeholder}
             indentSize={indentSize}
             stickyClassName={stickyClassName}

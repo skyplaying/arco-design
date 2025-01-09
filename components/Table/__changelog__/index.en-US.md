@@ -1,3 +1,518 @@
+## 2.64.1
+
+2024-10-28
+
+### 🐛 BugFix
+
+- `Table` component fixes the problem that fixed columns become invalid when the virtual list is enabled and the amount of data is small([#2847](https://github.com/arco-design/arco-design/pull/2847))
+
+## 2.61.1
+
+2024-03-22
+
+### 🐛 BugFix
+
+- ([#2602](https://github.com/arco-design/arco-design/pull/2602))
+- Fix the problem that the `Table` component may report an error when dynamically changing scrollY([#2599](https://github.com/arco-design/arco-design/pull/2599))
+
+## 2.61.0
+
+2024-03-15
+
+### 🐛 BugFix
+
+- Fix `Table` console warning due to missing ReactKey.([#2592](https://github.com/arco-design/arco-design/pull/2592))
+
+## 2.60.2
+
+2024-03-01
+
+### 💎 Enhancement
+
+- `Table` component supports expanding rows and tree data when virtual scrolling is turned on.([#2553](https://github.com/arco-design/arco-design/pull/2553))
+
+## 2.60.0
+
+2024-02-23
+
+### 🐛 BugFix
+
+- Fix the issue where the `scrollbar-color` property in the `Table` component causes incorrect width calculations.([#2533](https://github.com/arco-design/arco-design/pull/2533))
+
+### 🆎 TypeScript
+
+- `Table` component column attribute TS definition adjustment([#2531](https://github.com/arco-design/arco-design/pull/2531))
+
+## 2.58.1
+
+2024-01-05
+
+### 🐛 BugFix
+
+- Fixes `Table` component `loading` configuration not being effective.([#2474](https://github.com/arco-design/arco-design/pull/2474))
+
+## 2.56.1
+
+2023-11-24
+
+### 🐛 BugFix
+
+- Compatible cases in which the `sortOrder` in `column` is initially uncontrolled and then controlled within the same life cycle of the `Table` component.([#2379](https://github.com/arco-design/arco-design/pull/2379))
+
+## 2.56.0
+
+2023-11-17
+
+### 🐛 BugFix
+
+- Optimize the definition of empty `data` and `columns` for the `Table` component to avoid infinite re-renders.([#2370](https://github.com/arco-design/arco-design/pull/2370))
+
+## 2.55.2
+
+2023-11-10
+
+### 🐛 BugFix
+
+- Fixed an issue where `col key` could be repeated when neither `dataIndex` nor `key` was specified in columns of `Table`.([#2353](https://github.com/arco-design/arco-design/pull/2353))
+- Fixed horizontal scrolling style issue in `Table` after virtual scrolling is enabled.([#2353](https://github.com/arco-design/arco-design/pull/2353))
+- Fixed `Table` `scroll.x={max-content}`, `scroll.y={true}` and the data is empty, the table header style is confused.([#2353](https://github.com/arco-design/arco-design/pull/2353))
+
+## 2.55.1
+
+2023-11-03
+
+### 🐛 BugFix
+
+- Fixed the problem of horizontal scrolling failure of table header when dynamically updating `scrollY` in `Table`.([#2330](https://github.com/arco-design/arco-design/pull/2330))
+
+## 2.55.0
+
+2023-10-27
+
+### 🐛 BugFix
+
+- Fixed an issue where the `render` parameter might be empty when the `Table` component's `data` attribute is a two-dimensional array.([#2319](https://github.com/arco-design/arco-design/pull/2319))
+- Fixed an issue where the sorting and filtering functions failed when the `Table` component had both `dataIndex` and `key` attributes in columns.([#2311](https://github.com/arco-design/arco-design/pull/2311))
+
+## 2.54.2
+
+2023-10-20
+
+### 🐛 BugFix
+
+- Fixed an issue where the `Table` component would not align with the table header when `scroll={x: 'max-content', y: true}`([#2303](https://github.com/arco-design/arco-design/pull/2303))
+
+## 2.53.0
+
+2023-09-08
+
+### 🆕 Feature
+
+- The `Table` component supports scrolling to the specified area through `ref.scrollIntoView` in the virtual list scenario.([#2226](https://github.com/arco-design/arco-design/pull/2226))
+- `Table` component `onChange` callback adds parameter `extra.currentAllData`.([#2220](https://github.com/arco-design/arco-design/pull/2220))
+
+## 2.52.1
+
+2023-08-25
+
+### 🐛 BugFix
+
+- Fix the bug that the second parameter of the render attribute of the `Table` component may be `undefined` (this problem was introduced in `2.50.2` by removing the internal attribute __ORIGIN_DATA__ attached to the external callback parameter)([#2188](https://github.com/arco-design/arco-design/pull/2188) [@Ryuurock](https://github.com/Ryuurock))
+
+### 💅 Style
+
+- Fix the problem that the scrollbar style may appear in the blank state when the `Table` component is setting scrollX.([#2171](https://github.com/arco-design/arco-design/pull/2171) [@whyour](https://github.com/whyour))
+
+## 2.51.0
+
+2023-07-28
+
+### 💎 Enhancement
+
+- Optimize the width of the table and the problem of unnecessary scroll bars in certain scenarios.([#2066](https://github.com/arco-design/arco-design/pull/2066) [@hkhere](https://github.com/hkhere))
+
+## 2.50.1
+
+2023-07-14
+
+### 🐛 BugFix
+
+- Fixed incorrect state synchronization within the component when the sortOrder property  of `Table` was controlled([#2079](https://github.com/arco-design/arco-design/pull/2079))
+
+## 2.50.0
+
+2023-06-30
+
+### 🐛 BugFix
+
+- Fix the header alignment problem that may occur when virtual scrolling is enabled for `Table` and the amount of data is small.([#2056](https://github.com/arco-design/arco-design/pull/2056))
+
+## 2.49.0
+
+2023-06-02
+
+### 🐛 BugFix
+
+- When `Table` component has no data but `pagination.total > 0`, pagination should be shown.([#2005](https://github.com/arco-design/arco-design/pull/2005))
+
+## 2.47.2
+
+2023-05-06
+
+### 🐛 BugFix
+
+- Fix the problem that the `defaultExpandAllRows` attribute of the `Table` component does not take effect.([#1953](https://github.com/arco-design/arco-design/pull/1953))
+
+## 2.47.1
+
+2023-04-21
+
+### 🐛 BugFix
+
+- Fix `Table` component pagination hiding logic.([#1937](https://github.com/arco-design/arco-design/pull/1937))
+
+## 2.47.0
+
+2023-04-14
+
+### 🆕 Feature
+
+- Added the multiple sorter function for Table component.([#1910](https://github.com/arco-design/arco-design/pull/1910))
+
+### 🐛 BugFix
+
+- Fixed indentation issue when tree data presentation is non-text.([#1913](https://github.com/arco-design/arco-design/pull/1913))
+
+## 2.46.2
+
+2023-03-31
+
+### 💎 Enhancement
+
+- When `Table` is fixed columns, `column.width` can be set to a string with pixels.([#1883](https://github.com/arco-design/arco-design/pull/1883))
+
+## 2.46.1
+
+2023-03-24
+
+### 🐛 BugFix
+
+- Fix the bug that colSpan is overwritten when the group columns of the `Table` component is used together with colSpan.([#1865](https://github.com/arco-design/arco-design/pull/1865))
+
+## 2.46.0
+
+2023-03-17
+
+### 🆕 Feature
+
+- The `Table` component add parameter `virtualListProps`.([#1848](https://github.com/arco-design/arco-design/pull/1848))
+
+### 🐛 BugFix
+
+- Fix the problem of misaligned table header and content when scrolling in the `Table` component under the scenario of multiple headers and fixed columns.([#1852](https://github.com/arco-design/arco-design/pull/1852))
+- Fix the problem of misaligned table header and content when scrolling in the Table component under the scenario of multiple headers and fixed columns.([#1840](https://github.com/arco-design/arco-design/pull/1840))
+
+## 2.45.1
+
+2023-03-01
+
+### 💅 Style
+
+- Fix the style problem caused by the transparency of the fixed column background color of the `Table` component in dark mode([#1816](https://github.com/arco-design/arco-design/pull/1816))
+
+## 2.45.0
+
+2023-02-17
+
+### 🐛 BugFix
+
+- Fix the bug that the fixed column event is not triggered when the `Table` component `data` is dynamically loaded.([#1787](https://github.com/arco-design/arco-design/pull/1787))
+
+## 2.44.0
+
+2023-01-13
+
+### 💅 Style
+
+- Fix `Table` component summary row style error when `fixed=top`.([#1719](https://github.com/arco-design/arco-design/pull/1719))
+
+## 2.42.0
+
+2022-11-25
+
+### 🐛 BugFix
+
+- Fix the bug of reporting an error when the data of the `Table` component is `number[]` or `string[]`.([#1611](https://github.com/arco-design/arco-design/pull/1611))
+- Fixed a bug that when the `Table` component enabled virtual scrolling, dynamically changing the `scroll` would cause the fixed column highlight to lose its style.([#1600](https://github.com/arco-design/arco-design/pull/1600))
+
+## 2.41.2
+
+2022-11-11
+
+### 💎 Enhancement
+
+- Reduced unexpected rendering times of `Table` component `column.render`.([#1562](https://github.com/arco-design/arco-design/pull/1562))
+
+## 2.41.0
+
+2022-10-28
+
+### 💅 Style
+
+- Fixed `Table` component's style issue of collapsed column height when `scroll.x` is too small.([#1492](https://github.com/arco-design/arco-design/pull/1492))
+
+## 2.40.2
+
+2022-09-30
+
+### 💅 Style
+
+- Fixed the issue that when the `Table` component expands a row and nested a sub table, the cell transparent problem occurs when the subtable opens fixed column.([#1433](https://github.com/arco-design/arco-design/pull/1433))
+
+## 2.40.1
+
+2022-09-23
+
+### 🐛 BugFix
+
+- Fix the bug that when Table is turned off `checkStrictly`, passing in non-existing `selectedKeys` will  report an error([#1420](https://github.com/arco-design/arco-design/pull/1420))
+
+## 2.39.2
+
+2022-08-26
+
+### 🐛 BugFix
+
+- Fix the problem that after the `Table` component updates `data`, the `selectedRows` is not updated in time when the selectedRows is selected next time.([#1341](https://github.com/arco-design/arco-design/pull/1341))
+
+## 2.39.0
+
+2022-08-12
+
+### 🐛 BugFix
+
+- Fixed `Table` component not rendering correctly when data format is `[['1']], ['2']]`.([#1270](https://github.com/arco-design/arco-design/pull/1270))
+
+## 2.38.0
+
+2022-07-29
+
+### 🐛 BugFix
+
+- Fix the bug that the `onChange` callback of the paginator does not trigger after `Table` is passed to `pagination` alone([#1217](https://github.com/arco-design/arco-design/pull/1217))
+
+## 2.37.2
+
+2022-07-22
+
+### 🐛 BugFix
+
+- Fix the bug that the `onChange` callback parameter of the `Table` component is not updated in time([#1155](https://github.com/arco-design/arco-design/pull/1155))
+
+## 2.37.0
+
+2022-07-08
+
+### 🐛 BugFix
+
+- Fix the bug that ellipsis does not take effect when `Table` component set `column.sorter` and `column.ellipsis` at the same time.([#1108](https://github.com/arco-design/arco-design/pull/1108))
+- Fix the style issue that the left border of `Table` component disappears when there is no data.([#1106](https://github.com/arco-design/arco-design/pull/1106))
+- Fix the bug of error when `Table` component data is null.([#1104](https://github.com/arco-design/arco-design/pull/1104))
+
+## 2.36.0
+
+2022-06-24
+
+### 🐛 BugFix
+
+- Fixed the bug that the data and record outputted by the `Table` component contained internal data.([#1047](https://github.com/arco-design/arco-design/pull/1047))
+
+## 2.35.1
+
+2022-06-17
+
+### 🐛 BugFix
+
+- Fix the bug that `Table` component will change the original data when tree data.([#990](https://github.com/arco-design/arco-design/pull/990))
+
+## 2.35.0
+
+2022-06-10
+
+### 🆕 Feature
+
+- The `Table` component supports fixed columns when `virtualized` is enabled.([#971](https://github.com/arco-design/arco-design/pull/971))
+
+## 2.33.1
+
+2022-05-20
+
+### 🐛 BugFix
+
+- Fixed the bug that the table header cells also have border-radius when the `Table` component header is grouped.([#872](https://github.com/arco-design/arco-design/pull/872))
+
+## 2.33.0
+
+2022-05-13
+
+### 🆕 Feature
+
+- `Table` Add `rowSelection.checkStrictly` to support parent-child selection associations.([#849](https://github.com/arco-design/arco-design/pull/849))
+
+## 2.32.2
+
+2022-04-29
+
+### 🐛 BugFix
+
+- Fix the bug that the outer `ConfigProvider` of the `Table` component cannot take effect after setting `pagination`([#827](https://github.com/arco-design/arco-design/pull/827))
+
+## 2.32.1
+
+2022-04-22
+
+### 🆎 TypeScript
+
+- Modify the `TS` of the `Table` component `rowKey` to be `React.Key \| ((record: T) => React.Key)`. ([#799](https://github.com/arco-design/arco-design/pull/799))
+
+## 2.31.1
+
+2022-03-28
+
+### 💅 Style
+
+- Fix the problem that the checkbox column width is abnormal when the `Table` component enable `virtualized`.([#696](https://github.com/arco-design/arco-design/pull/696))
+
+## 2.31.0
+
+2022-03-25
+
+### 🆕 Feature
+
+- The `Table` component supports sorting tree data.([#678](https://github.com/arco-design/arco-design/pull/678))
+
+## 2.30.2
+
+2022-03-18
+
+### 🐛 BugFix
+
+- Fix the bug that `column.align` does not take effect when `virtualized` is enabled in `Table` component.([#650](https://github.com/arco-design/arco-design/pull/650))
+
+### 💅 Style
+
+- Fix `Table` component set `expandProps.width` is not work when less than 40.([#656](https://github.com/arco-design/arco-design/pull/656))
+
+## 2.30.0
+
+2022-03-04
+
+### 🐛 BugFix
+
+- `placeholder`   attributes take effect when `Table` data is an empty string or null([#609](https://github.com/arco-design/arco-design/pull/609))
+
+## 2.29.0
+
+2022-02-11
+
+### 🐛 BugFix
+
+- Fix the bug that `Table` component `onDropdownVisibleChange` does not trigger when the OK button is clicked.([#521](https://github.com/arco-design/arco-design/pull/521))
+
+## 2.28.2
+
+2022-01-21
+
+### 💎 Optimization
+
+- Optimize the `Table` component `expandedRowRender` to cause the problem of freezing.([#473](https://github.com/arco-design/arco-design/pull/473))
+- Optimized `Table` performance problem when selecting all data is larger than 10000 after enabling `virtualized`.([#472](https://github.com/arco-design/arco-design/pull/472))
+
+### 🐛 BugFix
+
+- Fixed the bug that `Table` component `size` did not work on `Pagination`.([#475](https://github.com/arco-design/arco-design/pull/475))
+
+## 2.28.1
+
+2022-01-14
+
+### 🐛 BugFix
+
+- Pagination should not be displayed if the table has no data.([#435](https://github.com/arco-design/arco-design/pull/435))
+
+### 💅 Style
+
+- Fixed the style issue of the `Table` component when the size is `mini` when there is only one data.([#449](https://github.com/arco-design/arco-design/pull/449))
+
+## 2.28.0
+
+2022-01-07
+
+### 🐛 BugFix
+
+- Fix the bug that the className is incorrect when the `Table` component updates the `column.className` asynchronously.([#398](https://github.com/arco-design/arco-design/pull/398))
+
+## 2.27.2
+
+2021-12-31
+
+### 🐛 BugFix
+
+- Fix the bug that the filter of the `Table` component cannot be reset when the `filteredValue` is set to `undefined` in the controlled mode.([#382](https://github.com/arco-design/arco-design/pull/382))
+
+## 2.27.0
+
+2021-12-17
+
+### 🆕 Feature
+
+- `Table` add prop `expandProps.strictTreeData`.([#334](https://github.com/arco-design/arco-design/pull/334))
+
+### 🐛 BugFix
+
+- Fix the bug that `column.cellStyle` of the `Table` component works abnormally.([#332](https://github.com/arco-design/arco-design/pull/332))
+- Fix the bug that the current page calculation error occurs when the amount of data in `Table` changes.([#329](https://github.com/arco-design/arco-design/pull/329))
+
+## 2.26.2
+
+2021-12-10
+
+### 💅 Style
+
+- Fix the problem that table cell will break line when `Table` component is tree data and `column.render` returns `div`.([#302](https://github.com/arco-design/arco-design/pull/302))
+
+## 2.26.0
+
+2021-12-03
+
+### 💅 Style
+
+- Fix the style problem that the checkbox column of the `Table` component is not aligned when the table header is fixed.([#261](https://github.com/arco-design/arco-design/pull/261))
+
+## 2.25.0
+
+2021-11-19
+
+### 💅 Style
+
+- Fix the style problem that the header of the `Table` component is misplaced when the scroll bar is always displayed after the `virtualized` is turned on.([#182](https://github.com/arco-design/arco-design/pull/182))
+
+## 2.24.1
+
+2021-11-12
+
+### 💅 Style
+
+- Fix the style problem that the cell align ='right' will overlap when the `Table` component has filter in the column.([#140](https://github.com/arco-design/arco-design/pull/140))
+
+## 2.24.0
+
+2021-11-05
+
+### 💅 Style
+
+- Fix the problem that the border line of the header is broken when `border={{ border: true, headerCell: true }}` when the `Table` component is grouped columns in the header.([#120](https://github.com/arco-design/arco-design/pull/120))
+
 ## 2.23.4
 
 2021-10-26

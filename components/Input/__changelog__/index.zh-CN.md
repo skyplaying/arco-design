@@ -1,3 +1,168 @@
+## 2.61.1
+
+2024-03-22
+
+### 🐛 问题修复
+
+- 修复 `Input` 组件设置 `allowClear`且自适应宽度时，清除图标错位的 bug。([#2606](https://github.com/arco-design/arco-design/pull/2606))
+- 自适应宽度的 `Input` 组件在文本被 Hover 时不显示省略状态。([#2606](https://github.com/arco-design/arco-design/pull/2606))
+- 修复 `Input.Search` 无法透传 `suffix` 和 `addAfter` 的问题([#2591](https://github.com/arco-design/arco-design/pull/2591))
+
+## 2.61.0
+
+2024-03-15
+
+### 🆕 功能升级
+
+- `Input` 组件支持 `onCompositionStart`、  `onCompositionUpdate`、 `onCompositionEnd` 事件([#2589](https://github.com/arco-design/arco-design/pull/2589))
+
+## 2.55.1
+
+2023-11-03
+
+### 🐛 问题修复
+
+- 修复 `Input` 组件默认传入包含换行符的字符串且未做值的改动时， `onChange` 会在 blur 时触发一次的 bug。([#2335](https://github.com/arco-design/arco-design/pull/2335))
+
+## 2.55.0
+
+2023-10-27
+
+### 💅 样式更新
+
+- 修复 `Input` 组件具有前后缀时在 Safari 中清空文本导致垂直方向高度抖动的问题。([#2315](https://github.com/arco-design/arco-design/pull/2315))
+
+## 2.54.0
+
+2023-10-09
+
+### 🆕 功能升级
+
+- `Input` 组件支持通过 `autoWidth` 属性设置宽度自适应。([#2274](https://github.com/arco-design/arco-design/pull/2274))
+
+## 2.53.2
+
+2023-09-22
+
+### 🐛 问题修复
+
+- 修复 `Input.Search` 组件在 `value` 受控且传入了对象类型的 `maxLength`并直接触发 `onSearch`时， 回调参数错误的 bug([#2239](https://github.com/arco-design/arco-design/pull/2239))
+
+## 2.51.0
+
+2023-07-28
+
+### 🆎 类型修正
+
+- 导出 `<Input />` 组件的 `Ref` 类型定义([#2105](https://github.com/arco-design/arco-design/pull/2105) [@WindrunnerMax](https://github.com/WindrunnerMax))
+
+## 2.50.1
+
+2023-07-14
+
+### 💅 样式更新
+
+- 修复 `Input` 组件设置 `allowClear` 且宽度不固定时 hover 前后出现的宽度抖动问题。([#2084](https://github.com/arco-design/arco-design/pull/2084))
+
+## 2.50.0
+
+2023-06-30
+
+### 🆕 功能升级
+
+- `Input` 支持通过 `normalize` 在指定时机对输入值进行格式化。([#2065](https://github.com/arco-design/arco-design/pull/2065))
+- `Input` 支持配置清除按钮([#2059](https://github.com/arco-design/arco-design/pull/2059))
+
+## 2.48.2
+
+2023-05-26
+
+### 🐛 问题修复
+
+- 修复 `Input.Search` 组件点击搜索图标或搜索按钮时错误触发 `onPressEnter` 回调的 bug。([#1990](https://github.com/arco-design/arco-design/pull/1990))
+- 修复 `Input.TextArea` 组件 `autoSize` 属性在非英文输入法时可能不生效的问题。([#1988](https://github.com/arco-design/arco-design/pull/1988))
+
+## 2.46.3
+
+2023-04-07
+
+### 🆎 类型修正
+
+- 完善 `Input.Textarea` TS 定义([#1899](https://github.com/arco-design/arco-design/pull/1899))
+
+## 2.36.1
+
+2022-07-01
+
+### 🐛 问题修复
+
+- 修复 `Input` 组件导致的控制台 React Warning(not recognize prop on a DOM element)。([#1070](https://github.com/arco-design/arco-design/pull/1070))
+
+## 2.35.0
+
+2022-06-10
+
+### 🐛 问题修复
+
+- 修复 `Input.TextArea` 组件输入中文时长度有可能超过 `maxLength` 的 bug。([#988](https://github.com/arco-design/arco-design/pull/988))
+
+## 2.32.1
+
+2022-04-22
+
+### 💎 功能优化
+
+- 优化 `Input.Textarea` 组件外部调用 `focus` 时光标位置。([#800](https://github.com/arco-design/arco-design/pull/800))
+
+## 2.31.0
+
+2022-03-25
+
+### 💅 样式更新
+
+- 修复在特定场景下 `Input` 的清除按钮无法隐藏的bug([#685](https://github.com/arco-design/arco-design/pull/685))
+
+## 2.30.2
+
+2022-03-18
+
+### 🐛 问题修复
+
+- 修复 `Input` 同时设置  `allowClear` 和 `readOnly` 属性时， 依然展示清除按钮的问题。([#640](https://github.com/arco-design/arco-design/pull/640))
+
+## 2.29.2
+
+2022-02-25
+
+### 🐛 问题修复
+
+- 修复 `Input` 组件粘贴文本并清空之后，无法再次粘贴同样文本的 bug。([#584](https://github.com/arco-design/arco-design/pull/584))
+
+## 2.29.0
+
+2022-02-11
+
+### 🐛 问题修复
+
+- 修复 `Input` 组件在 Firefox 中输入中文会连续触发两次 `onChange` 的 bug。([#522](https://github.com/arco-design/arco-design/pull/522))
+
+## 2.28.1
+
+2022-01-14
+
+### 🐛 问题修复
+
+- 修复 `Input` 组件点击清除图标边缘区域未清除文本的 `bug`。([#438](https://github.com/arco-design/arco-design/pull/438))
+- 修复 `Input.Search` 在不同尺寸下，`searchButton` 尺寸未调整的问题。([#438](https://github.com/arco-design/arco-design/pull/438))
+
+## 2.28.0
+
+2022-01-07
+
+### 🐛 问题修复
+
+- 修复 `Input` 组件在输入中文并直接选中自动补全选项时，未触发 `onChange` 的 bug。([#407](https://github.com/arco-design/arco-design/pull/407))
+
 ## 2.23.0
 
 2021-09-27

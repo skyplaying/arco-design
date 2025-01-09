@@ -16,7 +16,7 @@ const Portal = (props: PortalProps) => {
   const containerRef = useRef<HTMLElement>();
   const isFirstRender = useIsFirstRender();
 
-  if (isFirstRender && !isServerRendering) {
+  if ((isFirstRender || containerRef.current === null) && !isServerRendering) {
     containerRef.current = getContainer();
   }
 
@@ -25,6 +25,7 @@ const Portal = (props: PortalProps) => {
       const container = containerRef.current;
       if (container && container.parentNode) {
         container.parentNode.removeChild(container);
+        containerRef.current = null;
       }
     };
   }, []);

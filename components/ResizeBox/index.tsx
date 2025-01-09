@@ -6,6 +6,7 @@ import React, {
   useState,
   useRef,
 } from 'react';
+import omit from '../_util/omit';
 import cs from '../_util/classNames';
 import { ConfigContext } from '../ConfigProvider';
 import { on, off } from '../_util/dom';
@@ -15,6 +16,7 @@ import useMergeValue from '../_util/hooks/useMergeValue';
 import { isNumber } from '../_util/is';
 import { ResizeBoxProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import SplitGroup from './split-group';
 
 const DIRECTION_LEFT = 'left';
 const DIRECTION_RIGHT = 'right';
@@ -37,8 +39,19 @@ const defaultProps: ResizeBoxProps = {
   resizeTriggers: {},
 };
 
+const getOppositeDirection = (direction: DirectionType) => {
+  switch (direction) {
+    case 'left':
+      return 'right';
+    case 'right':
+      return 'left';
+    default:
+      return direction;
+  }
+};
+
 function ResizeBox(baseProps: PropsWithChildren<ResizeBoxProps>, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<PropsWithChildren<ResizeBoxProps>>(
     baseProps,
     defaultProps,
@@ -54,10 +67,12 @@ function ResizeBox(baseProps: PropsWithChildren<ResizeBoxProps>, ref) {
     resizeTriggers,
     width: propWidth,
     height: propHeight,
+    ...rest
   } = props;
 
+  const realDirections = rtl ? directions.map((dir) => getOppositeDirection(dir)) : directions;
   const prefixCls = getPrefixCls('resizebox');
-  const classNames = cs(prefixCls, className);
+  const classNames = cs(prefixCls, { [`${prefixCls}-rtl`]: rtl }, className);
   const [paddingStyles, setPaddingStyles] = useState({});
   const [width, setWidth] = useMergeValue(undefined, { value: propWidth });
   const [height, setHeight] = useMergeValue(undefined, { value: propHeight });
@@ -103,6 +118,22 @@ function ResizeBox(baseProps: PropsWithChildren<ResizeBoxProps>, ref) {
     return res <= 0 ? 0 : res;
   }
 
+  //
+  function setOrResetBodyCursor(cursor?: string) {
+    const attrKey = 'data-arco-origin-cursor';
+    if (cursor) {
+      // 因为只会覆盖内联样式的 cursor，所以只需要记录下原本内联的 cursor 值即可。
+      document.body.setAttribute(attrKey, document.body.style.cursor);
+      document.body.style.cursor = cursor;
+    } else {
+      // reset to origin cursor
+      const originCursor = document.body.getAttribute(attrKey);
+      document.body.style.cursor = originCursor || '';
+
+      document.body.removeAttribute(attrKey);
+    }
+  }
+
   function onTriggerMouseDown(direction, e) {
     props.onMovingStart && props.onMovingStart();
 
@@ -122,7 +153,7 @@ function ResizeBox(baseProps: PropsWithChildren<ResizeBoxProps>, ref) {
     on(window, 'touchend', moveEnd);
     on(window, 'contextmenu', moveEnd);
 
-    document.body.style.cursor = getIsHorizontal(direction) ? 'row-resize' : 'col-resize';
+    setOrResetBodyCursor(getIsHorizontal(direction) ? 'row-resize' : 'col-resize');
   }
 
   function moving(e: MouseEvent) {
@@ -168,7 +199,7 @@ function ResizeBox(baseProps: PropsWithChildren<ResizeBoxProps>, ref) {
   function moveEnd() {
     recordRef.current.moving = false;
     offEvents();
-    document.body.style.cursor = 'default';
+    setOrResetBodyCursor();
     props.onMovingEnd && props.onMovingEnd();
   }
 
@@ -201,9 +232,14 @@ function ResizeBox(baseProps: PropsWithChildren<ResizeBoxProps>, ref) {
   };
   const Tag = component as any;
   return (
-    <Tag style={wrapperStyles} className={classNames} ref={wrapperRef}>
+    <Tag
+      {...omit(rest, ['onMovingStart', 'onMoving', 'onMovingEnd'])}
+      style={wrapperStyles}
+      className={classNames}
+      ref={wrapperRef}
+    >
       {children}
-      {directions.map((direction) => {
+      {realDirections.map((direction) => {
         if (allDirections.indexOf(direction) !== -1) {
           return (
             <ResizeTrigger
@@ -231,9 +267,11 @@ const ForwardRefResizeBox = forwardRef<unknown, PropsWithChildren<ResizeBoxProps
 
 const ResizeBoxComponent = ForwardRefResizeBox as typeof ForwardRefResizeBox & {
   Split: typeof Split;
+  SplitGroup: typeof SplitGroup;
 };
 
 ResizeBoxComponent.Split = Split;
+ResizeBoxComponent.SplitGroup = SplitGroup;
 
 ResizeBoxComponent.displayName = 'ResizeBox';
 

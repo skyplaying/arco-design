@@ -1,6 +1,16 @@
+import 'dayjs/locale/en';
+import { DefaultValidateMessage } from 'b-validate';
+
 const Calendar = {
+  // only used in calendar
   formatYear: 'YYYY',
+  // only used in calendar
   formatMonth: 'MMM YYYY',
+  monthBeforeYear: true,
+  // DatePicker panel header format
+  monthFormat: 'MMM',
+  // DatePicker panel header format
+  yearFormat: 'YYYY',
   today: 'Today',
   view: {
     month: 'Month',
@@ -64,15 +74,16 @@ const Calendar = {
 
 export default {
   locale: 'en-US',
+  dayjsLocale: 'en',
   Calendar,
   DatePicker: {
     Calendar,
     placeholder: {
-      date: 'Please select date',
-      week: 'Please select week',
-      month: 'Please select month',
-      year: 'Please select year',
-      quarter: 'Please select quarter',
+      date: 'Select date',
+      week: 'Select week',
+      month: 'Select month',
+      year: 'Select year',
+      quarter: 'Select quarter',
     },
     placeholders: {
       date: ['Start date', 'End date'],
@@ -85,10 +96,10 @@ export default {
     selectDate: 'Select Date',
     today: 'Today',
     now: 'Now',
-    ok: 'Ok',
+    ok: 'OK',
   },
   Drawer: {
-    okText: 'Ok',
+    okText: 'OK',
     cancelText: 'Cancel',
   },
   Empty: {
@@ -103,13 +114,19 @@ export default {
     page: 'Page',
     countPerPage: ' / Page',
     total: 'Total: {0}',
+    prev: 'Go to previous page',
+    next: 'Go to next page',
+    currentPage: 'page {0}',
+    prevSomePages: 'Previous {0} pages',
+    nextSomePages: 'Next {0} pages',
+    pageSize: 'page size',
   },
   Popconfirm: {
     okText: 'OK',
     cancelText: 'Cancel',
   },
   Table: {
-    okText: 'Ok',
+    okText: 'OK',
     resetText: 'Reset',
     sortAscend: 'Click to sort ascending',
     sortDescend: 'Click to sort descending',
@@ -134,7 +151,7 @@ export default {
     preview: 'Preview',
     drag: 'Click or drag file to this area to upload',
     dragHover: 'Release to upload',
-    error: 'Uplaod Error',
+    error: 'Upload Error',
   },
   Typography: {
     copy: 'Copy',
@@ -153,5 +170,11 @@ export default {
     zoomIn: 'Zoom In',
     zoomOut: 'Zoom Out',
     originalSize: 'Original Size',
+  },
+  Form: DefaultValidateMessage,
+  ColorPicker: {
+    history: 'History Colors',
+    preset: 'Preset Colors',
+    empty: 'Empty',
   },
 };

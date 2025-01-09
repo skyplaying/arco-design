@@ -3,7 +3,7 @@ import isEqualWith from 'lodash/isEqualWith';
 import cs from '../_util/classNames';
 import Node from './node';
 import NodeList from './node-list';
-import { isFunction } from '../_util/is';
+import { isArray, isEmptyObject, isFunction, isUndefined } from '../_util/is';
 import { ConfigContext } from '../ConfigProvider';
 import {
   getAllCheckedKeysByCheck,
@@ -12,7 +12,7 @@ import {
 } from './util';
 import { TreeProps, NodeProps, TreeDataType, NodeInstance, TreeState } from './interface';
 import { TreeContext } from './context';
-import mergeProps from '../_util/mergeProps';
+import { pickDataAttributes } from '../_util/pick';
 
 const DefaultFieldNames = {
   key: 'key',
@@ -33,8 +33,10 @@ const defaultProps = {
   selectable: true,
   autoExpandParent: true,
   checkedStrategy: 'all' as const,
+  actionOnClick: 'select',
   allowDrop: () => true,
   fieldNames: DefaultFieldNames,
+  animation: true,
 };
 
 const needMergeKeys = [
@@ -51,6 +53,8 @@ const needMergeKeys = [
   'showLine',
   'selectable',
   'allowDrop',
+  'actionOnClick',
+  'animation',
 ] as const;
 
 type MergedPropsType = {
@@ -84,12 +88,7 @@ class Tree extends Component<TreeProps, TreeState> {
     return null;
   }
 
-  // 依旧使用NodeInstance 是为了兼容1.x的一些用法，改动较大
-  cacheNodes: { [key: string]: NodeInstance } = {};
-
   key2nodeProps: key2nodePropsType = {};
-
-  indeterminateKeys: string[] = [];
 
   dragNode: null | NodeInstance;
 
@@ -99,17 +98,20 @@ class Tree extends Component<TreeProps, TreeState> {
 
   getMergedProps = (baseProps?): MergedPropsType => {
     const { componentConfig } = this.context;
-    const props = mergeProps<TreeProps>(
-      baseProps || this.props,
-      defaultProps,
-      componentConfig?.Tree
-    );
-    return Object.keys(props).reduce((total, key) => {
-      if (needMergeKeys.indexOf(key as any) > -1) {
-        total[key] = props[key];
+    const props = baseProps || this.props;
+    const treeComponentConfig = componentConfig?.Tree || {};
+    const _props = {};
+
+    needMergeKeys.forEach((key) => {
+      if (!isUndefined(props[key])) {
+        _props[key] = props[key];
+      } else if (!isUndefined(treeComponentConfig[key])) {
+        _props[key] = treeComponentConfig[key];
+      } else {
+        _props[key] = defaultProps[key];
       }
-      return total;
-    }, {});
+    });
+    return _props;
   };
 
   constructor(props, context) {
@@ -118,10 +120,14 @@ class Tree extends Component<TreeProps, TreeState> {
     this.state = {};
     const treeData = this.getTreeData();
     const nodeList = this.getNodeList(treeData, context.getPrefixCls('tree'));
+    const { checkedKeys, halfCheckedKeys } = this.getInitCheckedKeys(
+      props.checkedKeys || props.defaultCheckedKeys || []
+    );
 
     this.state = {
       selectedKeys: props.selectedKeys || props.defaultSelectedKeys || [],
-      checkedKeys: this.getInitCheckedKeys(props.checkedKeys || props.defaultCheckedKeys || []),
+      checkedKeys,
+      halfCheckedKeys,
       expandedKeys: this.getInitExpandedKeys(props.expandedKeys || props.defaultExpandedKeys),
       loadedKeys: [],
       loadingKeys: [],
@@ -134,9 +140,9 @@ class Tree extends Component<TreeProps, TreeState> {
   // nodeProps 参数似乎咩有什么用。。。但是不知道外部有没有调用，就当key用吧。。
   scrollIntoView = (_index: number | string, nodeProps?: NodeProps) => {
     let index = _index;
-    if (typeof _index === 'string' || nodeProps) {
+    if (nodeProps) {
       // 作为key
-      index = _index || nodeProps._key;
+      index = nodeProps._key;
     }
 
     if (this.nodeListRef) {
@@ -163,17 +169,29 @@ class Tree extends Component<TreeProps, TreeState> {
         newState.treeData = treeData;
         newState.nodeList = nodeList;
       }
-      // 说明treeData变了，需要比较下内部checkedKeys
+
       if (
         newState.treeData ||
         ('checkedKeys' in this.props && !isEqualWith(prevProps.checkedKeys, this.props.checkedKeys))
       ) {
+        // 说明treeData变了，需要比较下内部checkedKeys
         const currentCheckedKeys =
           'checkedKeys' in this.props ? this.props.checkedKeys : this.state.checkedKeys;
-        const keys = this.getInitCheckedKeys(currentCheckedKeys || []);
-        if (!isEqualWith(keys, this.state.checkedKeys)) {
-          newState.checkedKeys = keys;
+        const { halfCheckedKeys, checkedKeys } = this.getInitCheckedKeys(currentCheckedKeys || []);
+        if (!isEqualWith(checkedKeys, this.state.checkedKeys)) {
+          newState.checkedKeys = checkedKeys;
         }
+        if (!isEqualWith(halfCheckedKeys, this.state.halfCheckedKeys)) {
+          newState.halfCheckedKeys = halfCheckedKeys;
+        }
+      }
+
+      if (
+        this.props.checkStrictly &&
+        'halfCheckedKeys' in this.props &&
+        !isEqualWith(prevProps.halfCheckedKeys, this.props.halfCheckedKeys)
+      ) {
+        newState.halfCheckedKeys = this.props.halfCheckedKeys;
       }
 
       if (
@@ -181,33 +199,36 @@ class Tree extends Component<TreeProps, TreeState> {
         !isEqualWith(this.props.expandedKeys, prevProps.expandedKeys)
       ) {
         newState.expandedKeys = this.props.expandedKeys;
+
         // 比较前后expandKeys的改变，去重，得到需要收起/展开的动画
         // 例如 [...[1, 2, 3], ...[1, 3, 4]] 。那么 2 会收起，4会展开。
         // 如果父节点正在执行收起/展开逻辑，子节点不需要出现在 currentExpandKeys 数组。
-        newState.currentExpandKeys = [...newState.expandedKeys, ...this.state.expandedKeys]
-          .reduce((total, next) => {
-            const index = total.indexOf(next);
-            if (index === -1) {
-              total.push(next);
-            } else {
-              total.splice(index, 1);
-            }
-            return total;
-          }, [])
-          .filter((key, _, array) => {
-            if (this.key2nodeProps[key]) {
-              const pathParentKeys = this.key2nodeProps[key].pathParentKeys;
-              if (pathParentKeys.some((x) => array.indexOf(x) > -1)) {
-                return false;
-              }
-              return this.key2nodeProps[key].children?.length;
-            }
-          });
+        newState.currentExpandKeys = !mergedProps.animation
+          ? []
+          : [...newState.expandedKeys, ...this.state.expandedKeys]
+              .reduce((total, next) => {
+                const index = total.indexOf(next);
+                if (index === -1) {
+                  total.push(next);
+                } else {
+                  total.splice(index, 1);
+                }
+                return total;
+              }, [])
+              .filter((key, _, array) => {
+                if (this.key2nodeProps[key]) {
+                  const pathParentKeys = this.key2nodeProps[key].pathParentKeys;
+                  if (pathParentKeys.some((x) => array.indexOf(x) > -1)) {
+                    return false;
+                  }
+                  return this.key2nodeProps[key].children?.length;
+                }
+              });
       }
       const currentExpandKeys = newState.currentExpandKeys || this.state.currentExpandKeys;
       if (newState.treeData && currentExpandKeys) {
         newState.currentExpandKeys = currentExpandKeys.filter((key) => {
-          const item = newState.treeData.find((node) => node._key === key);
+          const item = newState.treeData.find((node) => node.key === key);
           return item && item.children && item.children.length;
         });
       }
@@ -237,7 +258,11 @@ class Tree extends Component<TreeProps, TreeState> {
       'children',
     ];
 
-    return keys.some((key) => isEqualWith(prevProps[key], props[key]));
+    return (
+      prevProps.treeData !== props.treeData ||
+      prevProps.children !== props.children ||
+      keys.some((key) => isEqualWith(prevProps[key], props[key]))
+    );
   };
 
   // 根据 fieldNames 获取节点数据
@@ -360,18 +385,22 @@ class Tree extends Component<TreeProps, TreeState> {
   getInitCheckedKeys = (keys) => {
     if (!this.props.checkStrictly) {
       const { checkedKeys, indeterminateKeys } = getCheckedKeysByInitKeys(keys, this.key2nodeProps);
-      this.indeterminateKeys = indeterminateKeys;
-      return checkedKeys;
+      return {
+        checkedKeys,
+        halfCheckedKeys: indeterminateKeys,
+      };
     }
 
-    this.indeterminateKeys = [];
-    return keys;
+    return {
+      checkedKeys: keys,
+      halfCheckedKeys: this.props.halfCheckedKeys || [],
+    };
   };
 
-  handleSelect = (key, e) => {
+  handleSelect = (key: string, e) => {
     const { onSelect } = this.props;
 
-    const extra: any = { e, node: this.cacheNodes[key] };
+    const extra: any = { e, node: this.getCacheNode([key])[0] };
 
     if (this.props.multiple) {
       const selectedKeys = [...(this.state.selectedKeys as string[])];
@@ -383,14 +412,14 @@ class Tree extends Component<TreeProps, TreeState> {
         extra.selected = true;
         selectedKeys.push(key);
       }
-      extra.selectedNodes = selectedKeys.map((x) => this.cacheNodes[x]);
+      extra.selectedNodes = this.getCacheNode(selectedKeys);
       if (!('selectedKeys' in this.props)) {
         this.setState({ selectedKeys });
       }
       onSelect && onSelect(selectedKeys, extra);
     } else {
       extra.selected = true;
-      extra.selectedNodes = [this.cacheNodes[key]];
+      extra.selectedNodes = this.getCacheNode([key]);
       if (!('selectedKeys' in this.props)) {
         this.setState({ selectedKeys: [key] });
       }
@@ -398,20 +427,29 @@ class Tree extends Component<TreeProps, TreeState> {
     }
   };
 
-  handleCheck = (checked, key, e) => {
+  handleCheck = (checked: boolean, key: string, e) => {
     const { checkedStrategy } = this.getMergedProps();
     const { onCheck, checkStrictly } = this.props;
-    const extra = { e, node: this.cacheNodes[key] };
+    const extra = { e, node: this.getCacheNode([key])[0] };
 
     let checkedKeys = this.state.checkedKeys;
+    let halfCheckedKeys = this.state.halfCheckedKeys;
     if (checkStrictly) {
       if (checked) {
         checkedKeys = checkedKeys.concat(key);
       } else {
         checkedKeys = checkedKeys.filter((item) => item !== key);
       }
+
+      const newState: Pick<TreeState, 'checkedKeys' | 'halfCheckedKeys'> = {};
       if (!('checkedKeys' in this.props)) {
-        this.setState({ checkedKeys });
+        newState.checkedKeys = checkedKeys;
+      }
+      if (!('halfCheckedKeys' in this.props)) {
+        newState.halfCheckedKeys = halfCheckedKeys;
+      }
+      if (!isEmptyObject(newState)) {
+        this.setState({ ...newState });
       }
     } else {
       // 找到所有允许勾选的子节点
@@ -420,12 +458,16 @@ class Tree extends Component<TreeProps, TreeState> {
         checked,
         checkedKeys,
         this.key2nodeProps,
-        this.indeterminateKeys
+        halfCheckedKeys
       );
+
       checkedKeys = newCheckedKeys;
-      this.indeterminateKeys = indeterminateKeys;
+      halfCheckedKeys = indeterminateKeys;
+
       if (!('checkedKeys' in this.props)) {
-        this.setState({ checkedKeys });
+        this.setState({ checkedKeys, halfCheckedKeys });
+      } else {
+        this.setState({ halfCheckedKeys });
       }
       if (checkedStrategy === Tree.SHOW_PARENT) {
         checkedKeys = checkedKeys.filter((x) => {
@@ -437,7 +479,11 @@ class Tree extends Component<TreeProps, TreeState> {
       } else if (checkedStrategy === Tree.SHOW_CHILD) {
         checkedKeys = checkedKeys.filter((x) => {
           const item = this.key2nodeProps[x];
-          if (!item || !item.children || !item.children.length) {
+          if (
+            !item ||
+            !item.children?.length ||
+            item.children?.every((x) => checkedKeys.indexOf(x._key) === -1)
+          ) {
             return true;
           }
         });
@@ -446,8 +492,10 @@ class Tree extends Component<TreeProps, TreeState> {
 
     onCheck &&
       onCheck(checkedKeys, {
-        checkedNodes: checkedKeys.map((x) => this.cacheNodes[x]).filter((x) => x),
+        checkedNodes: this.getCacheNode(checkedKeys),
         checked,
+        halfCheckedKeys,
+        halfCheckedNodes: this.getCacheNode(halfCheckedKeys),
         ...extra,
       });
   };
@@ -463,7 +511,7 @@ class Tree extends Component<TreeProps, TreeState> {
         },
         async () => {
           try {
-            await (loadMore as Function)(this.cacheNodes[node._key]);
+            await (loadMore as Function)(this.getCacheNode([node._key])[0]);
 
             this.setState({
               loadedKeys: Array.from(new Set([...this.state.loadedKeys, node._key])),
@@ -482,30 +530,30 @@ class Tree extends Component<TreeProps, TreeState> {
   };
 
   handleNodeDragStart = (e: DragEvent<HTMLSpanElement>, node: NodeProps) => {
-    this.dragNode = this.cacheNodes[node._key];
+    this.dragNode = this.getCacheNode([node._key])[0];
     this.dropPosition = 0;
     const { onDragStart } = this.props;
-    onDragStart && onDragStart(e, this.cacheNodes[node._key]);
+    onDragStart && onDragStart(e, this.getCacheNode([node._key])[0]);
   };
 
   handleNodeDragEnd = (e: DragEvent<HTMLSpanElement>, node: NodeProps) => {
     this.dragNode = null;
     this.dropPosition = 0;
     const { onDragEnd } = this.props;
-    onDragEnd && onDragEnd(e, this.cacheNodes[node._key]);
+    onDragEnd && onDragEnd(e, this.getCacheNode([node._key])[0]);
   };
 
   handleNodeDragOver = (e: DragEvent<HTMLSpanElement>, node: NodeProps, dropPosition) => {
     this.dropPosition = dropPosition;
     const { onDragOver } = this.props;
-    onDragOver && onDragOver(e, this.cacheNodes[node._key]);
+    onDragOver && onDragOver(e, this.getCacheNode([node._key])[0]);
   };
 
   handleNodeDragLeave = (e: DragEvent<HTMLSpanElement>, node: NodeProps) => {
     // this.dropNode = null;
     this.dropPosition = 0;
     const { onDragLeave } = this.props;
-    onDragLeave && onDragLeave(e, this.cacheNodes[node._key]);
+    onDragLeave && onDragLeave(e, this.getCacheNode([node._key])[0]);
   };
 
   isChildOfNode = (node: NodeProps, target) => {
@@ -539,13 +587,16 @@ class Tree extends Component<TreeProps, TreeState> {
     if (this.dragNode) {
       const { allowDrop } = this.getMergedProps();
       const { onDrop } = this.props;
-      const nodeInstance = this.cacheNodes[node._key];
+      const nodeInstance = this.getCacheNode([node._key])[0];
       if (
         onDrop &&
         !this.isChildOfNode(node, this.dragNode) &&
         !this.isSameNode(this.dragNode, nodeInstance)
       ) {
-        if (allowDrop && !allowDrop({ dropNode: nodeInstance, dropPosition })) {
+        if (
+          allowDrop &&
+          !allowDrop({ dropNode: nodeInstance, dragNode: this.dragNode, dropPosition })
+        ) {
           return;
         }
         onDrop({
@@ -562,13 +613,18 @@ class Tree extends Component<TreeProps, TreeState> {
     const { allowDrop } = this.getMergedProps();
     let isAllowDrop = true;
     if (typeof allowDrop === 'function') {
-      isAllowDrop = allowDrop({ dropNode: this.cacheNodes[node._key], dropPosition });
+      isAllowDrop = allowDrop({
+        dropNode: this.getCacheNode([node._key])[0],
+        dragNode: this.dragNode,
+        dropPosition,
+      });
     }
     return isAllowDrop;
   };
 
   handleExpand = (expanded: boolean, key: string) => {
     const { currentExpandKeys, expandedKeys = [] } = this.state;
+    const { animation } = this.getMergedProps();
     const { onExpand } = this.props;
     if (currentExpandKeys.indexOf(key) > -1) {
       // 如果当前key节点正在展开/收起，不执行操作。
@@ -583,19 +639,54 @@ class Tree extends Component<TreeProps, TreeState> {
     if (!('expandedKeys' in this.props)) {
       this.setState({
         expandedKeys: newExpandedKeys,
-        currentExpandKeys: [...currentExpandKeys, key],
+        currentExpandKeys: animation ? [...currentExpandKeys, key] : [],
       });
     }
     onExpand &&
       onExpand(newExpandedKeys, {
         expanded,
-        node: this.cacheNodes[key],
-        expandedNodes: newExpandedKeys.map((x) => this.cacheNodes[x]).filter((x) => x),
+        node: this.getCacheNode([key])[0] as NodeInstance,
+        expandedNodes: this.getCacheNode(newExpandedKeys) as NodeInstance[],
       });
   };
 
-  // 传入构建好的expandedKeysSet
-  getNodeProps = (nodeProps, expandedKeysSet) => {
+  getCacheNode = (key: string[]): NodeInstance[] => {
+    // __ArcoAdapterMode__ ，在大数据下获取选中结点信息时，构建 Node 会导致性能消耗过大，
+    // 通过 __ArcoAdapterMode__ 开启构建数据一个类似 node 的数据结构，提升性能，大版本升级时调整所有回调类型的 NodeInstance 的参数
+    const { __ArcoAdapterMode__ } = this.props;
+    const originData = [];
+    [].concat(key).forEach((_key) => {
+      const data = this.key2nodeProps[_key];
+      if (data) {
+        originData.push(data);
+      }
+    });
+    const nodeProps = this.getNodeProps(originData);
+
+    return nodeProps.map((_props) => {
+      return __ArcoAdapterMode__ ? (
+        {
+          props: _props,
+          key,
+        }
+      ) : (
+        <Node {..._props} key={_props.key} />
+      );
+    }) as NodeInstance[];
+  };
+
+  // 转换为 set 类型，便于查找。主要是传递给node-list使用
+  getDataSet = (dataSet?) => {
+    return {
+      expandedKeysSet: dataSet?.expandedKeysSet || new Set(this.state?.expandedKeys || []),
+      checkedKeysSet: dataSet?.checkedKeysSet || new Set(this.state?.checkedKeys || []),
+      selectedKeysSet: dataSet?.selectedKeysSet || new Set(this.state?.selectedKeys || []),
+      halfCheckedKeysSet: dataSet?.halfCheckedKeysSet || new Set(this.state?.halfCheckedKeys || []),
+    };
+  };
+
+  // dataSet:传入构建好的expandedKeysSet,, checkedKeysSet, halfCheckedKeysSet ，性能优化
+  getNodeProps = <T extends NodeProps | NodeProps[]>(nodes: T, dataSet?): T => {
     const { autoExpandParent } = this.getMergedProps();
     const { loadMore } = this.props;
 
@@ -607,45 +698,60 @@ class Tree extends Component<TreeProps, TreeState> {
       loadedKeys = [],
     } = this.state;
 
-    const hasChildren = nodeProps.children && nodeProps.children.length;
-    const otherProps: NodeProps = {
-      isLeaf: !hasChildren,
-      autoExpandParent: hasChildren ? autoExpandParent : false,
-      expanded: expandedKeysSet
-        ? expandedKeysSet.has(nodeProps._key)
-        : expandedKeys.indexOf(nodeProps._key) > -1,
+    const { expandedKeysSet, checkedKeysSet, selectedKeysSet, halfCheckedKeysSet } =
+      this.getDataSet(dataSet);
+
+    const processNodeProps = (nodeProps) => {
+      const hasChildren = nodeProps.children && nodeProps.children.length;
+      const otherProps: NodeProps = {
+        isLeaf: !hasChildren,
+        autoExpandParent: hasChildren ? autoExpandParent : false,
+        expanded: expandedKeysSet
+          ? expandedKeysSet.has(nodeProps._key)
+          : expandedKeys.indexOf(nodeProps._key) > -1,
+      };
+
+      if (loadMore) {
+        const loaded = loadedKeys.indexOf(nodeProps._key) > -1;
+        otherProps.loaded = loaded;
+        otherProps.isLeaf = hasChildren ? false : nodeProps.isLeaf;
+      }
+
+      return {
+        ...nodeProps,
+        ...otherProps,
+        selected: selectedKeysSet.has(nodeProps._key),
+        indeterminated: halfCheckedKeysSet.has(nodeProps._key),
+        loading: loadingKeys.indexOf(nodeProps._key) > -1,
+        checked: checkedKeysSet.has(nodeProps._key),
+        selectedKeys,
+        checkedKeys,
+        loadingKeys,
+        loadedKeys,
+        expandedKeys,
+        childrenData: nodeProps.children || [],
+        children: null,
+      };
     };
 
-    if (loadMore) {
-      const loaded = loadedKeys.indexOf(nodeProps._key) > -1;
-      otherProps.loaded = loaded;
-      otherProps.isLeaf = hasChildren ? false : nodeProps.isLeaf;
-    }
-
-    return {
-      ...nodeProps,
-      ...otherProps,
-      selected: selectedKeys && selectedKeys.indexOf(nodeProps._key) > -1,
-      indeterminated: this.indeterminateKeys.indexOf(nodeProps._key) > -1,
-      loading: loadingKeys.indexOf(nodeProps._key) > -1,
-      checked: checkedKeys && checkedKeys.indexOf(nodeProps._key) > -1,
-      selectedKeys,
-      checkedKeys,
-      loadingKeys,
-      loadedKeys,
-      expandedKeys: this.state.expandedKeys,
-      childrenData: nodeProps.children || [],
-      children: null,
-    };
+    return isArray(nodes)
+      ? nodes.map((node) => {
+          return processNodeProps(node);
+        })
+      : processNodeProps(nodes);
   };
 
   handleExpandEnd = (key) => {
-    const { currentExpandKeys } = this.state;
-    if (currentExpandKeys.indexOf(key) > -1) {
-      this.setState({
-        currentExpandKeys: currentExpandKeys.filter((v) => v !== key),
-      });
-    }
+    // 获取最新 state 并更新，因为在 react 18 下批处理，可能多个节点并行执行动画时，导致更新 currentExpandKeys 相互覆盖
+    this.setState((state) => {
+      const { currentExpandKeys } = state;
+      if (currentExpandKeys.indexOf(key) > -1) {
+        return {
+          currentExpandKeys: currentExpandKeys.filter((v) => v !== key),
+        };
+      }
+      return {};
+    });
   };
 
   // 获取tree的state数据，在子组件里使用。
@@ -654,8 +760,6 @@ class Tree extends Component<TreeProps, TreeState> {
   };
 
   render() {
-    // render 之前重置掉，在NodeList里会进行赋值。
-    this.cacheNodes = {};
     const {
       className,
       showLine,
@@ -664,6 +768,8 @@ class Tree extends Component<TreeProps, TreeState> {
       height,
       style,
       icons,
+      actionOnClick,
+      animation,
     } = this.getMergedProps();
     const { loadMore, checkable } = this.props;
     // 兼容旧 APi : height
@@ -677,7 +783,7 @@ class Tree extends Component<TreeProps, TreeState> {
       : {
           threshold: null,
         };
-    const { getPrefixCls } = this.context;
+    const { getPrefixCls, rtl } = this.context;
 
     const prefixCls = getPrefixCls('tree');
 
@@ -685,11 +791,12 @@ class Tree extends Component<TreeProps, TreeState> {
       <TreeContext.Provider
         value={{
           icons,
+          animation,
           key2nodeProps: this.key2nodeProps,
           getFieldInfo: this.getFieldInfo,
           getTreeState: this.getTreeState,
           getNodeProps: this.getNodeProps,
-          onExpandEnd: this.handleExpandEnd,
+          onExpandEnd: animation ? this.handleExpandEnd : () => {},
           onSelect: this.handleSelect,
           onCheck: this.handleCheck,
           onNodeDragStart: this.handleNodeDragStart,
@@ -702,6 +809,7 @@ class Tree extends Component<TreeProps, TreeState> {
           renderTitle: this.props.renderTitle,
           loadMore: loadMore && this.handleLoadMore,
           allowDrop: this.handleAllowDrop,
+          actionOnClick,
           virtualListProps,
         }}
       >
@@ -715,6 +823,7 @@ class Tree extends Component<TreeProps, TreeState> {
               [`${prefixCls}-checkable`]: checkable,
               [`${prefixCls}-show-line`]: showLine,
               [`${prefixCls}-size-${size}`]: size,
+              [`${prefixCls}-rtl`]: rtl,
             },
             className
           )}
@@ -724,9 +833,14 @@ class Tree extends Component<TreeProps, TreeState> {
           expandedKeys={this.state.expandedKeys}
           currentExpandKeys={this.state.currentExpandKeys}
           getNodeProps={this.getNodeProps}
+          getDataSet={this.getDataSet}
           nodeList={this.state.nodeList}
-          saveCacheNode={(node) => {
-            this.cacheNodes[node.key] = node;
+          onMouseDown={this.props.onMouseDown}
+          ariaProps={{
+            role: 'tree',
+            'aria-multiselectable': this.props.multiple,
+            tabIndex: 0,
+            ...pickDataAttributes(this.props),
           }}
         />
       </TreeContext.Provider>

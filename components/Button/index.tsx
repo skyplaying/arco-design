@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, createRef, ReactNode, forwardRef } from 'react';
+import React, { useState, useContext, useEffect, useRef, ReactNode, forwardRef } from 'react';
 import IconLoading from '../../icon/react-icon/IconLoading';
 import Group from './group';
 import cs from '../_util/classNames';
@@ -34,9 +34,13 @@ const defaultProps: ButtonProps = {
 };
 
 function Button(baseProps: ButtonProps, ref) {
-  const { getPrefixCls, size: ctxSize, autoInsertSpaceInButton, componentConfig } = useContext(
-    ConfigContext
-  );
+  const {
+    getPrefixCls,
+    size: ctxSize,
+    autoInsertSpaceInButton,
+    componentConfig,
+    rtl,
+  } = useContext(ConfigContext);
   const props = useMergeProps<ButtonProps>(baseProps, defaultProps, componentConfig?.Button);
   const {
     style,
@@ -62,7 +66,8 @@ function Button(baseProps: ButtonProps, ref) {
   const iconNode = loading ? <IconLoading /> : icon;
 
   const [isTwoCNChar, setIsTwoCNChar] = useState(false);
-  const buttonRef = ref || createRef();
+  const innerButtonRef = useRef();
+  const buttonRef = ref || innerButtonRef;
 
   useEffect(() => {
     if (autoInsertSpaceInButton && buttonRef && buttonRef.current) {
@@ -75,7 +80,7 @@ function Button(baseProps: ButtonProps, ref) {
         setIsTwoCNChar(false);
       }
     }
-  }, [buttonRef, autoInsertSpaceInButton]);
+  }, [buttonRef.current, autoInsertSpaceInButton]);
 
   const prefixCls = getPrefixCls('btn');
   const _type = type === 'default' ? 'secondary' : type;
@@ -93,12 +98,13 @@ function Button(baseProps: ButtonProps, ref) {
       [`${prefixCls}-icon-only`]: iconOnly || (!children && children !== 0 && iconNode),
       [`${prefixCls}-disabled`]: disabled,
       [`${prefixCls}-two-chinese-chars`]: isTwoCNChar,
+      [`${prefixCls}-rtl`]: rtl,
     },
     className
   );
 
   const handleClick: React.MouseEventHandler<HTMLElement> = (event: any): void => {
-    if (loading) {
+    if (loading || disabled) {
       typeof event?.preventDefault === 'function' && event.preventDefault();
       return;
     }

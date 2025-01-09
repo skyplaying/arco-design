@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
+import { ConfigProviderProps } from '../../ConfigProvider';
 import { UploadListProps, STATUS, CustomIconType } from '../interface';
 import { UploadItem } from '../upload';
 import { isFunction, isObject } from '../../_util/is';
@@ -7,11 +8,17 @@ import IconImageClose from '../../../icon/react-icon/IconImageClose';
 import IconEye from '../../../icon/react-icon/IconEye';
 import IconDelete from '../../../icon/react-icon/IconDelete';
 import IconUpload from '../../../icon/react-icon/IconUpload';
+import useKeyboardEvent from '../../_util/hooks/useKeyboardEvent';
 
-const PictureItem = (props: UploadListProps & { file: UploadItem }) => {
-  const { disabled, prefixCls, file, showUploadList } = props;
+const PictureItem = (
+  props: UploadListProps & { file: UploadItem; locale: ConfigProviderProps['locale'] },
+  ref
+) => {
+  const { disabled, prefixCls, file, showUploadList, locale } = props;
+  const keyboardEvents = useKeyboardEvent();
   const cls = `${prefixCls}-list-item-picture`;
   const { status, originFile } = file;
+
   const url =
     file.url !== undefined
       ? file.url
@@ -19,7 +26,7 @@ const PictureItem = (props: UploadListProps & { file: UploadItem }) => {
   const actionIcons = isObject(showUploadList) ? (showUploadList as CustomIconType) : {};
 
   return (
-    <div className={cls}>
+    <div className={cls} ref={ref}>
       {status === STATUS.uploading ? (
         <UploadProgress
           onReupload={props.onReupload}
@@ -33,8 +40,12 @@ const PictureItem = (props: UploadListProps & { file: UploadItem }) => {
         />
       ) : (
         <>
-          <img src={url} />
-          <div className={`${cls}-mask`}>
+          {isFunction(actionIcons.imageRender) ? (
+            actionIcons.imageRender(file)
+          ) : (
+            <img src={url} alt={file.name} />
+          )}
+          <div className={`${cls}-mask`} role="radiogroup">
             {file.status === STATUS.fail && (
               <div className={`${cls}-error-tip`}>
                 {actionIcons.errorIcon !== null && (
@@ -48,6 +59,14 @@ const PictureItem = (props: UploadListProps & { file: UploadItem }) => {
               {file.status !== STATUS.fail && actionIcons.previewIcon !== null && (
                 <span
                   className={`${prefixCls}-list-preview-icon`}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={locale.Upload.preview}
+                  {...keyboardEvents({
+                    onPressEnter: () => {
+                      props.onPreview && props.onPreview(file);
+                    },
+                  })}
                   onClick={() => {
                     props.onPreview && props.onPreview(file);
                   }}
@@ -61,6 +80,14 @@ const PictureItem = (props: UploadListProps & { file: UploadItem }) => {
                   onClick={() => {
                     props.onReupload && props.onReupload(file);
                   }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={locale.Upload.reupload}
+                  {...keyboardEvents({
+                    onPressEnter: () => {
+                      props.onReupload && props.onReupload(file);
+                    },
+                  })}
                 >
                   {actionIcons.reuploadIcon || <IconUpload />}
                 </span>
@@ -71,6 +98,14 @@ const PictureItem = (props: UploadListProps & { file: UploadItem }) => {
                   onClick={() => {
                     props.onRemove && props.onRemove(file);
                   }}
+                  role="button"
+                  aria-label={locale.Upload.delete}
+                  tabIndex={0}
+                  {...keyboardEvents({
+                    onPressEnter: () => {
+                      props.onRemove && props.onRemove(file);
+                    },
+                  })}
                 >
                   {actionIcons.removeIcon || <IconDelete />}
                 </span>
@@ -83,4 +118,7 @@ const PictureItem = (props: UploadListProps & { file: UploadItem }) => {
   );
 };
 
-export default PictureItem;
+export default forwardRef<
+  HTMLDivElement,
+  UploadListProps & { file: UploadItem; locale: ConfigProviderProps['locale'] }
+>(PictureItem);

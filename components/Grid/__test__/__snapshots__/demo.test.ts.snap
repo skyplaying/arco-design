@@ -192,6 +192,92 @@ exports[`renders Grid/demo/basic.md correctly 1`] = `
 </div>
 `;
 
+exports[`renders Grid/demo/flex.md correctly 1`] = `
+<div
+  style="width:100%"
+>
+  <div
+    class="arco-row arco-row-align-start arco-row-justify-start grid-demo"
+    style="margin-bottom:16px"
+  >
+    <div
+      class="arco-col"
+      style="flex:0 0 100px"
+    >
+      <div>
+        100px
+      </div>
+    </div>
+    <div
+      class="arco-col"
+      style="flex:auto"
+    >
+      <div>
+        auto
+      </div>
+    </div>
+  </div>
+  <div
+    class="arco-row arco-row-align-start arco-row-justify-start grid-demo"
+    style="margin-bottom:16px"
+  >
+    <div
+      class="arco-col"
+      style="flex:0 0 100px"
+    >
+      <div>
+        100px
+      </div>
+    </div>
+    <div
+      class="arco-col"
+      style="flex:auto"
+    >
+      <div>
+        auto
+      </div>
+    </div>
+    <div
+      class="arco-col"
+      style="flex:0 0 100px"
+    >
+      <div>
+        100px
+      </div>
+    </div>
+  </div>
+  <div
+    class="arco-row arco-row-align-start arco-row-justify-start grid-demo"
+    style="margin-bottom:16px"
+  >
+    <div
+      class="arco-col"
+      style="flex:3"
+    >
+      <div>
+        3 / 12
+      </div>
+    </div>
+    <div
+      class="arco-col"
+      style="flex:4"
+    >
+      <div>
+        4 / 12
+      </div>
+    </div>
+    <div
+      class="arco-col"
+      style="flex:5"
+    >
+      <div>
+        5 / 12
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`renders Grid/demo/flex-align.md correctly 1`] = `
 <div
   style="width:100%"
@@ -554,12 +640,152 @@ exports[`renders Grid/demo/flex-justify.md correctly 1`] = `
 </div>
 `;
 
+exports[`renders Grid/demo/grid.md correctly 1`] = `
+<div
+  style="width:100%"
+>
+  <div
+    style="margin-bottom:20px"
+  >
+    <span
+      class="arco-typography"
+    >
+      折叠：
+    </span>
+    <button
+      aria-checked="false"
+      class="arco-switch arco-switch-type-circle"
+      role="switch"
+      type="button"
+    >
+      <div
+        class="arco-switch-dot"
+      />
+    </button>
+  </div>
+  <div
+    class="arco-grid grid-demo-grid"
+    style="gap:16px 12px;grid-template-columns:repeat(3, minmax(0px, 1fr))"
+  >
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 2 / span 1;margin-left:calc(((100% - 12px) / 2 * 1) + 12px);display:none"
+    >
+      item | offset - 1
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 3 / span 3;display:none"
+    >
+      item | span - 3
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:3 / span 1;display:none"
+    >
+      suffix | overflow: false
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders Grid/demo/grid-responsive.md correctly 1`] = `
+<div
+  style="width:100%"
+>
+  <div
+    class="arco-grid grid-responsive-demo"
+    style="gap:16px 12px;grid-template-columns:repeat(6, minmax(0px, 1fr))"
+  >
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:span 1 / span 1;display:none"
+    >
+      item
+    </div>
+    <div
+      class="arco-grid-item demo-item"
+      style="grid-column:1 / span 6;display:none"
+    >
+      suffix
+    </div>
+  </div>
+</div>
+`;
+
 exports[`renders Grid/demo/gutter.md correctly 1`] = `
 <div
   style="width:100%"
 >
   <div
-    class="arco-divider arco-divider-horizontal arco-divider-with-text"
+    class="arco-divider arco-divider-horizontal arco-divider-with-text arco-divider-with-text-left"
+    role="separator"
   >
     <span
       class="arco-divider-text arco-divider-text-left"
@@ -589,7 +815,8 @@ exports[`renders Grid/demo/gutter.md correctly 1`] = `
     </div>
   </div>
   <div
-    class="arco-divider arco-divider-horizontal arco-divider-with-text"
+    class="arco-divider arco-divider-horizontal arco-divider-with-text arco-divider-with-text-left"
+    role="separator"
   >
     <span
       class="arco-divider-text arco-divider-text-left"
@@ -635,7 +862,8 @@ exports[`renders Grid/demo/gutter.md correctly 1`] = `
     </div>
   </div>
   <div
-    class="arco-divider arco-divider-horizontal arco-divider-with-text"
+    class="arco-divider arco-divider-horizontal arco-divider-with-text arco-divider-with-text-left"
+    role="separator"
   >
     <span
       class="arco-divider-text arco-divider-text-left"

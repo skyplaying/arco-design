@@ -4,49 +4,51 @@ exports[`renders Breadcrumb/demo/basic.md correctly 1`] = `
 <div>
   <div
     class="arco-breadcrumb"
+    role="list"
   >
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       Home
     </div>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
         />
       </svg>
     </span>
-    <div
+    <a
       class="arco-breadcrumb-item"
+      href="#"
+      role="listitem"
     >
-      <a
-        href="#"
-      >
-        Channel
-      </a>
-    </div>
+      Channel
+    </a>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
@@ -55,6 +57,7 @@ exports[`renders Breadcrumb/demo/basic.md correctly 1`] = `
     </span>
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       News
     </div>
@@ -66,23 +69,26 @@ exports[`renders Breadcrumb/demo/max-count.md correctly 1`] = `
 <div>
   <div
     class="arco-breadcrumb"
+    role="list"
   >
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       Home
     </div>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
@@ -90,21 +96,23 @@ exports[`renders Breadcrumb/demo/max-count.md correctly 1`] = `
       </svg>
     </span>
     <span
+      aria-label="ellipses of breadcrumb items"
       class="arco-breadcrumb-item-ellipses"
     >
       ...
     </span>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
@@ -113,20 +121,22 @@ exports[`renders Breadcrumb/demo/max-count.md correctly 1`] = `
     </span>
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       Channel
     </div>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
@@ -135,6 +145,7 @@ exports[`renders Breadcrumb/demo/max-count.md correctly 1`] = `
     </span>
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       News
     </div>
@@ -152,23 +163,26 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
   >
     <div
       class="arco-breadcrumb"
+      role="list"
     >
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Home
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -177,20 +191,22 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Channel
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -199,6 +215,7 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         News
       </div>
@@ -210,23 +227,26 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
   >
     <div
       class="arco-breadcrumb"
+      role="list"
     >
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Home
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-right"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="m16 39.513 15.556-15.557L16 8.4"
@@ -235,20 +255,22 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Channel
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-right"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="m16 39.513 15.556-15.557L16 8.4"
@@ -257,6 +279,7 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         News
       </div>
@@ -267,13 +290,16 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
   >
     <div
       class="arco-breadcrumb"
+      role="list"
     >
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Home
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <span>
@@ -282,10 +308,12 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Channel
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <span>
@@ -294,6 +322,7 @@ exports[`renders Breadcrumb/demo/separator.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         News
       </div>
@@ -312,23 +341,26 @@ exports[`renders Breadcrumb/demo/size.md correctly 1`] = `
   >
     <div
       class="arco-breadcrumb"
+      role="list"
     >
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Home
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -337,20 +369,22 @@ exports[`renders Breadcrumb/demo/size.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Channel
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -359,6 +393,7 @@ exports[`renders Breadcrumb/demo/size.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         News
       </div>
@@ -369,24 +404,27 @@ exports[`renders Breadcrumb/demo/size.md correctly 1`] = `
   >
     <div
       class="arco-breadcrumb"
+      role="list"
       style="font-size:12px"
     >
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Home
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -395,20 +433,22 @@ exports[`renders Breadcrumb/demo/size.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Channel
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -417,6 +457,7 @@ exports[`renders Breadcrumb/demo/size.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         News
       </div>
@@ -429,23 +470,26 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
 <div>
   <div
     class="arco-breadcrumb"
+    role="list"
   >
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       Home
     </div>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
@@ -454,19 +498,21 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
     </span>
     <div
       class="arco-breadcrumb-item arco-breadcrumb-item-with-dropdown"
+      role="listitem"
     >
       Channel
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-dropdown-icon"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-down"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -475,16 +521,17 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
       </span>
     </div>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
@@ -493,6 +540,7 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
     </span>
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       News
     </div>
@@ -500,10 +548,12 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
   <br />
   <div
     class="arco-breadcrumb"
+    role="list"
     style="margin-top:20px"
   >
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       <a
         href="#/"
@@ -512,16 +562,17 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
       </a>
     </div>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
@@ -530,6 +581,7 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
     </span>
     <div
       class="arco-breadcrumb-item arco-breadcrumb-item-with-dropdown"
+      role="listitem"
     >
       <a
         href="#/Channel"
@@ -537,16 +589,17 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
         Channel
       </a>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-dropdown-icon"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-down"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -555,16 +608,17 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
       </span>
     </div>
     <span
+      aria-hidden="true"
       class="arco-breadcrumb-item-separator"
     >
       <svg
+        aria-hidden="true"
         class="arco-icon arco-icon-oblique-line"
         fill="none"
-        height="1em"
+        focusable="false"
         stroke="currentColor"
         stroke-width="4"
         viewBox="0 0 48 48"
-        width="1em"
       >
         <path
           d="M29.506 6.502 18.493 41.498"
@@ -573,6 +627,7 @@ exports[`renders Breadcrumb/demo/with-dropdown.md correctly 1`] = `
     </span>
     <div
       class="arco-breadcrumb-item"
+      role="listitem"
     >
       <span>
         News
@@ -592,18 +647,20 @@ exports[`renders Breadcrumb/demo/with-icon.md correctly 1`] = `
   >
     <div
       class="arco-breadcrumb"
+      role="list"
     >
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-home"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M7 17 24 7l17 10v24H7V17Z"
@@ -614,16 +671,17 @@ exports[`renders Breadcrumb/demo/with-icon.md correctly 1`] = `
         </svg>
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -632,20 +690,22 @@ exports[`renders Breadcrumb/demo/with-icon.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Channel
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -654,6 +714,7 @@ exports[`renders Breadcrumb/demo/with-icon.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         News
       </div>
@@ -664,19 +725,21 @@ exports[`renders Breadcrumb/demo/with-icon.md correctly 1`] = `
   >
     <div
       class="arco-breadcrumb"
+      role="list"
       style="font-size:12px"
     >
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-home"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M7 17 24 7l17 10v24H7V17Z"
@@ -687,16 +750,17 @@ exports[`renders Breadcrumb/demo/with-icon.md correctly 1`] = `
         </svg>
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -705,20 +769,22 @@ exports[`renders Breadcrumb/demo/with-icon.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         Channel
       </div>
       <span
+        aria-hidden="true"
         class="arco-breadcrumb-item-separator"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-oblique-line"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M29.506 6.502 18.493 41.498"
@@ -727,6 +793,7 @@ exports[`renders Breadcrumb/demo/with-icon.md correctly 1`] = `
       </span>
       <div
         class="arco-breadcrumb-item"
+        role="listitem"
       >
         News
       </div>

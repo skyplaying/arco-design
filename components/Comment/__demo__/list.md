@@ -14,6 +14,7 @@ title:
 Display the comments list with List component.
 
 ```js
+import React from 'react';
 import { Comment, List } from '@arco-design/web-react';
 import {
   IconHeart,
@@ -23,17 +24,17 @@ import {
   IconStar,
 } from '@arco-design/web-react/icon';
 
-const Demo = () => {
+const App = () => {
   const [likes, setLikes] = React.useState([]);
   const [stars, setStars] = React.useState([]);
-
   const data = [
     {
       id: 1,
       author: 'Socrates',
       like: 13,
       star: 3,
-      avatar: '//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/e278888093bef8910e829486fb45dd69.png~tplv-uwbnlip3yd-webp.webp',
+      avatar:
+        '//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/e278888093bef8910e829486fb45dd69.png~tplv-uwbnlip3yd-webp.webp',
       content: 'Comment body content.',
       datetime: '1 hour',
     },
@@ -42,18 +43,17 @@ const Demo = () => {
       author: 'Balzac',
       like: 12,
       star: 1,
-      avatar: '//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/9eeb1800d9b78349b24682c3518ac4a3.png~tplv-uwbnlip3yd-webp.webp',
+      avatar:
+        '//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/9eeb1800d9b78349b24682c3518ac4a3.png~tplv-uwbnlip3yd-webp.webp',
       content: 'Comment body content.',
       datetime: '2 hour',
     },
   ];
-
   return (
     <List bordered={false} header={<span>2 comments</span>}>
       {data.map((item, index) => {
         const like = likes.indexOf(item.id) > -1;
         const star = stars.indexOf(item.id) > -1;
-
         return (
           <List.Item key={item.id}>
             <Comment
@@ -62,29 +62,37 @@ const Demo = () => {
               content={item.content}
               datetime={item.datetime}
               actions={[
-                <span
+                <button
                   className="custom-comment-action"
                   key="heart"
                   onClick={() =>
                     setLikes(like ? likes.filter((x) => x !== item.id) : [...likes, item.id])
                   }
                 >
-                  {like ? <IconHeartFill style={{ color: '#f53f3f' }} /> : <IconHeart />}{' '}
+                  {like ? (
+                    <IconHeartFill style={{ color: '#f53f3f' }}/>
+                  ) : (
+                    <IconHeart />
+                  )}
                   {item.like + (like ? 1 : 0)}
-                </span>,
-                <span
+                </button>,
+                <button
                   className="custom-comment-action"
                   key="star"
                   onClick={() =>
                     setStars(star ? stars.filter((x) => x !== item.id) : [...stars, item.id])
                   }
                 >
-                  {star ? <IconStarFill style={{ color: '#ffb400' }} /> : <IconStar />}{' '}
+                  {star ? (
+                    <IconStarFill style={{ color: '#ffb400' }}/>
+                  ) : (
+                    <IconStar />
+                  )}
                   {item.star + (star ? 1 : 0)}
-                </span>,
-                <span className="custom-comment-action" key="reply">
+                </button>,
+                <button className="custom-comment-action" key="reply">
                   <IconMessage /> Reply
-                </span>,
+                </button>,
               ]}
             />
           </List.Item>
@@ -94,7 +102,7 @@ const Demo = () => {
   );
 };
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```
 
 ```css:silent
@@ -107,6 +115,11 @@ ReactDOM.render(<Demo />, CONTAINER);
   color: var(--color-text-1);
   cursor: pointer;
   display: inline-block;
+  border: none;
+}
+
+.custom-comment-action:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--color-primary-light-3);
 }
 
 .custom-comment-action:hover {

@@ -1,5 +1,4 @@
 import React, {
-  ReactNode,
   forwardRef,
   useContext,
   useRef,
@@ -9,20 +8,34 @@ import React, {
 import cs from '../_util/classNames';
 import Trigger, { EventsByTriggerNeed } from '../Trigger';
 import { ConfigContext } from '../ConfigProvider';
-import pick from '../_util/pick';
+import pick, { pickDataAttributes } from '../_util/pick';
 import { TooltipProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import { isFunction, isEmptyReactNode } from '../_util/is';
 
-type TooltipHandle = {
+export type TooltipHandle = {
   updatePopupPosition: () => void;
 };
 
 const defaultProps: TooltipProps = {
   position: 'top',
   trigger: 'hover',
+  escToClose: false,
   unmountOnExit: true,
   blurToHide: true,
   popupHoverStay: true,
+};
+
+const triggerDuration = {
+  enter: 300,
+  exit: 100,
+};
+
+const triggerPopupAlign = {
+  left: 12,
+  right: 12,
+  top: 12,
+  bottom: 12,
 };
 
 function Tooltip(baseProps: PropsWithChildren<TooltipProps>, ref) {
@@ -37,6 +50,7 @@ function Tooltip(baseProps: PropsWithChildren<TooltipProps>, ref) {
     className,
     children,
     trigger,
+    escToClose,
     defaultPopupVisible,
     position,
     unmountOnExit,
@@ -65,6 +79,9 @@ function Tooltip(baseProps: PropsWithChildren<TooltipProps>, ref) {
     ref,
     () => ({
       updatePopupPosition,
+      getRootDOMNode: () => {
+        return refTrigger.current?.getRootDOMNode?.();
+      },
     }),
     []
   );
@@ -72,26 +89,16 @@ function Tooltip(baseProps: PropsWithChildren<TooltipProps>, ref) {
   const prefixCls = tooltipPrefixCls || getPrefixCls('tooltip');
   const otherProps: any = {
     ...pick(rest, EventsByTriggerNeed),
+    ...pickDataAttributes(rest),
     ...triggerProps,
+    className: cs(className, triggerProps?.className),
   };
 
-  const renderedContent = typeof content === 'function' ? content() : content;
-
-  // it is important to note that this method has its limitations
-  // it fails in cases such as content = <>&nbsp;&nbsp;</>
-  const isEmpty = (content: ReactNode): boolean => {
-    if (content === null || content === undefined) {
-      return true;
-    }
-    if (typeof content === 'string' && content.trim() === '') {
-      return true;
-    }
-    return false;
-  };
+  const renderedContent = isFunction(content) ? content() : content;
 
   if ('popupVisible' in props) {
     otherProps.popupVisible = popupVisible;
-  } else if (isEmpty(renderedContent)) {
+  } else if (isEmptyReactNode(renderedContent, true)) {
     // hide if empty content
     otherProps.popupVisible = false;
   }
@@ -112,13 +119,9 @@ function Tooltip(baseProps: PropsWithChildren<TooltipProps>, ref) {
         maxWidth: 350,
         ...style,
       }}
-      className={className}
       ref={refTrigger}
       classNames="zoomInFadeOut"
-      duration={{
-        enter: 300,
-        exit: 100,
-      }}
+      duration={triggerDuration}
       popup={() => {
         return (
           <div
@@ -126,6 +129,7 @@ function Tooltip(baseProps: PropsWithChildren<TooltipProps>, ref) {
             className={cs(`${prefixCls}-content`, `${prefixCls}-content-${position}`, {
               [`${prefixCls}-mini`]: mini,
             })}
+            role="tooltip"
           >
             <div className={`${prefixCls}-content-inner`}>{renderedContent}</div>
           </div>
@@ -134,13 +138,9 @@ function Tooltip(baseProps: PropsWithChildren<TooltipProps>, ref) {
       position={position}
       disabled={disabled}
       trigger={trigger}
+      escToClose={escToClose}
       showArrow
-      popupAlign={{
-        left: 12,
-        right: 12,
-        top: 12,
-        bottom: 12,
-      }}
+      popupAlign={triggerPopupAlign}
       mouseEnterDelay={200}
       mouseLeaveDelay={200}
       unmountOnExit={unmountOnExit}

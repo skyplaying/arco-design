@@ -70,8 +70,10 @@ exports[`renders Drawer/demo/nofooter.md correctly 1`] = `
         class="arco-checkbox-mask"
       >
         <svg
+          aria-hidden="true"
           class="arco-checkbox-mask-icon"
           fill="currentColor"
+          focusable="false"
           height="200"
           viewBox="0 0 1024 1024"
           width="200"
@@ -103,8 +105,10 @@ exports[`renders Drawer/demo/nofooter.md correctly 1`] = `
         class="arco-checkbox-mask"
       >
         <svg
+          aria-hidden="true"
           class="arco-checkbox-mask-icon"
           fill="currentColor"
+          focusable="false"
           height="200"
           viewBox="0 0 1024 1024"
           width="200"
@@ -135,8 +139,10 @@ exports[`renders Drawer/demo/nofooter.md correctly 1`] = `
         class="arco-checkbox-mask"
       >
         <svg
+          aria-hidden="true"
           class="arco-checkbox-mask-icon"
           fill="currentColor"
+          focusable="false"
           height="200"
           viewBox="0 0 1024 1024"
           width="200"
@@ -171,6 +177,7 @@ exports[`renders Drawer/demo/position.md correctly 1`] = `
 <div>
   <div
     class="arco-radio-group arco-radio-size-default arco-radio-mode-outline"
+    role="radiogroup"
   >
     <label
       class="arco-radio"

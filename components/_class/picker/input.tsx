@@ -5,9 +5,9 @@ import React, {
   useContext,
   CSSProperties,
   ReactNode,
+  useState,
 } from 'react';
 import { Dayjs } from 'dayjs';
-import { getResolvedDayjsLocaleName } from '../../_util/dayjs';
 import omit from '../../_util/omit';
 import { Enter } from '../../_util/keycode';
 import { ConfigContext } from '../../ConfigProvider';
@@ -20,6 +20,7 @@ export interface DateInputProps {
   style?: CSSProperties;
   className?: string | string[];
   error?: boolean;
+  status?: 'warning' | 'error';
   disabled?: boolean;
   placeholder?: string;
   value?: Dayjs;
@@ -35,6 +36,8 @@ export interface DateInputProps {
   onChange?: (e) => void;
   suffixIcon?: ReactNode;
   isPlaceholder?: boolean;
+  prefix?: ReactNode;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
 type DateInputHandle = {
@@ -48,6 +51,7 @@ function DateInput(
     className,
     prefixCls: propPrefixCls,
     allowClear,
+    status,
     error,
     disabled,
     placeholder,
@@ -59,18 +63,20 @@ function DateInput(
     inputValue,
     onPressEnter,
     suffixIcon,
+    prefix,
     onChange,
     popupVisible,
     isPlaceholder,
+    inputProps,
     ...rest
   }: DateInputProps,
   ref
 ) {
-  const { getPrefixCls, size: ctxSize, locale } = useContext(ConfigContext);
+  const { getPrefixCls, size: ctxSize, locale, rtl } = useContext(ConfigContext);
   const input = useRef<HTMLInputElement>(null);
+  const [focused, setFocused] = useState(false);
   const size = propSize || ctxSize;
-
-  const localeName = getResolvedDayjsLocaleName(locale.locale);
+  const inputWrapperRef = useRef<HTMLDivElement>(null);
 
   useImperativeHandle<any, DateInputHandle>(ref, () => ({
     focus() {
@@ -79,13 +85,21 @@ function DateInput(
     blur() {
       input.current && input.current.blur && input.current.blur();
     },
+    getRootDOMNode: () => inputWrapperRef.current,
   }));
 
   function onKeyDown(e) {
+    inputProps?.onKeyDown?.(e);
+
     const keyCode = e.keyCode || e.which;
     if (keyCode === Enter.code) {
-      onPressEnter && onPressEnter();
+      onPressEnter?.();
     }
+  }
+
+  function onChangeInput(e) {
+    inputProps?.onChange?.(e);
+    onChange?.(e);
   }
 
   let showValue = '';
@@ -93,37 +107,59 @@ function DateInput(
     showValue = inputValue;
   } else if (value && !isArray(value)) {
     showValue =
-      typeof format === 'function' ? format(value) : value.locale(localeName).format(format);
+      typeof format === 'function'
+        ? format(value)
+        : value.locale(locale.dayjsLocale).format(format);
   }
 
   const readOnlyProps = editable ? {} : { readOnly: true };
 
   const prefixCls = propPrefixCls || getPrefixCls('picker');
+
+  const inputStatus = status || (error ? 'error' : undefined);
+  const mergedFocused = focused || popupVisible;
   const classNames = cs(
     prefixCls,
     `${prefixCls}-size-${size}`,
     {
-      [`${prefixCls}-focused`]: !!popupVisible,
+      [`${prefixCls}-focused`]: mergedFocused,
       [`${prefixCls}-disabled`]: disabled,
-      [`${prefixCls}-error`]: error,
+      [`${prefixCls}-has-prefix`]: prefix,
+      [`${prefixCls}-${inputStatus}`]: inputStatus,
+      [`${prefixCls}-rtl`]: rtl,
     },
     className
   );
 
   return (
-    <div style={style} className={classNames} {...omit(rest, ['onChange', 'onPressEnter'])}>
+    <div
+      style={style}
+      className={classNames}
+      ref={inputWrapperRef}
+      {...omit(rest, ['onChange', 'onPressEnter'])}
+    >
+      {prefix && <div className={`${prefixCls}-prefix`}>{prefix}</div>}
       <div
         className={cs(`${prefixCls}-input`, { [`${prefixCls}-input-placeholder`]: isPlaceholder })}
       >
         <input
           ref={input}
+          {...inputProps}
           disabled={disabled}
           placeholder={placeholder}
           className={`${prefixCls}-start-time`}
           value={showValue}
           onKeyDown={onKeyDown}
-          onChange={onChange}
+          onChange={onChangeInput}
           {...readOnlyProps}
+          onFocus={(e) => {
+            setFocused(true);
+            inputProps?.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            inputProps?.onBlur?.(e);
+          }}
         />
       </div>
       <div className={`${prefixCls}-suffix`}>

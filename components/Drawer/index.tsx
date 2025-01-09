@@ -7,21 +7,22 @@ import React, {
   useState,
   useImperativeHandle,
 } from 'react';
-import { CSSTransition } from 'react-transition-group';
 import FocusLock from 'react-focus-lock';
-import { findDOMNode } from 'react-dom';
+import ArcoCSSTransition from '../_util/CSSTransition';
+import { findDOMNode } from '../_util/react-dom';
 import IconClose from '../../icon/react-icon/IconClose';
 import cs from '../_util/classNames';
 import Button from '../Button';
 import Portal from '../Portal';
 import ConfigProvider, { ConfigContext } from '../ConfigProvider';
-import { isServerRendering, off, on } from '../_util/dom';
 import IconHover from '../_class/icon-hover';
-import { Esc } from '../_util/keycode';
 import { isObject } from '../_util/is';
 import useOverflowHidden from '../_util/hooks/useOverflowHidden';
 import { DrawerProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import omit from '../_util/omit';
+import { Esc } from '../_util/keycode';
+import { isServerRendering, contains } from '../_util/dom';
 
 const defaultProps: DrawerProps = {
   placement: 'right',
@@ -37,7 +38,7 @@ const defaultProps: DrawerProps = {
 
 function Drawer(baseProps: DrawerProps, ref) {
   const context = useContext(ConfigContext);
-  const { locale, getPrefixCls, componentConfig } = context;
+  const { locale, getPrefixCls, componentConfig, rtl } = context;
   const props = useMergeProps<DrawerProps>(baseProps, defaultProps, componentConfig?.Drawer);
   const {
     style,
@@ -68,6 +69,11 @@ function Drawer(baseProps: DrawerProps, ref) {
     getChildrenPopupContainer: propGetChildrenPopupContainer,
     focusLock,
     autoFocus,
+    okButtonProps,
+    cancelButtonProps,
+    zIndex,
+    closeIcon,
+    ...rest
   } = props;
 
   const drawerWrapperRef = useRef(null);
@@ -76,12 +82,12 @@ function Drawer(baseProps: DrawerProps, ref) {
   const [popupZIndex, setPopupZIndex] = useState<number>();
   const prefixCls = getPrefixCls('drawer');
   // Record whether is exiting, to prevent `onCancel` being unnecessarily triggered when mask is clicked during the period.
-  const inExit = useRef(false);
+  const [inExit, setInExit] = useState(false);
   // Record whether it's opened to avoid element shaking during animation caused by focus lock.
   const [isOpened, setIsOpened] = useState(false);
 
   const getContainer = useCallback((): HTMLElement => {
-    const container = getPopupContainer && getPopupContainer();
+    const container = getPopupContainer?.();
     return (findDOMNode(container) || document.body) as HTMLElement;
   }, [getPopupContainer]);
 
@@ -89,7 +95,8 @@ function Drawer(baseProps: DrawerProps, ref) {
     return !isServerRendering && getContainer() === document.body;
   }, [shouldReComputeFixed, getContainer]);
 
-  useOverflowHidden(getContainer, { hidden: visible && mask });
+  // visible || inExit: 完全退出后在重置 overflow
+  useOverflowHidden(getContainer, { hidden: (visible || inExit) && mask });
 
   useImperativeHandle(ref, () => drawerWrapperRef.current);
 
@@ -102,6 +109,15 @@ function Drawer(baseProps: DrawerProps, ref) {
   }, []);
 
   useEffect(() => {
+    if (autoFocus && visible) {
+      // https://github.com/arco-design/arco-design/pull/1439
+      if (contains(document.body, drawerWrapperRef.current)) {
+        drawerWrapperRef.current?.focus();
+      }
+    }
+  }, [visible, autoFocus]);
+
+  const initPopupZIndex = () => {
     if (visible && popupZIndex === undefined) {
       if (drawerWrapperRef.current) {
         // Set zIndex for nested drawer components based on zIndex of wrapper
@@ -111,38 +127,36 @@ function Drawer(baseProps: DrawerProps, ref) {
         }
       }
     }
-  }, [visible, popupZIndex]);
-
-  useEffect(() => {
-    const onKeyDown = (e) => {
-      if (escToExit && e && e.key === Esc.key && props.onCancel) {
-        props.onCancel();
-      }
-    };
-
-    if (visible) {
-      on(document, 'keydown', onKeyDown);
-    }
-    return () => {
-      off(document, 'keydown', onKeyDown);
-    };
-  }, [visible, escToExit]);
+  };
 
   const element = (
-    <div className={`${prefixCls}-scroll`}>
+    <div
+      className={`${prefixCls}-scroll`}
+      // tabIndex => https://github.com/arco-design/arco-design/issues/2121
+      // use -1 => https://github.com/arco-design/arco-design/issues/2404
+      tabIndex={-1}
+    >
       {title !== null && (
         <div className={`${prefixCls}-header`} style={headerStyle}>
           <div className={`${prefixCls}-header-title`}>{title}</div>
         </div>
       )}
-      {closable && (
-        <IconHover onClick={props.onCancel} className={`${prefixCls}-close-icon`}>
-          <IconClose />
-        </IconHover>
-      )}
+      {closable &&
+        (closeIcon !== undefined ? (
+          <span onClick={props.onCancel} className={`${prefixCls}-close-icon`}>
+            {closeIcon}
+          </span>
+        ) : (
+          <IconHover onClick={props.onCancel} className={`${prefixCls}-close-icon`}>
+            <IconClose />
+          </IconHover>
+        ))}
 
       <div
-        ref={contentWrapperRef}
+        ref={(node) => {
+          contentWrapperRef.current = node;
+          initPopupZIndex();
+        }}
         style={bodyStyle}
         className={cs(`${prefixCls}-content`, {
           [`${prefixCls}-content-nofooter`]: footer === null,
@@ -167,8 +181,10 @@ function Drawer(baseProps: DrawerProps, ref) {
           <div className={`${prefixCls}-footer`}>{footer}</div>
         ) : (
           <div className={`${prefixCls}-footer`}>
-            <Button onClick={props.onCancel}>{cancelText || locale.Drawer.cancelText}</Button>
-            <Button type="primary" loading={confirmLoading} onClick={props.onOk}>
+            <Button onClick={props.onCancel} {...cancelButtonProps}>
+              {cancelText || locale.Drawer.cancelText}
+            </Button>
+            <Button type="primary" loading={confirmLoading} onClick={props.onOk} {...okButtonProps}>
               {okText || locale.Drawer.okText}
             </Button>
           </div>
@@ -184,7 +200,7 @@ function Drawer(baseProps: DrawerProps, ref) {
 
   // Only enable FocusLock when drawer is fully opened, to avoid element shaking.
   const dom = innerFocusLock ? (
-    <FocusLock as="span" disabled={!isOpened} autoFocus={innerAutoFocus}>
+    <FocusLock as="span" disabled={!isOpened} crossFrame={false} autoFocus={innerAutoFocus}>
       {element}
     </FocusLock>
   ) : (
@@ -194,7 +210,16 @@ function Drawer(baseProps: DrawerProps, ref) {
   return (
     <Portal forceRender={!mountOnEnter} visible={visible} getContainer={getPopupContainer}>
       <div
+        {...omit(rest, ['onCancel', 'onOk'])}
         ref={drawerWrapperRef}
+        onKeyDown={(e) => {
+          const keyCode = e.keyCode || e.which;
+          if (keyCode === Esc.code) {
+            if (escToExit && visible) {
+              props.onCancel?.(e as any);
+            }
+          }
+        }}
         className={cs(
           `${prefixCls}-wrapper`,
           {
@@ -203,10 +228,14 @@ function Drawer(baseProps: DrawerProps, ref) {
           },
           wrapClassName
         )}
-        style={isFixed ? { position: 'fixed' } : { zIndex: 'inherit', position: 'absolute' }}
+        style={
+          isFixed
+            ? { position: 'fixed', zIndex }
+            : { zIndex: zIndex || 'inherit', position: 'absolute' }
+        }
       >
         {mask ? (
-          <CSSTransition
+          <ArcoCSSTransition
             in={visible}
             appear
             timeout={300}
@@ -217,16 +246,16 @@ function Drawer(baseProps: DrawerProps, ref) {
             <div
               className={`${prefixCls}-mask`}
               style={maskStyle}
-              onClick={() => {
-                if (!inExit.current && maskClosable) {
-                  props.onCancel && props.onCancel();
+              onClick={(e) => {
+                if (!inExit && maskClosable) {
+                  props.onCancel && props.onCancel(e);
                 }
               }}
             />
-          </CSSTransition>
+          </ArcoCSSTransition>
         ) : null}
 
-        <CSSTransition
+        <ArcoCSSTransition
           in={visible}
           appear
           timeout={300}
@@ -241,24 +270,27 @@ function Drawer(baseProps: DrawerProps, ref) {
           mountOnEnter={mountOnEnter}
           unmountOnExit={unmountOnExit}
           onEnter={(e) => {
+            if (!e) return;
             e.parentNode.style.display = 'block';
+            setInExit(false);
           }}
           onEntered={() => {
             setIsOpened(true);
-            afterOpen && afterOpen();
+            afterOpen?.();
           }}
           onExit={() => {
             setIsOpened(false);
-            inExit.current = true;
+            setInExit(true);
           }}
           onExited={(e) => {
-            inExit.current = false;
+            if (!e) return;
+            setInExit(false);
             e.parentNode.style.display = ''; // don't set display='none'
-            afterClose && afterClose();
+            afterClose?.();
           }}
         >
           <div
-            className={cs(prefixCls, className)}
+            className={cs(prefixCls, className, { [`${prefixCls}-rtl`]: rtl })}
             style={Object.assign(
               placement === 'left' || placement === 'right' ? { width } : { height },
               { [placement]: 0 },
@@ -271,7 +303,7 @@ function Drawer(baseProps: DrawerProps, ref) {
               </ConfigProvider>
             </div>
           </div>
-        </CSSTransition>
+        </ArcoCSSTransition>
       </div>
     </Portal>
   );

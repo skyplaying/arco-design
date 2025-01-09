@@ -17,6 +17,10 @@
   border: @collapse-border-width solid @collapse-color-border;
   line-height: @collapse-line-height;
 
+  &-rtl {
+    direction: rtl;
+  }
+
   &-item {
     border-bottom: @collapse-item-border-width solid @collapse-item-color-border;
     box-sizing: border-box;
@@ -25,7 +29,6 @@
       > .@{collapse-prefix-cls}-item-header {
         background-color: @collapse-title-color-bg_active;
         border-color: @collapse-title-color-border;
-
         transition: border-color 0s ease 0s;
 
         .@{collapse-prefix-cls}-item-header-title {
@@ -51,6 +54,27 @@
       line-height: @collapse-title-line-height;
       // 保证在收起动画完成时才隐藏边框
       transition: border-color 0s ease 0.19s;
+
+      &[data-active-region='header'] {
+        cursor: unset;
+
+        > .@{collapse-prefix-cls}-item-header-title,
+        > .@{prefix}-icon-hover {
+          cursor: pointer;
+        }
+      }
+
+      &[data-active-region='icon'] {
+        cursor: unset;
+
+        > .@{prefix}-icon-hover {
+          cursor: pointer;
+        }
+      }
+
+      &:focus-visible {
+        box-shadow: inset 0 0 0 2px @collapse-color-box-shadow;
+      }
 
       &-left {
         padding-left: @collapse-title-padding-horizontal + @collapse-expand-icon-size +

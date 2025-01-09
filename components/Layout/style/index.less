@@ -51,13 +51,14 @@
     }
 
     &-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       box-sizing: border-box;
       width: 100%;
       height: @layout-trigger-height;
-      line-height: @layout-trigger-height;
-      text-align: center;
       background: @layout-trigger-dark-color;
-      color: var(--color-white);
+      color: var(~'@{arco-cssvars-prefix}-color-white');
       cursor: pointer;
       transition: width @transition-duration-2 @transition-timing-function-standard;
       z-index: 1;
@@ -72,7 +73,7 @@
 
   &-sider-light {
     background: @layout-sider-background-light;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 8%);
   }
 
   &-header {

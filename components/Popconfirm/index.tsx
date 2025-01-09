@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, PropsWithChildren, useContext, useEffect } from 'react';
 import FocusLock from 'react-focus-lock';
+import cs from '../_util/classNames';
 import Tooltip from '../Tooltip';
 import Button from '../Button';
 import IconExclamationCircleFill from '../../icon/react-icon/IconExclamationCircleFill';
@@ -7,6 +8,7 @@ import { ConfigContext } from '../ConfigProvider';
 import useMergeValue from '../_util/hooks/useMergeValue';
 import { PopconfirmProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import { isFunction, isNullOrUndefined } from '../_util/is';
 
 const defaultProps: PopconfirmProps = {
   position: 'top',
@@ -15,10 +17,11 @@ const defaultProps: PopconfirmProps = {
   blurToHide: true,
   unmountOnExit: true,
   trigger: 'click',
+  escToClose: true,
 };
 
 function Popconfirm(baseProps: PropsWithChildren<PopconfirmProps>, ref) {
-  const { getPrefixCls, locale, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, locale, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<PropsWithChildren<PopconfirmProps>>(
     baseProps,
     defaultProps,
@@ -33,6 +36,7 @@ function Popconfirm(baseProps: PropsWithChildren<PopconfirmProps>, ref) {
     blurToHide,
     unmountOnExit,
     trigger,
+    escToClose,
     onVisibleChange,
     triggerProps,
     title,
@@ -44,6 +48,7 @@ function Popconfirm(baseProps: PropsWithChildren<PopconfirmProps>, ref) {
     cancelButtonProps,
     autoFocus,
     focusLock,
+    content,
     ...rest
   } = props;
 
@@ -53,6 +58,7 @@ function Popconfirm(baseProps: PropsWithChildren<PopconfirmProps>, ref) {
   });
   const [buttonLoading, setLoading] = useState(false);
   const prefixCls = getPrefixCls('popconfirm');
+  const hasContent = !isNullOrUndefined(content);
 
   const handleVisibleChange = (visible: boolean) => {
     if (!('popupVisible' in props)) {
@@ -68,17 +74,17 @@ function Popconfirm(baseProps: PropsWithChildren<PopconfirmProps>, ref) {
     handleVisibleChange(false);
   };
 
-  const onCancelPopconfirm = () => {
+  const onCancelPopconfirm = (e) => {
     closePopconfirm();
-    props.onCancel && props.onCancel();
+    props.onCancel && props.onCancel(e);
   };
 
-  const onConfirmPopconfirm = () => {
+  const onConfirmPopconfirm = (e) => {
     const _onConfirm = props.onOk || props.onConfirm;
 
     let ret;
     if (_onConfirm) {
-      ret = _onConfirm();
+      ret = _onConfirm(e);
     }
     if (ret && ret.then) {
       setLoading(true);
@@ -118,17 +124,28 @@ function Popconfirm(baseProps: PropsWithChildren<PopconfirmProps>, ref) {
       <div className={`${prefixCls}-wrapper`}>
         <div className={`${prefixCls}-title`}>
           {icon && <span className={`${prefixCls}-title-icon`}>{icon}</span>}
-          <div className={`${prefixCls}-title-text`}>{title}</div>
+          <div className={`${prefixCls}-title-text`}>{isFunction(title) ? title() : title}</div>
         </div>
-        <div className={`${prefixCls}-btn`}>
-          {focusLock ? (
-            <FocusLock disabled={!popupVisible} autoFocus={!!autoFocus}>
-              {element}
-            </FocusLock>
-          ) : (
-            element
-          )}
-        </div>
+        {hasContent && (
+          <div className={`${prefixCls}-inner-content`}>
+            {isFunction(content) ? content() : content}
+          </div>
+        )}
+
+        {focusLock ? (
+          <FocusLock
+            returnFocus
+            as="div"
+            className={`${prefixCls}-btn`}
+            crossFrame={false}
+            disabled={!popupVisible}
+            autoFocus={!!autoFocus}
+          >
+            {element}
+          </FocusLock>
+        ) : (
+          <div className={`${prefixCls}-btn`}>{element}</div>
+        )}
       </div>
     );
   };
@@ -150,13 +167,17 @@ function Popconfirm(baseProps: PropsWithChildren<PopconfirmProps>, ref) {
         maxWidth: 350,
         ...style,
       }}
-      className={className}
+      className={cs(className, {
+        [`${prefixCls}-rtl`]: rtl,
+        [`${prefixCls}-has-content`]: hasContent,
+      })}
       prefixCls={prefixCls}
       getPopupContainer={getPopupContainer}
       position={position}
       trigger={trigger}
+      escToClose={escToClose}
       popupVisible={popupVisible}
-      content={renderPopconfirmContent()}
+      content={renderPopconfirmContent}
       unmountOnExit={unmountOnExit}
       blurToHide={blurToHide}
       popupHoverStay

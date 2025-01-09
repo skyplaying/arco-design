@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, forwardRef, useState, useEffect, useContext, memo } from 'react';
-import { CSSTransition } from 'react-transition-group';
 import BTween from 'b-tween';
+import { pickDataAttributes } from '../_util/pick';
 import cs from '../_util/classNames';
 import IconToTop from '../../icon/react-icon/IconToTop';
 import { ConfigContext } from '../ConfigProvider';
@@ -8,6 +8,8 @@ import { on, off } from '../_util/dom';
 import throttleByRaf from '../_util/throttleByRaf';
 import { BackTopProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import useKeyboardEvent from '../_util/hooks/useKeyboardEvent';
+import ArcoCSSTransition from '../_util/CSSTransition';
 
 const defaultProps: BackTopProps = {
   visibleHeight: 400,
@@ -17,7 +19,8 @@ const defaultProps: BackTopProps = {
 };
 
 function BackTop(baseProps: PropsWithChildren<BackTopProps>, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
+  const getKeyboardEvents = useKeyboardEvent();
   const props = useMergeProps<PropsWithChildren<BackTopProps>>(
     baseProps,
     defaultProps,
@@ -69,18 +72,22 @@ function BackTop(baseProps: PropsWithChildren<BackTopProps>, ref) {
 
   return (
     <div
+      {...pickDataAttributes(props)}
       ref={ref}
-      className={cs(`${prefixCls}`, props.className)}
+      className={cs(`${prefixCls}`, { [`${prefixCls}-rtl`]: rtl }, props.className)}
       style={props.style}
       onClick={scrollToTop}
+      {...getKeyboardEvents({
+        onPressEnter: scrollToTop,
+      })}
     >
-      <CSSTransition in={visible} timeout={100} classNames="fadeIn" unmountOnExit>
+      <ArcoCSSTransition in={visible} timeout={100} classNames="fadeIn" unmountOnExit>
         {props.children || (
           <button className={`${prefixCls}-button`}>
             <IconToTop />
           </button>
         )}
-      </CSSTransition>
+      </ArcoCSSTransition>
     </div>
   );
 }

@@ -7,7 +7,7 @@ title:
 
 ## zh-CN
 
-通过指定参数 `key`，可以更新已经存在的通知提醒框。
+通过指定参数 `id`，可以更新已经存在的通知提醒框。
 
 ## en-US
 
@@ -31,10 +31,13 @@ function updateNotification() {
   }, 2000);
 }
 
-ReactDOM.render(
-  <Button onClick={updateNotification} type="primary">
-    Update Notification
-  </Button>,
-  CONTAINER
-);
+const App = () => {
+  return (
+    <Button onClick={updateNotification} type="primary">
+      Update Notification
+    </Button>
+  );
+};
+
+export default App;
 ```

@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import { ProgressProps } from '../Progress';
 
 export const STATUS: {
@@ -24,11 +24,15 @@ export type CustomIconType = {
   errorIcon?: ReactNode;
   successIcon?: ReactNode;
   fileName?: (file: UploadItem) => ReactNode;
+  // 2.34.0
+  progressRender?: (file: UploadItem, originDom: ReactNode) => React.ReactElement;
+  // 2.34.0
+  imageRender?: (file: UploadItem) => React.ReactNode;
 };
 
 export type RequestOptions = Pick<
   UploadProps,
-  'headers' | 'name' | 'data' | 'withCredentials' | 'action'
+  'headers' | 'name' | 'data' | 'withCredentials' | 'action' | 'method'
 > & {
   /** 更新当前文件的上传进度 。percent: 当前上传进度百分比 */
   onProgress: (percent: number, event?: ProgressEvent) => void;
@@ -70,10 +74,10 @@ export interface UploadProps {
    */
   directory?: boolean;
   /**
-   * @zh 接受上传的类型 [详细请参考](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept)
-   * @en Accepted [file types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept)
+   * @zh 接受上传的类型 [详细请参考](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept)。（`strict` in `2.53.0`，默认为 true。设置为 false 时，accept 表现和原生一致。设置为 true 时，会严格匹配文件后缀名，过滤掉不符合 accept 规则的文件。)
+   * @en Accepted [file types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept)（`strict` in `2.53.0`, defaultValue is true. When set to false, accept behaves the same as native. When set to true, file extensions will be strictly matched and files that do not meet the accept rules will be filtered out. )
    */
-  accept?: string;
+  accept?: string | { type: string; strict?: boolean };
   /**
    * @zh 通过覆盖默认的上传行为，可以自定义自己的上传实现
    * @en Provide an override for the default xhr behavior for additional customization
@@ -85,6 +89,11 @@ export interface UploadProps {
    * @defaultValue text
    */
   listType?: 'text' | 'picture-list' | 'picture-card';
+  /**
+   * @zh 启用内置的图片预览，仅在 listType='picture-card' 时生效。(`v2.41.0`)
+   * @en Enable built-in image preview, only works when listType='picture-card'. (`v2.41.0`)
+   */
+  imagePreview?: boolean;
   /**
    * @zh
    * 是否展示上传文件列表。预览图标，删除图标，文件图标，重新上传图标，取消上传图标。
@@ -101,15 +110,22 @@ export interface UploadProps {
    */
   autoUpload?: boolean;
   /**
-   * @zh action
+   * @zh 上传接口地址
    * @en Uploading URL
    */
   action?: string;
   /**
-   * @zh 限制上传数量。超出后会隐藏
-   * @en maximum number of uploads allowed
+   * @zh 上传请求的 http method
+   * @en The http method of upload request
+   * @defaultValue post
+   * @version 2.55.0
    */
-  limit?: number;
+  method?: string;
+  /**
+   * @zh 限制上传数量。默认超出后会隐藏上传节点。对象类型在 `2.28.0` 支持
+   * @en maximum number of uploads allowed. Object type is supported in `2.28.0`
+   */
+  limit?: number | { maxCount: number; hideOnExceedLimit?: boolean };
   /**
    * @zh 禁用
    * @en Whether to disable
@@ -179,7 +195,7 @@ export interface UploadProps {
    * @zh 点击删除文件时的回调。返回 `false` 或者 `Promise.reject` 的时候不会执行删除。
    * @en Callback when the remove icon is clicked.Remove actions will be aborted when the return value is false or a Promise which resolve(false) or reject.
    */
-  onRemove?: (file: UploadItem, fileList: UploadItem[]) => void;
+  onRemove?: (file: UploadItem, fileList: UploadItem[]) => void | boolean | Promise<void | boolean>;
   /**
    * @zh 文件上传进度的回调
    * @en Callback when uploading progress is changing
@@ -201,6 +217,24 @@ export interface UploadProps {
    * @defaultValue () => true
    */
   beforeUpload?: (file: File, filesList: File[]) => boolean | Promise<any>;
+  /**
+   * @zh 拖拽上传文件时执行的回调
+   * @en Callback after drag file to the upload area and drop.
+   * @version 2.37.0
+   */
+  onDrop?: (e: React.DragEvent) => void;
+  /**
+   * @zh 拖拽上传文件进入拖拽区时的回调
+   * @en Callback when drag and drop uploaded file into the drag area
+   * @version 2.41.0
+   */
+  onDragOver?: (e: React.DragEvent) => void;
+  /**
+   * @zh 拖拽上传文件离开拖拽区时的回调
+   * @en Callback when drag and drop uploaded file leaves the drag area
+   * @version 2.41.0
+   */
+  onDragLeave?: (e: React.DragEvent) => void;
 }
 
 /**
@@ -209,6 +243,7 @@ export interface UploadProps {
  * @en File upload list display
  */
 export interface UploadListProps {
+  imagePreview?: boolean;
   listType?: string;
   fileList?: UploadItem[];
   showUploadList?: boolean | CustomIconType;
@@ -223,7 +258,7 @@ export interface UploadListProps {
    * @zh 点击删除文件时的回调。返回 false 或者 Promise.reject 的时候不会执行删除
    * @en Callback when the remove icon is clicked.Remove actions will be aborted when the return value is false or a Promise which resolve(false) or reject
    */
-  onRemove?: (file: UploadItem) => void;
+  onRemove?: (file: UploadItem) => void | boolean | Promise<void | boolean>;
   /**
    * @zh 重新上传的回调
    * @en Callback when the re-upload icon is clicked
@@ -286,22 +321,28 @@ export type UploadItem = {
    * @en File name
    */
   name?: string;
+  children?: ReactNode;
 };
 
 export interface UploaderProps extends UploadProps {
   prefixCls?: string;
-  onFileStatusChange?: (file: UploadItem) => void;
+  limit?: number;
+  hide?: boolean;
+  onFileStatusChange?: (fileList: UploadItem[], file: UploadItem) => void;
 }
 
 export type TriggerProps = {
   tip?: string | React.ReactNode;
   multiple?: boolean;
-  accept?: string;
+  accept?: UploadProps['accept'];
   disabled?: boolean;
   directory?: boolean;
   drag?: boolean;
   listType?: 'text' | 'picture-list' | 'picture-card';
   onClick: () => void;
+  onDrop?: (e: React.DragEvent) => void;
+  onDragLeave?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
   onDragFiles: (files: File[]) => void;
   prefixCls?: string;
 };

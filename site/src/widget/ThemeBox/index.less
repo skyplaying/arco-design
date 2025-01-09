@@ -1,8 +1,20 @@
 .tb {
+  &-header {
+    display: flex;
+    justify-content: space-between;
+
+    .arco-input-search {
+      .arco-icon {
+        font-size: 14px;
+        margin-right: 0;
+      }
+    }
+  }
+
   &-badge {
     position: fixed !important;
-    right: 70px;
-    bottom: 124px;
+    right: 39px;
+    bottom: 134px;
   }
 
   &-link {
@@ -24,5 +36,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+}
+
+html.rtl {
+  .tb-badge {
+    right: unset;
+    left: 39px;
   }
 }

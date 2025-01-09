@@ -23,9 +23,11 @@ export const linkGithubRepositoryArcoWebpackPlugin =
 export const linkGithubRepositoryArcoCli = 'https://github.com/arco-design/arco-cli';
 
 export const linkFigmaArcoComponent =
-  'https://www.figma.com/file/M66cTiLXHa4SVyZIlfY5Pb/arco-Design-System?node-id=8253%3A44145';
-export const linkFigmaArcoPro =
-  'https://www.figma.com/file/dp8okiO9c6tKdBmqv1m1R2/Arco-Design-Pro?node-id=515%3A5594';
+  'https://www.figma.com/file/xcwQO53J0OGZ0nKDs5Swrh/Arco-Design-System?node-id=8253%3A44145';
+
+export const linkMobileComponent = 'https://www.figma.com/community/file/1128173873536739844';
+export const linkFigmaArcoPro = 'https://www.figma.com/community/file/1065157704393387989';
+
 export const linkFigmaArcoIcons =
   'https://www.figma.com/file/1ohmb16op4ogbI09ojLR5W/Arco-Design-Icons?node-id=0%3A1';
 
@@ -34,3 +36,5 @@ export const linkSketchResource =
 
 export const linkAxureResource =
   'https://unpkg.byted-static.com/byted/arco-config/1.0.8/axure/ArcoDesign_Axure_Component.rp';
+
+export const linkJiShiResource = 'https://js.design/resourceDetails?id=6194e775c530ee24f130e742';

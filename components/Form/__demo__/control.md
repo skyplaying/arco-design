@@ -1,5 +1,5 @@
 ---
-order: 8
+order: 2
 title:
   zh-CN: 受控表单
   en-US: Controlled
@@ -7,26 +7,32 @@ title:
 
 ## zh-CN
 
-可以在`Form.Item`传入`field`属性，即可使控件变为受控组件。
+可以在`Form.Item`传入`field`属性，即可使控件变为受控组件，表单项的值都将会被 `Form` 收集。
 
-**注意：**：
-
-1. 受控模式下`Form.Item`会接管控件，自动给表单控件添加相应的 `value`（或 `triggerPropName` 指定的其他属性）和`onChange`（或 `trigger` 指定的其他属性)，所有的数据收集都由 `Form` 内部完成。
-2. 受控下不要为表单控件添加 `defaultValue`。默认值可以通过 `Form` 的 `initialValues` 或 `Form.Item` 的 `initialValue` 来设置。
+<ol>
+  <li>
+  受控模式下`Form.Item`会接管控件，自动给表单控件添加相应的 `value`（或 `triggerPropName` 指定的其他属性）和`onChange`（或 `trigger` 指定的其他属性)，所有的数据收集都由 `Form` 内部完成。
+  </li>
+  <li>
+  受控下不要为表单控件添加 `defaultValue`。默认值可以通过 `Form` 的 `initialValues` 或 `Form.Item` 的 `initialValue` 来设置。
+  </li>
+</ol>
 
 ## en-US
 
 You can set the `field` property in `Form.Item` to control the field.
 
-**Notice:**
-
-1. In the controlled mode, `Form.Item` will automatically set `value` (or other attribute set by `triggerPropName`) and `onChange` (or other attribute set by `trigger`) properties for Form.Item's children. All data will be processed by `Form`.
-2. 2. You cannot set `defaultValue` for Form.Item's children.  The default value can be set by the `initialValues` of `Form` or the `initialValue` of `Form.Item`.
-
+<ol>
+  <li>
+    In the controlled mode, `Form.Item` will automatically set `value` (or other attribute set by `triggerPropName`) and `onChange` (or other attribute set by `trigger`) properties for Form.Item's children. All data will be processed by `Form`.
+  </li>
+  <li>
+    You cannot set `defaultValue` for Form.Item's children.  The default value can be set by the `initialValues` of `Form` or the `initialValue` of `Form.Item`.
+  </li>
+</ol>
 
 ```js
 import { useRef, useEffect, useState } from 'react';
-
 import {
   Form,
   AutoComplete,
@@ -46,9 +52,7 @@ import {
   DatePicker,
   Modal,
 } from '@arco-design/web-react';
-
 const FormItem = Form.Item;
-
 const cascaderOptions = [
   {
     value: 'beijing',
@@ -89,7 +93,6 @@ const cascaderOptions = [
     ],
   },
 ];
-
 const formItemLayout = {
   labelCol: {
     span: 7,
@@ -105,12 +108,13 @@ const noLabelLayout = {
   },
 };
 
-function Demo() {
+function App() {
   const formRef = useRef();
   const [size, setSize] = useState('default');
-
   useEffect(() => {
-    formRef.current.setFieldsValue({ rate: 5 });
+    formRef.current.setFieldsValue({
+      rate: 5,
+    });
   }, []);
 
   const onValuesChange = (changeValue, values) => {
@@ -121,6 +125,7 @@ function Demo() {
     <div style={{ maxWidth: 650 }}>
       <Form
         ref={formRef}
+        autoComplete="off"
         {...formItemLayout}
         size={size}
         initialValues={{
@@ -138,11 +143,7 @@ function Demo() {
             <Radio value="large">large</Radio>
           </Radio.Group>
         </FormItem>
-        <FormItem
-          label="Username"
-          field="name"
-          rules={[{ required: true, message: 'username is required' }]}
-        >
+        <FormItem label="Username" field="name" rules={[{ required: true }]}>
           <Input placeholder="please enter..." />
         </FormItem>
         <FormItem label="Age" field="age" rules={[{ type: 'number', required: true }]}>
@@ -159,7 +160,6 @@ function Demo() {
             {
               type: 'array',
               length: 4,
-              message: '必须选择长度为四的节点',
             },
           ]}
         >
@@ -172,9 +172,18 @@ function Demo() {
           <Select
             placeholder="please select"
             options={[
-              { label: 'one', value: 0 },
-              { label: 'two', value: 1 },
-              { label: 'three', value: 2 },
+              {
+                label: 'one',
+                value: 0,
+              },
+              {
+                label: 'two',
+                value: 1,
+              },
+              {
+                label: 'three',
+                value: 2,
+              },
             ]}
             allowClear
           />
@@ -183,26 +192,16 @@ function Demo() {
           label="Multiple Choice"
           required
           field="a.b[0].c"
-          rules={[
-            {
-              type: 'array',
-              minLength: 1,
-              message: 'choice is required',
-            },
-          ]}
+          rules={[{ type: 'array', minLength: 1 }]}
         >
-          <Select mode="multiple" allowCreate placeholder="please select" options={['a', 'b', 'c', 'd', 'e']} />
+          <Select
+            mode="multiple"
+            allowCreate
+            placeholder="please select"
+            options={['a', 'b', 'c', 'd', 'e']}
+          />
         </FormItem>
-        <FormItem
-          label="TreeSelect"
-          field="treenode"
-          rules={[
-            {
-              required: true,
-              message: 'treenode is required',
-            },
-          ]}
-        >
+        <FormItem label="TreeSelect" field="treenode" rules={[{ required: true }]}>
           <TreeSelect allowClear placeholder="please select">
             <TreeSelect.Node key="node1" title="Trunk(node1)">
               <TreeSelect.Node key="node2" title="Leaf(node2)" />
@@ -213,41 +212,17 @@ function Demo() {
             </TreeSelect.Node>
           </TreeSelect>
         </FormItem>
-        <FormItem
-          label="Score"
-          field="score"
-          rules={[
-            {
-              required: true,
-              type: 'number',
-            },
-          ]}
-        >
+        <FormItem label="Score" field="score" rules={[{ required: true, type: 'number' }]}>
           <Rate />
         </FormItem>
-        <FormItem
-          label="Date"
-          field="date"
-          rules={[
-            {
-              required: true,
-              message: 'date is required',
-            },
-          ]}
-        >
+        <FormItem label="Date" field="date" rules={[{ required: true }]}>
           <DatePicker showTime />
         </FormItem>
         <FormItem
           label="Switch"
           field="switch"
           triggerPropName="checked"
-          rules={[
-            {
-              type: 'boolean',
-              true: true,
-              message: 'must be true',
-            },
-          ]}
+          rules={[{ type: 'boolean', true: true }]}
         >
           <Switch />
         </FormItem>
@@ -311,7 +286,9 @@ function Demo() {
                 content: (
                   <img
                     src={file.url || URL.createObjectURL(file.originFile)}
-                    style={{ maxWidth: '100%' }}
+                    style={{
+                      maxWidth: '100%',
+                    }}
                   ></img>
                 ),
               });
@@ -322,13 +299,7 @@ function Demo() {
           {...noLabelLayout}
           field="readme"
           triggerPropName="checked"
-          rules={[
-            {
-              type: 'boolean',
-              true: true,
-              message: 'must be true',
-            },
-          ]}
+          rules={[{ type: 'boolean', true: true }]}
         >
           <Checkbox>I have read the employee manual</Checkbox>
         </FormItem>
@@ -371,5 +342,5 @@ function Demo() {
   );
 }
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```

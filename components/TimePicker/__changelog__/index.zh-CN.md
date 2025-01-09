@@ -1,3 +1,67 @@
+## 2.51.1
+
+2023-08-04
+
+### 🐛 问题修复
+
+- 修复 `TimePicker` 组件选中默认值没有兼容 `disabledHours` `disabledMinites` `DisabledSeconds` 的 bug。([#2025](https://github.com/arco-design/arco-design/pull/2025) [@bestlyg](https://github.com/bestlyg))
+
+## 2.49.1
+
+2023-06-09
+
+### 🐛 问题修复
+
+- 修复 `TimePicker` 组件在 `scrollSticky={false}` 时控制台出现 warning 的 bug。([#2023](https://github.com/arco-design/arco-design/pull/2023) [@bestlyg](https://github.com/bestlyg))
+
+## 2.44.0
+
+2023-01-13
+
+### 🆕 功能升级
+
+- `TimePicker` 组件支持设置 `triggerElement=null` 只使用面板。([#1721](https://github.com/arco-design/arco-design/pull/1721))
+
+## 2.43.0
+
+2022-12-23
+
+### 🆕 功能升级
+
+- `TimePicker` 支持通过 `prefix` 设置前缀。([#1668](https://github.com/arco-design/arco-design/pull/1668))
+
+## 2.38.0
+
+2022-07-29
+
+### 🆕 功能升级
+
+- `TimePicker` 组件添加 `triggerElement` 属性支持自定义触发器。([#1199](https://github.com/arco-design/arco-design/pull/1199))
+
+## 2.32.0
+
+2022-04-15
+
+### 🐛 问题修复
+
+- 修复 `TimePicker` 输入正确时不触发 `onSelect` 事件的 bug。([#769](https://github.com/arco-design/arco-design/pull/769))
+
+## 2.30.0
+
+2022-03-04
+
+### 🆕 功能升级
+
+- `TimePicker` 组件支持 `utcOffset` 和 `timezone` 来设置 UTC 时间和时区。([#604](https://github.com/arco-design/arco-design/pull/604))
+
+## 2.27.1
+
+2021-12-24
+
+### 🐛 问题修复
+
+- 修复 `TimePicker` 组件在受控设置为 `undefined` 时，下次 onChange 回调不正确的 bug。([#361](https://github.com/arco-design/arco-design/pull/361))
+
 ## 2.23.0-beta.0
 
 2021-09-17

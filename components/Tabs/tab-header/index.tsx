@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import throttle from 'lodash/throttle';
+import { isNumber, isObject } from '../../_util/is';
 import ResizeObserver from '../../_util/resizeObserver';
 import DropdownIcon from './dropdown-icon';
 import TabNavIcon from './tab-nav-icon';
@@ -6,18 +8,23 @@ import TabHeaderTitle from './tab-title';
 import IconPlus from '../../../icon/react-icon/IconPlus';
 import cs from '../../_util/classNames';
 import { setTransformStyle } from '../../_util/style';
-import { getRectDiff } from '../utils';
+import { getKeyDownEvent, getRectDiff, updateScrollOffset } from '../utils';
 import { TabsContext } from '../tabs';
 import { TabsProps } from '..';
 import TabInk from './tab-ink';
 import IconHover from '../../_class/icon-hover';
 import useDomSize from '../hook/useDomSize';
-import throttleByRaf from '../../_util/throttleByRaf';
 import useHeaderScroll from '../hook/useHeaderScroll';
+import { ConfigContext } from '../../ConfigProvider';
 
 const DIRECTION_VERTICAL = 'vertical';
 const ALIGN_RIGHT = 'right';
 const ALIGN_LEFT = 'left';
+
+const SCROLL_MAP = {
+  delete: true,
+  add: true,
+};
 
 const getHeaderStyle = ({
   direction,
@@ -58,13 +65,18 @@ const getCurrentHeaderOffset = ({
 
 const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
   const ctxProps = useContext(TabsContext);
+  const { rtl } = useContext(ConfigContext);
   const mergeProps = { ...props, ...ctxProps };
 
   const [headerWrapperRef, headerWrapperSize, setHeaderWrapperSize] = useDomSize<HTMLDivElement>();
   const [headerRef, headerSize, setHeaderSize] = useDomSize<HTMLDivElement>();
+  const [scrollWrapperRef, scrollWrapperSize, setScrollWrapperSize] = useDomSize<HTMLDivElement>();
+  const [extraRef, extraSize, setExtraSize] = useDomSize<HTMLDivElement>();
+  const [addBtnRef, addBtnSize, setAddenBtnSize] = useDomSize<HTMLDivElement>();
 
   const titleRef = useRef({});
   const [headerOffset, setHeaderOffset] = useState(0);
+  const [shouldScroll, setShouldScroll] = useState(true);
 
   const {
     paneChildren,
@@ -86,39 +98,63 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
     deleteButton,
     addButton,
     renderTabTitle,
+    scrollAfterEdit,
+    scrollPosition = 'auto',
+    inkBarSize,
   } = mergeProps;
 
-  const align = type === 'capsule' ? ALIGN_RIGHT : ALIGN_LEFT;
+  const scrollConfig = isObject(scrollAfterEdit)
+    ? { ...SCROLL_MAP, ...scrollAfterEdit }
+    : SCROLL_MAP;
+
+  const [left, right]: Array<'left' | 'right'> = rtl
+    ? [ALIGN_RIGHT, ALIGN_LEFT]
+    : [ALIGN_LEFT, ALIGN_RIGHT];
+  const align = type === 'capsule' ? right : left;
 
   const isScrollable = useMemo<boolean>(() => {
+    const headerContentHeight = scrollWrapperSize.height - extraSize.height - addBtnSize.height;
+    const headerContentWidth = scrollWrapperSize.width - extraSize.width - addBtnSize.width;
     const res =
       mergeProps.direction === 'vertical'
-        ? headerWrapperSize.height < headerSize.height
-        : headerWrapperSize.width < headerSize.width;
-
+        ? headerContentHeight < headerSize.height
+        : headerContentWidth < headerSize.width;
     return res;
-  }, [mergeProps.direction, headerWrapperSize, headerSize]);
+  }, [mergeProps.direction, scrollWrapperSize, extraSize, headerSize, addBtnSize]);
 
-  const onWrapperResize = throttleByRaf((entry) => {
-    const dom = entry[0] && entry[0].target;
-    if (dom) {
-      setHeaderWrapperSize({
+  const updateScrollWrapperSize = () => {
+    if (scrollWrapperRef.current) {
+      const dom = scrollWrapperRef.current;
+      setScrollWrapperSize({
         height: (dom as HTMLElement).offsetHeight,
         width: (dom as HTMLElement).offsetWidth,
-        domRect: dom.getBoundingClientRect(),
       });
     }
-  });
-  const onHeaderResize = throttleByRaf((entry) => {
-    const dom = entry[0] && entry[0].target;
-    if (dom) {
-      setHeaderSize({
-        height: (dom as HTMLElement).offsetHeight,
-        width: (dom as HTMLElement).offsetWidth,
-        domRect: dom.getBoundingClientRect(),
-      });
-    }
-  });
+  };
+
+  const resizeCallback = (
+    callback:
+      | typeof setHeaderSize
+      | typeof setHeaderWrapperSize
+      | typeof setExtraSize
+      | typeof setAddenBtnSize
+  ) =>
+    throttle((entry) => {
+      updateScrollWrapperSize();
+      const dom = entry[0] && entry[0].target;
+      if (dom) {
+        callback({
+          height: (dom as HTMLElement).offsetHeight,
+          width: (dom as HTMLElement).offsetWidth,
+          domRect: dom.getBoundingClientRect(),
+        });
+      }
+    }, 200);
+
+  const onWrapperResize = resizeCallback(setHeaderWrapperSize);
+  const onHeaderResize = resizeCallback(setHeaderSize);
+  const onExtraResize = resizeCallback(setExtraSize);
+  const onAddBtnResize = resizeCallback(setAddenBtnSize);
 
   const getValidOffset = useCallback(
     (offset) => {
@@ -143,20 +179,25 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
 
   useEffect(() => {
     return () => {
-      onHeaderResize.cancel && onHeaderResize.cancel();
-      onWrapperResize.cancel && onWrapperResize.cancel();
+      onHeaderResize?.cancel?.();
+      onWrapperResize?.cancel?.();
+      onExtraResize?.cancel?.();
+      onAddBtnResize?.cancel?.();
     };
   }, []);
 
   // 根据激活的 tab 更新 headerOffset，所以依赖里面不能加 headerOffset
   useEffect(() => {
+    if (!shouldScroll) {
+      setShouldScroll(true);
+      return;
+    }
+
     const getActiveTabOffset = () => {
       const currentTitleNode = titleRef.current[activeTab];
-
       if (!currentTitleNode || !isScrollable) {
         return 0;
       }
-
       const diffStyle = getRectDiff(currentTitleNode, headerWrapperRef.current);
       const currentOffset = getCurrentHeaderOffset({
         direction,
@@ -164,47 +205,74 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
         headerDom: headerRef.current,
         headerWrapperDom: headerWrapperRef.current,
       });
-
       // 垂直方向的 offset 计算，不分type
       if (direction === 'vertical') {
         let nextOffset = currentOffset;
-        if (diffStyle.top < 0) {
-          // 不完全在可见区
-          nextOffset = currentOffset + diffStyle.top;
-        } else if (diffStyle.bottom > 0) {
-          // 不完全在可见区
-          nextOffset = currentOffset + diffStyle.bottom;
+        let scrollAlign = scrollPosition;
+        const topOffset = currentOffset + diffStyle.top;
+        const bottomOffset = currentOffset + diffStyle.bottom;
+        if (scrollAlign === 'auto') {
+          scrollAlign = diffStyle.top < 0 ? 'start' : diffStyle.bottom > 0 ? 'end' : scrollPosition;
+        }
+        if (scrollAlign === 'start') {
+          nextOffset = topOffset;
+        } else if (scrollAlign === 'end') {
+          nextOffset = bottomOffset;
+        } else if (scrollAlign === 'center') {
+          nextOffset = topOffset - (diffStyle.top - diffStyle.bottom) / 2;
+        } else if (isNumber(scrollAlign)) {
+          nextOffset = Math.max(topOffset - scrollAlign, bottomOffset);
         }
         return nextOffset;
       }
 
       // 水平方向的 offset 计算，分为 capsule 和其他，因为 capsule 是右对齐
       if (align === 'right') {
+        const startOffset = currentOffset - diffStyle.left;
+        const endOffset = currentOffset - diffStyle.right;
+        let scrollAlign = scrollPosition;
         let nextOffset = currentOffset;
-        if (diffStyle.left < 0) {
-          // 不完全在可见区
-          nextOffset = currentOffset - diffStyle.left;
-        } else if (diffStyle.right > 0) {
-          // 不完全在可见区
-          nextOffset = currentOffset - diffStyle.right;
+
+        if (scrollPosition === 'auto') {
+          scrollAlign = diffStyle.left < 0 ? 'start' : diffStyle.right > 0 ? 'end' : scrollPosition;
         }
+        if (scrollAlign === 'start') {
+          nextOffset = startOffset;
+        } else if (scrollAlign === 'end') {
+          nextOffset = endOffset;
+        } else if (scrollAlign === 'center') {
+          nextOffset = startOffset + (diffStyle.left - diffStyle.right) / 2;
+        } else if (isNumber(scrollAlign)) {
+          nextOffset = Math.min(startOffset + scrollAlign, endOffset);
+        }
+
         return nextOffset;
       }
 
       let nextOffset = currentOffset;
-      if (diffStyle.left < 0) {
-        // 不完全在可见区
-        nextOffset = currentOffset + diffStyle.left;
-      } else if (diffStyle.right > 0) {
-        // 不完全在可见区
-        nextOffset = currentOffset + diffStyle.right;
+      let scrollAlign = scrollPosition;
+      const startOffset = currentOffset + diffStyle.left;
+      const endOffset = currentOffset + diffStyle.right;
+      if (scrollPosition === 'auto') {
+        scrollAlign = diffStyle.left < 0 ? 'start' : diffStyle.right > 0 ? 'end' : scrollPosition;
+      }
+      if (scrollAlign === 'start') {
+        nextOffset = startOffset;
+      } else if (scrollAlign === 'end') {
+        nextOffset = endOffset;
+      } else if (scrollAlign === 'center') {
+        nextOffset = startOffset - (diffStyle.left - diffStyle.right) / 2;
+      } else if (isNumber(scrollAlign)) {
+        nextOffset = Math.max(startOffset - scrollAlign, endOffset);
       }
       return nextOffset;
     };
+
+    updateScrollOffset(headerWrapperRef.current, direction);
     let offset = getActiveTabOffset();
     offset = getValidOffset(offset);
     setHeaderOffset(offset);
-  }, [activeTab, direction, overflow, isScrollable, type, getValidOffset]);
+  }, [activeTab, direction, overflow, isScrollable, type, getValidOffset, scrollPosition]);
 
   const headerStyle = getHeaderStyle({
     direction,
@@ -215,17 +283,37 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
   const isScroll = isScrollable && !isDropdown;
   const isEditable = editable && (type === 'card' || type === 'card-gutter' || type === 'line');
 
+  const handleDelete = (child) => {
+    mergeProps.onDeleteTab && mergeProps.onDeleteTab(child.key as string);
+    setShouldScroll(scrollConfig.delete);
+  };
+
+  const handleAdd = () => {
+    onAddTab?.();
+    setShouldScroll(scrollConfig.add);
+  };
+
   const renderAddIcon = (isEditable) => {
     return (
       isEditable &&
       showAddButton && (
-        <div className={`${prefixCls}-add-icon`} onClick={onAddTab}>
-          {addButton || (
-            <IconHover prefix={`${prefixCls}-add`}>
-              <span className={`${prefixCls}-add`}>{icons?.add || <IconPlus />}</span>
-            </IconHover>
-          )}
-        </div>
+        <ResizeObserver onResize={onAddBtnResize}>
+          <div
+            className={`${prefixCls}-add-icon`}
+            aria-label="add tab"
+            tabIndex={0}
+            role="button"
+            ref={addBtnRef}
+            onClick={handleAdd}
+            {...getKeyDownEvent({ onPressEnter: handleAdd })}
+          >
+            {addButton || (
+              <IconHover prefix={`${prefixCls}-add`}>
+                <span className={`${prefixCls}-add`}>{icons?.add || <IconPlus />}</span>
+              </IconHover>
+            )}
+          </div>
+        </ResizeObserver>
       )
     );
   };
@@ -259,10 +347,13 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
           [`${prefixCls}-header-overflow-scroll`]: isScroll,
           [`${prefixCls}-header-overflow-dropdown`]: isDropdown,
         })}
+        ref={scrollWrapperRef}
       >
         {isScroll && (
           <TabNavIcon
             iconPos="prev"
+            rtl={rtl}
+            icon={icons?.prev}
             prefixCls={prefixCls}
             currentOffset={headerOffset}
             headerSize={headerSize}
@@ -273,7 +364,6 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
             onChange={updateHeaderOffset}
           />
         )}
-
         <ResizeObserver onResize={onWrapperResize}>
           <div className={`${prefixCls}-header-wrapper`} ref={headerWrapperRef}>
             <ResizeObserver onResize={onHeaderResize}>
@@ -296,9 +386,7 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
                     tabKey={child.key}
                     {...child.props}
                     prefixCls={prefixCls}
-                    onDeleteTab={() => {
-                      mergeProps.onDeleteTab && mergeProps.onDeleteTab(child.key as string);
-                    }}
+                    onDeleteTab={() => handleDelete(child)}
                     renderTitle={props.children || renderTabTitle}
                     onClickTab={() => {
                       mergeProps.onClickTab && mergeProps.onClickTab(child.key as string);
@@ -307,6 +395,8 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
                     editable={isEditable && child.props.closable !== false}
                     deleteIcon={icons?.delete}
                     deleteButton={deleteButton}
+                    getIdPrefix={ctxProps.getIdPrefix}
+                    index={index}
                   />
                 ))}
                 {type === 'line' && (
@@ -323,6 +413,7 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
                     getTitleRef={(key) => titleRef.current[key]}
                     activeTab={activeTab}
                     getHeaderRef={() => headerRef}
+                    inkBarSize={inkBarSize}
                   />
                 )}
               </div>
@@ -333,6 +424,9 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
         {isScroll && (
           <TabNavIcon
             prefixCls={prefixCls}
+            rtl={rtl}
+            iconPos="next"
+            icon={icons?.next}
             currentOffset={headerOffset}
             headerSize={headerSize}
             headerWrapperSize={headerWrapperSize}
@@ -348,16 +442,19 @@ const TabHeader = React.forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
             prefixCls={prefixCls}
             currentOffset={headerOffset}
             headerSize={headerSize}
+            icon={icons?.dropdown}
             headerWrapperSize={headerWrapperSize}
             getTitleRef={(key) => titleRef.current[key]}
             direction={direction}
           />
         )}
         {((isEditable && isScrollable) || extra) && (
-          <div className={`${prefixCls}-header-extra`}>
-            {isScrollable && renderAddIcon(isEditable)}
-            {extra}
-          </div>
+          <ResizeObserver onResize={onExtraResize}>
+            <div className={`${prefixCls}-header-extra`} ref={extraRef}>
+              {isScrollable && renderAddIcon(isEditable)}
+              {extra}
+            </div>
+          </ResizeObserver>
         )}
       </div>
     </div>

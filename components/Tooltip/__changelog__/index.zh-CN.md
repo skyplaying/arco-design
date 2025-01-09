@@ -1,3 +1,43 @@
+## 2.61.3
+
+2024-04-12
+
+### 🐛 问题修复
+
+- 修复 `Tooltip`组件在 rtl 下文本未对齐的 bug([#2618](https://github.com/arco-design/arco-design/pull/2618))
+
+## 2.35.1
+
+2022-06-17
+
+### 🐛 问题修复
+
+- 修复了黑暗模式下 `Tooltip` 箭头样式问题([#995](https://github.com/arco-design/arco-design/pull/995))
+
+## 2.29.2
+
+2022-02-25
+
+### 🐛 问题修复
+
+- `Tooltip` content 值是 false 时不显示弹窗([#579](https://github.com/arco-design/arco-design/pull/579))
+
+## 2.25.0
+
+2021-11-19
+
+### 🆕 功能升级
+
+- `Tooltip` 组件添加 `escToClose`，默认为 `false`。([#167](https://github.com/arco-design/arco-design/pull/167))
+
+## 2.24.1
+
+2021-11-12
+
+### 💅 样式更新
+
+- `Tooltip` 组件在暗黑模式下添加边框，避免在弹出框内跟底色重合。([#150](https://github.com/arco-design/arco-design/pull/150))
+
 ## 2.23.0
 
 2021-09-27

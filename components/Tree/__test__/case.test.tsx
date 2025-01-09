@@ -1,6 +1,6 @@
 import React from 'react';
-import { mount } from 'enzyme';
-import { act } from 'react-test-renderer';
+import { cleanup } from '@testing-library/react';
+import { render, fireEvent, $ } from '../../../tests/util';
 import Tree from '..';
 
 const TreeData = [
@@ -45,10 +45,11 @@ describe('Tree case', () => {
 
   afterEach(() => {
     jest.runAllTimers();
+    cleanup();
   });
 
   it('icons correctly', async () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Tree
         treeData={TreeData}
         icons={(nodeprops) => {
@@ -59,14 +60,60 @@ describe('Tree case', () => {
       />
     );
 
-    const firstNode = wrapper.find(`.arco-tree-node-switcher-icon`).first();
+    const firstNode = wrapper.find(`.arco-tree-node-switcher-icon`).item(0);
 
     // 默认是展开的
-    expect(firstNode.text()).toBe('-');
-    await act(() => {
-      firstNode.simulate('click');
-    });
+    expect(firstNode.textContent).toBe('-');
+    fireEvent.click(firstNode);
     // 收起节点
-    expect(firstNode.text()).toBe('+');
+    expect(firstNode.textContent).toBe('+');
+  });
+
+  it('show child correctly', async () => {
+    const data = [
+      {
+        key: 'Trunk 0-0',
+        title: '0-0',
+        children: [
+          {
+            key: 'Branch 0-0-2',
+            title: '0-0-2',
+            disableCheckbox: true,
+            children: [
+              {
+                key: 'Leaf',
+                title: '0-0-2-1',
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    let currentKeys;
+    render(
+      <Tree
+        onCheck={(keys) => {
+          currentKeys = keys;
+        }}
+        checkable
+        treeData={data}
+        checkedStrategy="child"
+      />
+    );
+
+    fireEvent.click($('.arco-checkbox').item(0));
+
+    // 默认是展开的
+    expect(currentKeys).toEqual([data[0].key]);
+
+    fireEvent.click($('.arco-checkbox').item(2));
+
+    expect(currentKeys).toEqual([data[0].key, data[0].children[0].children[0].key]);
+
+    // 取消节点选中
+    fireEvent.click($('.arco-checkbox').item(2));
+
+    expect(currentKeys).toEqual([data[0].key]);
   });
 });

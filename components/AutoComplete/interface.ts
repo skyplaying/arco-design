@@ -1,4 +1,4 @@
-import React, { CSSProperties, ReactElement } from 'react';
+import { CSSProperties, ReactNode, ReactElement } from 'react';
 import { InputProps } from '../Input';
 import { OptionInfo, SelectProps } from '../Select/interface';
 
@@ -28,7 +28,7 @@ export interface AutoCompleteProps extends PartialSelectProps {
    * @zh 自定义输入框/数据源
    * @en Custom input/source data
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
   /**
    * @zh 是否允许一键清除
    * @en Whether to allow clear the content
@@ -38,7 +38,7 @@ export interface AutoCompleteProps extends PartialSelectProps {
    * @zh 自动完成的数据源
    * @en Data source
    */
-  data?: (string | { value: string; name: string; [key: string]: any } | React.ReactNode)[];
+  data?: (string | { value: string; name: string; [key: string]: any } | ReactNode)[];
   /**
    * @zh 输入框提示
    * @en Placeholder of input
@@ -55,10 +55,17 @@ export interface AutoCompleteProps extends PartialSelectProps {
    */
   value?: string;
   /**
-   * @zh 报错状态
-   * @en Error style
+   * @zh 是否是错误状态。(废弃，下个大版本移除，使用 status='error' 替代)
+   * @en Whether the textarea is error.(Deprecated, removed in the next major version, use status='error' instead)
+   * @deprecated use status="error"
    */
   error?: boolean;
+  /**
+   * @zh 状态
+   * @en Status
+   * @version 2.45.0
+   */
+  status?: 'error' | 'warning';
   /**
    * @zh `strict: true` 的时候大小写敏感
    * @en Case sensitive when set `strict: true`
@@ -74,8 +81,9 @@ export interface AutoCompleteProps extends PartialSelectProps {
    * @zh 自定义触发元素
    * @en Custom trigger element
    * @defaultValue <Input />
+   * @version `() => ReactElement` in 2.31.0
    */
-  triggerElement?: ReactElement;
+  triggerElement?: ReactElement | (({ value }) => ReactElement);
   /**
    * @zh 搜索补全时的回调
    * @en Callback when searching items
@@ -94,8 +102,9 @@ export interface AutoCompleteProps extends PartialSelectProps {
   /**
    * @zh 按下回车键的回调
    * @en Callback when Enter is pressed
+   * @version `activeOption` in 2.25.1
    */
-  onPressEnter?: (event) => void;
+  onPressEnter?: (event, activeOption?: OptionInfo) => void;
   /**
    * @zh 聚焦时的回调
    * @en Callback when component gets focus

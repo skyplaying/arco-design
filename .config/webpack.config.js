@@ -3,10 +3,18 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const { version } = require('../package.json');
+// const { getPWAConfig } = require('../site/config/pwa');
 
 // 组件 dist 打包
 exports.component = (config) => {
-  config.entry = path.resolve(__dirname, '../components/index.tsx');
+  if (process.env.BUILD_TYPE === 'hooks') {
+    config.entry = path.resolve(__dirname, '../hooks/src-es/index.ts');
+    config.output.filename = 'arco-hooks.min.js';
+    config.output.library = 'arcohooks';
+  } else {
+    config.entry = path.resolve(__dirname, '../components/index.tsx');
+  }
+
   config.plugins.pop();
   config.plugins.push(
     new webpack.BannerPlugin({
@@ -27,7 +35,8 @@ exports.icon = (config) => {
 
 // 官网
 exports.site = (config, env) => {
-  if (env === 'prod') {
+  const isProd = env === 'prod';
+  if (isProd) {
     config.output.publicPath = '/';
   }
 
@@ -42,18 +51,6 @@ exports.site = (config, env) => {
     formatTitle: (value) => `${value} | ArcoDesign`,
   };
 
-  // esbuild
-  config.module.rules[0].loader = 'esbuild-loader';
-  config.module.rules[0].options = {
-    loader: 'tsx',
-    target: 'es2015',
-  };
-  config.module.rules[1].use[0].loader = 'esbuild-loader';
-  config.module.rules[1].use[0].options = {
-    loader: 'tsx',
-    target: 'es2015',
-  };
-
   config.plugins[0] = new HtmlWebpackPlugin({
     template: path.resolve(__dirname, '../site/public/index.ejs'),
     templateParameters: {
@@ -65,7 +62,7 @@ exports.site = (config, env) => {
 
   config.plugins.push(
     new HtmlWebpackPlugin({
-      filename: 'index-en.html',
+      filename: 'react-en.html',
       template: path.resolve(__dirname, '../site/public/index.ejs'),
       templateParameters: {
         title:
@@ -78,13 +75,25 @@ exports.site = (config, env) => {
 
   config.resolve.alias['@arco-design/web-react'] = path.resolve(__dirname, '..');
   // config.resolve.alias['dayjs$'] = 'moment-timezone';
+  // update the react-dnd, with issue: https://github.com/facebook/react/issues/20235
+  config.resolve.alias['react/jsx-runtime'] = require.resolve('react/jsx-runtime.js');
+  config.resolve.alias['react/jsx-dev-runtime'] = require.resolve('react/jsx-dev-runtime.js');
+  delete config.resolve.alias['react'];
 
   if (env === 'dev') {
     config.devServer.historyApiFallback = {
       rewrites: [
-        { from: /^(\/(react|docs|showcase)){0,1}\/en-US/, to: '/index-en.html' },
+        { from: /^(\/(react|docs|showcase)){0,1}\/en-US/, to: '/react-en.html' },
         { from: /^\/$/, to: '/index.html' },
       ],
     };
+  }
+
+  try {
+    const { getPWAConfig } = require('../site/config/pwa');
+
+    getPWAConfig(config, env);
+  } catch (_) {
+    console.error('[Arco React]: site/config/pwa not exists');
   }
 };

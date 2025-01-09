@@ -1,6 +1,9 @@
+import 'dayjs/locale/id';
+
 const Calendar = {
   formatYear: 'YYYY',
   formatMonth: 'MMM YYYY',
+  monthBeforeYear: true,
   today: 'Hari ini',
   view: {
     month: 'Bulan',
@@ -64,6 +67,7 @@ const Calendar = {
 
 export default {
   locale: 'id-ID',
+  dayjsLocale: 'id',
   Calendar,
   DatePicker: {
     Calendar,
@@ -103,6 +107,12 @@ export default {
     page: 'Halaman',
     countPerPage: ' / Halaman',
     total: 'Total: {0}',
+    prev: 'halaman sebelumnya',
+    next: 'halaman selanjutnya',
+    currentPage: 'halaman {0}',
+    prevSomePages: 'Mundur {0} halaman',
+    nextSomePages: 'Teruskan {0} halaman',
+    pageSize: 'nomor halaman',
   },
   Popconfirm: {
     okText: 'Baik',

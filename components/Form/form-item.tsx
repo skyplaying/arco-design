@@ -7,85 +7,86 @@ import React, {
   useState,
   useEffect,
   useMemo,
+  ReactNode,
   useRef,
 } from 'react';
-import { CSSTransition } from 'react-transition-group';
 import cs from '../_util/classNames';
 import { isArray, isFunction, isUndefined, isObject } from '../_util/is';
 import Grid from '../Grid';
-import { FormItemProps, FieldError, KeyType, FormContextProps } from './interface';
+import {
+  FormItemProps,
+  FieldError,
+  KeyType,
+  FormContextProps,
+  VALIDATE_STATUS,
+  FormItemChildrenFn,
+} from './interface';
 import Control from './control';
 import {
   FormItemContext as RawFormItemContext,
   FormItemContextType as RawFormItemContextType,
   FormContext,
+  FormListContext,
 } from './context';
 import { ConfigContext } from '../ConfigProvider';
 import omit from '../_util/omit';
+import FormItemLabel from './form-label';
+import { formatValidateMsg } from './utils';
+import ArcoCSSTransition from '../_util/CSSTransition';
 
 const Row = Grid.Row;
 const Col = Grid.Col;
 
-interface FormItemLabelProps
-  extends Pick<FormItemProps, 'label' | 'requiredSymbol' | 'required' | 'rules'> {
-  showColon: boolean;
-  prefix: string;
-  htmlFor?: string;
-}
-
-// 标签
-const FormItemLabel: React.FC<FormItemLabelProps> = ({
-  htmlFor,
-  showColon,
-  label,
-  requiredSymbol,
-  required,
-  rules,
-  prefix,
-}) => {
-  const isRequiredRule = isArray(rules) && rules.some((rule) => rule && rule.required);
-
-  return label ? (
-    <label htmlFor={htmlFor && `${htmlFor}_input`}>
-      {(required || isRequiredRule) && requiredSymbol && (
-        <strong className={`${prefix}-form-item-symbol`}>
-          <svg fill="currentColor" viewBox="0 0 1024 1024" width="1em" height="1em">
-            <path d="M583.338667 17.066667c18.773333 0 34.133333 15.36 34.133333 34.133333v349.013333l313.344-101.888a34.133333 34.133333 0 0 1 43.008 22.016l42.154667 129.706667a34.133333 34.133333 0 0 1-21.845334 43.178667l-315.733333 102.4 208.896 287.744a34.133333 34.133333 0 0 1-7.509333 47.786666l-110.421334 80.213334a34.133333 34.133333 0 0 1-47.786666-7.509334L505.685333 706.218667 288.426667 1005.226667a34.133333 34.133333 0 0 1-47.786667 7.509333l-110.421333-80.213333a34.133333 34.133333 0 0 1-7.509334-47.786667l214.186667-295.253333L29.013333 489.813333a34.133333 34.133333 0 0 1-22.016-43.008l42.154667-129.877333a34.133333 34.133333 0 0 1 43.008-22.016l320.512 104.106667L412.672 51.2c0-18.773333 15.36-34.133333 34.133333-34.133333h136.533334z" />
-          </svg>
-        </strong>
-      )}{' '}
-      {label}
-      {showColon ? ':' : ''}
-    </label>
-  ) : null;
-};
-
 interface FormItemTipProps extends Pick<FormItemProps, 'prefixCls' | 'help'> {
   errors: FieldError[];
+  warnings: ReactNode[];
 }
 
 // 错误提示文字
-const FormItemTip: React.FC<FormItemTipProps> = ({ prefixCls, help, errors: propsErrors }) => {
+const FormItemTip: React.FC<FormItemTipProps> = ({
+  prefixCls,
+  help,
+  errors: propsErrors,
+  warnings,
+}) => {
   const errorTip = propsErrors.map((item, i) => {
     if (item) {
-      return <div key={i}>{item.message}</div>;
+      return (
+        <div key={i} role="alert">
+          {item.message}
+        </div>
+      );
     }
   });
-  const show = help !== undefined || !!errorTip.length;
-
-  const tip = help !== undefined ? help : errorTip.length > 0 && errorTip;
+  const warningTip = [];
+  warnings.map((item, i) => {
+    warningTip.push(
+      <div key={i} role="alert" className={`${prefixCls}-message-help-warning`}>
+        {item}
+      </div>
+    );
+  });
+  const isHelpTip = !isUndefined(help) || !!warningTip.length;
+  const visible = isHelpTip || !!errorTip.length;
 
   return (
-    show && (
-      <CSSTransition in={show} appear classNames="formblink" timeout={300} unmountOnExit>
+    visible && (
+      <ArcoCSSTransition in={visible} appear classNames="formblink" timeout={300} unmountOnExit>
         <div
           className={cs(`${prefixCls}-message`, {
-            [`${prefixCls}-message-help`]: help !== undefined,
+            [`${prefixCls}-message-help`]: isHelpTip,
           })}
         >
-          {tip}
+          {!isUndefined(help) ? (
+            help
+          ) : (
+            <>
+              {errorTip.length > 0 && errorTip}
+              {warningTip.length > 0 && warningTip}
+            </>
+          )}
         </div>
-      </CSSTransition>
+      </ArcoCSSTransition>
     )
   );
 };
@@ -100,8 +101,12 @@ const Item = <
 ) => {
   const { getPrefixCls, prefixCls: prefix } = useContext(ConfigContext);
   const topFormContext = useContext(RawFormItemContext);
+  const formListContext = useContext(FormListContext);
   const [errors, setErrors] = useState<{
     [key: string]: FieldError<FieldValue>;
+  }>(null);
+  const [warnings, setWarnings] = useState<{
+    [key: string]: ReactNode[];
   }>(null);
   const formContext = useContext(FormContext);
   const prefixCls = formContext.prefixCls || getPrefixCls('form');
@@ -110,18 +115,36 @@ const Item = <
   const isDestroyed = useRef(false);
 
   // update error status
-  const updateInnerFormItem = (field: string, errors?: FieldError<FieldValue>) => {
+  const updateInnerFormItem = (
+    field: string,
+    params: {
+      errors?: FieldError<FieldValue>;
+      warnings?: ReactNode[];
+    } = {}
+  ) => {
     if (isDestroyed.current) {
       return;
     }
+    const { errors, warnings } = params || {};
+
     setErrors((innerErrors) => {
-      const newErrors = { ...innerErrors };
+      const newErrors = { ...(innerErrors || {}) };
       if (errors) {
         newErrors[field] = errors;
       } else {
         delete newErrors[field];
       }
       return newErrors;
+    });
+
+    setWarnings((current) => {
+      const newVal = { ...(current || {}) };
+      if (warnings && warnings.length) {
+        newVal[field] = warnings;
+      } else {
+        delete newVal[field];
+      }
+      return newVal;
     });
   };
 
@@ -131,35 +154,62 @@ const Item = <
       : updateInnerFormItem;
 
   useEffect(() => {
+    isDestroyed.current = false;
+
     return () => {
       isDestroyed.current = true;
       setErrors(null);
+      setWarnings(null);
     };
   }, []);
 
   const contextProps = {
     ...(formContext as React.Context<FormContextProps<FormData, FieldValue, FieldKey>>),
+    validateMessages:
+      formContext.validateMessages &&
+      formatValidateMsg(formContext.validateMessages, {
+        label: props.label,
+      }),
     prefixCls,
     updateFormItem,
     disabled: 'disabled' in props ? props.disabled : formContext.disabled,
   };
 
-  const { label, extra, className, style, validateStatus, ...rest } = props;
+  const { label, extra, className, style, validateStatus, hidden, ...rest } = props;
   const labelClassNames = cs(`${prefixCls}-label-item`, {
     [`${prefixCls}-label-item-left`]: labelAlign === 'left',
   });
 
-  const isErrorStatus = useMemo(() => {
-    return errors && Object.values(errors).length;
-  }, [errors]);
-  const itemStatus = validateStatus || (isErrorStatus ? 'error' : '');
+  const errorInfo = errors ? Object.values(errors) : [];
+  const warningInfo = warnings
+    ? Object.values(warnings).reduce((total, next) => total.concat(next), [])
+    : [];
+
+  const itemStatus = useMemo(() => {
+    if (validateStatus) {
+      return validateStatus;
+    }
+    if (errorInfo.length) {
+      return VALIDATE_STATUS.error;
+    }
+    if (warningInfo.length) {
+      return VALIDATE_STATUS.warning;
+    }
+    return undefined;
+  }, [errors, warnings, validateStatus]);
+
+  const hasHelp = useMemo(() => {
+    return !isUndefined(props.help) || warningInfo.length > 0;
+  }, [props.help, warnings]);
 
   const classNames = cs(
     `${prefixCls}-item`,
     {
-      [`${prefixCls}-item-error`]: isErrorStatus || props.help !== undefined,
+      [`${prefixCls}-item-error`]:
+        hasHelp || (!validateStatus && itemStatus === VALIDATE_STATUS.error),
       [`${prefixCls}-item-status-${itemStatus}`]: itemStatus,
-      [`${prefixCls}-item-has-help`]: props.help !== undefined,
+      [`${prefixCls}-item-has-help`]: hasHelp,
+      [`${prefixCls}-item-hidden`]: hidden,
       [`${prefixCls}-item-has-feedback`]: itemStatus && props.hasFeedback,
     },
     `${prefixCls}-layout-${formLayout}`,
@@ -172,8 +222,14 @@ const Item = <
 
     if (isFunction(children)) {
       return (
-        <Control disabled={disabled} {...(props as any)} {...(field ? { key: field } : {})}>
-          {(...rest) => children(...rest)}
+        <Control
+          disabled={disabled}
+          {...(props as any)}
+          {...(field ? { key: field, _key: field } : {})}
+        >
+          {(...rest) =>
+            children(...(rest as Parameters<FormItemChildrenFn<FormData, FieldValue, FieldKey>>))
+          }
         </Control>
       );
     }
@@ -181,7 +237,9 @@ const Item = <
     if (isArray(children)) {
       const childrenDom = React.Children.map(children, (child, i) => {
         const key = (isObject(child) && (child as ReactElement).key) || i;
-        const childProps = !isUndefined(disabled) ? { key, disabled } : { key };
+        const existChildDisabled = isObject(child) && 'disabled' in (child as ReactElement).props;
+        const childProps =
+          !isUndefined(disabled) && !existChildDisabled ? { key, disabled } : { key };
         return isObject(child) ? cloneElement(child as ReactElement, childProps) : child;
       });
       return (
@@ -192,8 +250,9 @@ const Item = <
     }
     if (React.Children.count(children) === 1) {
       if (field) {
+        const key = formListContext?.getItemKey?.(field) || field;
         return (
-          <Control disabled={disabled} {...(props as any)} key={field}>
+          <Control disabled={disabled} {...(props as any)} key={key} _key={key}>
             {children}
           </Control>
         );
@@ -203,10 +262,12 @@ const Item = <
         if ((children as any).type?.isFormControl) {
           return children;
         }
-        const childProps = isUndefined(disabled) ? {} : { disabled };
+        const existChildDisabled = 'disabled' in (children as ReactElement).props;
+        const childProps = !existChildDisabled && !isUndefined(disabled) ? { disabled } : null;
+
         return (
           <Control {...(props as any)} field={undefined}>
-            {cloneElement(children as ReactElement, childProps)}
+            {!childProps ? children : cloneElement(children as ReactElement, childProps)}
           </Control>
         );
       }
@@ -215,7 +276,7 @@ const Item = <
     return children;
   };
 
-  const FormItemContext = (RawFormItemContext as unknown) as RawFormItemContextType<
+  const FormItemContext = RawFormItemContext as unknown as RawFormItemContextType<
     FormData,
     FieldValue,
     FieldKey
@@ -224,7 +285,6 @@ const Item = <
   const newFormContext = {
     ...formContext,
   };
-
   if (!props.noStyle) {
     newFormContext.wrapperCol = undefined;
     newFormContext.labelCol = undefined;
@@ -239,6 +299,7 @@ const Item = <
           <Row
             ref={ref}
             {...omit(rest, [
+              'tooltip',
               'children',
               'prefixCls',
               'store',
@@ -284,6 +345,7 @@ const Item = <
                 )}
               >
                 <FormItemLabel
+                  tooltip={props.tooltip}
                   htmlFor={props.field && formContext.getFormElementId(props.field)}
                   label={label}
                   prefix={prefix}
@@ -306,7 +368,8 @@ const Item = <
               <FormItemTip
                 prefixCls={prefixCls}
                 help={props.help}
-                errors={isErrorStatus ? Object.values(errors) : []}
+                errors={errorInfo}
+                warnings={warningInfo}
               />
               {extra && <div className={`${prefixCls}-extra`}>{extra}</div>}
             </Col>
@@ -322,7 +385,6 @@ const ItemComponent = forwardRef(Item);
 ItemComponent.defaultProps = {
   trigger: 'onChange',
   triggerPropName: 'value',
-  validateTrigger: 'onChange',
 };
 
 ItemComponent.displayName = 'FormItem';
@@ -332,7 +394,7 @@ export default ItemComponent as <
   FieldValue = FormData[keyof FormData],
   FieldKey extends KeyType = keyof FormData
 >(
-  props: React.PropsWithChildren<FormItemProps<FormData, FieldValue, FieldKey>> & {
+  props: FormItemProps<FormData, FieldValue, FieldKey> & {
     ref?: React.Ref<typeof Row['prototype']>;
   }
 ) => React.ReactElement;

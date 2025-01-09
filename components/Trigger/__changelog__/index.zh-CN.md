@@ -1,3 +1,141 @@
+## 2.61.2
+
+2024-03-29
+
+### 🐛 问题修复
+
+- 修复 `Trigger` 在设置组件 `rtl` 时内容视图仍然是 `ltr` 的问题([#2604](https://github.com/arco-design/arco-design/pull/2604))
+
+## 2.59.0
+
+2024-01-19
+
+### 🆕 功能升级
+
+- `Trigger` 支持根据视口自动调整位置时，设置视口偏移量([#2502](https://github.com/arco-design/arco-design/pull/2502))
+
+## 2.57.0
+
+2023-12-08
+
+### 💎 功能优化
+
+- 优化 `Trigger` 部分逻辑耗时问题([#2427](https://github.com/arco-design/arco-design/pull/2427))
+
+## 2.56.1
+
+2023-11-24
+
+### 🐛 问题修复
+
+- 修复不同弹出方向的 `Trigger` 组件在嵌套使用时，箭头样式被相互覆盖的 bug。([#2378](https://github.com/arco-design/arco-design/pull/2378))
+
+## 2.55.0
+
+2023-10-27
+
+### 🆕 功能升级
+
+- `Trigger` 支持配置在捕获阶段触发 `clickOutside` 逻辑。([#2324](https://github.com/arco-design/arco-design/pull/2324))
+
+## 2.51.2
+
+2023-08-11
+
+### 💎 功能优化
+
+- 优化 `Trigger` 组件在内容高度存在小数时会出现定位误差导致出现不必要滚动条的问题。([#2141](https://github.com/arco-design/arco-design/pull/2141))
+
+## 2.45.1
+
+2023-03-01
+
+### 🐛 问题修复
+
+- 修复 `Trigger` 组件在 `trigger=hover`时注入的 `onClick` 导致组件默认 `onClick` 不生效的 bug。([#1808](https://github.com/arco-design/arco-design/pull/1808))
+
+## 2.44.1
+
+2023-02-03
+
+### 🐛 问题修复
+
+- 修复 `Trigger` 组件的 `props.style` 不生效的 bug。([#1750](https://github.com/arco-design/arco-design/pull/1750))
+- 修复 `Trigger` 组件的 `clickToClose` 在 trigger="hover"  时不生效的 bug。([#1750](https://github.com/arco-design/arco-design/pull/1750))
+
+## 2.43.0
+
+2022-12-23
+
+### 💎 功能优化
+
+- 优化 `Trigger` 组件的触发节点样式变为 `display: none` 时弹出层位置出现闪动的问题。([#1652](https://github.com/arco-design/arco-design/pull/1652))
+- 优化 `Trigger` 组件的弹出层尺寸改变定位未及时更新导致的闪动问题。([#1652](https://github.com/arco-design/arco-design/pull/1652))
+
+## 2.42.0
+
+2022-11-25
+
+### 🐛 问题修复
+
+- 修复 `Trigger` 组件的 `containerScrollToClose` 属性在页面滚动容器为 document.documentElement 时不生效的 bug。([#1606](https://github.com/arco-design/arco-design/pull/1606))
+
+## 2.38.0
+
+2022-07-29
+
+### 🐛 问题修复
+
+- 修复 `Trigger` 组件在 React 18 严格模式下弹出层无法显示的 bug。([#1215](https://github.com/arco-design/arco-design/pull/1215))
+
+## 2.34.0
+
+2022-05-27
+
+### 🆕 功能升级
+
+- `Trigger` 组件支持通过 `containerScrollToClose` 属性设置弹出层挂载容器滚动时，关闭弹出层。([#913](https://github.com/arco-design/arco-design/pull/913))
+
+## 2.32.0
+
+2022-04-15
+
+### 🆕 功能升级
+
+- `Trigger` 组件支持通过 `updateOnScroll` 属性，设置在容器滚动时更新弹出框的位置。([#770](https://github.com/arco-design/arco-design/pull/770))
+
+## 2.26.1
+
+2021-12-07
+
+### 🐛 问题修复
+
+- 修复 `Trigger` 组件触发方式为 `contextMenu` 时，点击触发节点，弹出层未隐藏的 bug。([#284](https://github.com/arco-design/arco-design/pull/284))
+
+## 2.26.0
+
+2021-12-03
+
+### 💎 优化
+
+- 优化 `Trigger` 组件计算子节点尺寸和位置的逻辑，避免重复计算。([#258](https://github.com/arco-design/arco-design/pull/258))
+
+## 2.25.0
+
+2021-11-19
+
+### 🆕 功能升级
+
+- `Trigger` 组件添加 `escToClose` 设置是否允许按 `ESC` 关闭，默认为 `false`。([#167](https://github.com/arco-design/arco-design/pull/167))
+
+## 2.24.1
+
+2021-11-12
+
+### 🐛 问题修复
+
+- 修复 `Trigger` 组件在弹出层出现动画结束前错误触发弹出层鼠标事件的 bug。([#149](https://github.com/arco-design/arco-design/pull/149))
+
 ## 2.23.5
 
 2021-10-29

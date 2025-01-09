@@ -1,10 +1,10 @@
-import { CSSProperties, ChangeEvent, ReactNode } from 'react';
+import { CSSProperties, ChangeEvent, ReactNode, HTMLAttributes } from 'react';
 
 /**
  * @title Radio
  */
 export interface RadioProps<T = any>
-  extends Omit<React.HTMLAttributes<HTMLLabelElement>, 'className' | 'onChange'> {
+  extends Omit<HTMLAttributes<HTMLLabelElement>, 'children' | 'className' | 'onChange'> {
   style?: CSSProperties;
   className?: string | string[];
   /**
@@ -14,12 +14,12 @@ export interface RadioProps<T = any>
   disabled?: boolean;
   /**
    * @zh 控件的 `value`
-   * @en Whether the radio is checked (Controlled)
+   * @en The value of radio
    */
   value?: T;
   /**
    * @zh 是否选中（受控模式）
-   * @en The value of radio
+   * @en Whether the radio is checked (Controlled)
    */
   checked?: boolean;
   /**
@@ -32,6 +32,7 @@ export interface RadioProps<T = any>
    * @en Callback when radio status change
    */
   onChange?: (checked: boolean, event: ChangeEvent) => void;
+  children?: ReactNode | ((value: { checked: boolean }) => ReactNode);
 }
 
 /**
@@ -40,6 +41,10 @@ export interface RadioProps<T = any>
 export interface RadioGroupProps {
   style?: CSSProperties;
   className?: string | string[];
+  /**
+   * @zh 禁用
+   * @en disabled
+   */
   disabled?: boolean;
   /**
    * @zh `Radio` 的 name
@@ -84,4 +89,13 @@ export interface RadioGroupProps {
    * @en Set children options
    */
   options?: (string | number | { label: ReactNode; value: any; disabled?: boolean })[];
+}
+
+export interface RadioGroupContextProps {
+  type: 'radio' | 'button';
+  value?: any;
+  disabled?: boolean;
+  group?: boolean;
+  name?: RadioGroupProps['name'];
+  onChangeValue?: (value: any, event: ChangeEvent) => void;
 }

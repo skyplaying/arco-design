@@ -1,13 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, forwardRef } from 'react';
 import cs from '../_util/classNames';
 import { EditContentProps } from './interface';
 import Input from '../Input';
+import mergedToString from '../_util/mergedToString';
 
-export default function EditContent(props: EditContentProps) {
-  const { prefixCls, children, setEditing, editableConfig } = props;
-  const className = cs(`${prefixCls}-typography`, `${prefixCls}-edit-content`);
+function EditContent(props: EditContentProps, ref) {
+  const { prefixCls, children, setEditing, editableConfig, style } = props;
+  const className = cs(`${prefixCls}-typography`, `${prefixCls}-edit-content`, props.className);
 
-  const str = String(children);
+  const str = mergedToString(children);
 
   const input = useRef(null);
 
@@ -33,8 +34,9 @@ export default function EditContent(props: EditContentProps) {
   }
 
   return (
-    <div className={className}>
+    <div className={className} style={style} ref={ref}>
       <Input.TextArea
+        className={`${prefixCls}-edit-content-textarea`}
         onBlur={onBlur}
         ref={input}
         value={str}
@@ -45,3 +47,5 @@ export default function EditContent(props: EditContentProps) {
     </div>
   );
 }
+
+export default forwardRef<HTMLDivElement, EditContentProps>(EditContent);

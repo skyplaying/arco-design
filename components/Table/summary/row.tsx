@@ -1,13 +1,16 @@
 import React, { useContext, ReactNode, ReactElement, HTMLAttributes } from 'react';
+import get from 'lodash/get';
 import { SummaryContext } from './context';
 import cs from '../../_util/classNames';
 import { Omit } from '../../_util/type';
+import { ConfigContext } from '../../ConfigProvider';
 
 interface SummaryRowProps extends Omit<HTMLAttributes<HTMLTableRowElement>, 'children'> {
   children?: ReactNode;
 }
 
 function Row(props: SummaryRowProps) {
+  const { rtl } = useContext(ConfigContext);
   const { columns, stickyOffsets, stickyClassNames, prefixCls } = useContext(SummaryContext);
 
   const { children, ...rest } = props;
@@ -19,7 +22,10 @@ function Row(props: SummaryRowProps) {
 
   const element = React.Children.map(children, (child, index) => {
     const childElement = child as ReactElement;
-    const isSummaryCell = childElement?.props?.$$ArcoTableSummaryCell;
+    // childElement?.props?.$$ArcoTableSummaryCell: Compatible Cell.defaultProps.$$ArcoTableSummaryCell
+    const isSummaryCell =
+      get(childElement, 'type.__ARCO_TABLE_SUMMARY_CELL__') ||
+      get(childElement, 'props.$$ArcoTableSummaryCell');
 
     const childStyle = childElement?.props?.style;
     const childClassName = childElement?.props?.className;
@@ -30,9 +36,9 @@ function Row(props: SummaryRowProps) {
 
     const stickyStyle =
       columns[stickyIndex].fixed === 'left'
-        ? { left: stickyOffsets[stickyIndex] }
+        ? { [rtl ? 'right' : 'left']: stickyOffsets[stickyIndex] }
         : columns[stickyIndex].fixed === 'right'
-        ? { right: stickyOffsets[stickyIndex] }
+        ? { [rtl ? 'left' : 'right']: stickyOffsets[stickyIndex] }
         : {};
 
     const stickyClassName =

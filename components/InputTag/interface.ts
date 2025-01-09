@@ -1,10 +1,13 @@
 import { CSSProperties, ReactNode } from 'react';
+import { PopoverProps } from '../Popover';
 
 export type ObjectValueType = {
   value?: any;
   label?: ReactNode;
   closable?: boolean;
 };
+
+export type ValueChangeReason = 'add' | 'remove' | 'clear' | 'sort';
 
 /**
  * @title InputTag
@@ -22,11 +25,19 @@ export interface InputTagProps<T = any> {
    * @en Placeholder of input element
    */
   placeholder?: string;
+
   /**
-   * @zh 是否是错误状态
-   * @en Error style
+   * @zh 是否是错误状态.(废弃，下个大版本移除，使用 status='error' 替代)
+   * @en Whether the input is error.(Deprecated, removed in the next major version, use status='error' instead)
+   * @deprecated status="error"
    */
   error?: boolean;
+  /**
+   * @zh 状态
+   * @en Status
+   * @version 2.45.0
+   */
+  status?: 'error' | 'warning';
   /**
    * @zh 是否禁用
    * @en Whether the input is disabled
@@ -55,6 +66,12 @@ export interface InputTagProps<T = any> {
    */
   animation?: boolean;
   /**
+   * @zh 是否在失焦时自动存储正在输入的文本
+   * @en Whether to automatically store the text entering when blur InputTag
+   * @version 2.25.0
+   */
+  saveOnBlur?: boolean;
+  /**
    * @zh 默认值
    * @en To set default value
    */
@@ -75,21 +92,65 @@ export interface InputTagProps<T = any> {
    */
   labelInValue?: boolean;
   /**
+   * @zh 是否可以通过拖拽为 Tag 排序
+   * @en Weather it is possible to sort tags by drag
+   * @version 2.27.0
+   */
+  dragToSort?: boolean;
+  /**
+   * @zh 最多显示多少个 `tag`
+   * @en The maximum number of `tags` is displayed
+   * @version 2.59.0. `responsive ` in `2.62.0`
+   */
+  maxTagCount?:
+    | number
+    | 'responsive'
+    | {
+        count: number | 'responsive';
+        render?: (invisibleTagCount: number, value: T[]) => ReactNode;
+        popoverProps?: Partial<PopoverProps>;
+      };
+  /**
+   * @zh 添加前缀文字或者图标
+   * @en The prefix icon or text for the input-tag
+   * @version 2.47.0
+   */
+  prefix?: ReactNode;
+  /**
    * @zh 后缀
    * @en The suffix for the InputTag
    */
-  suffix?: React.ReactNode;
+  suffix?: ReactNode;
+  /**
+   * @zh 输入框前添加元素
+   * @en The label text displayed before (on the left side of) the input-tag field
+   * @version 2.47.0
+   */
+  addBefore?: ReactNode;
+  /**
+   * @zh 输入框后添加元素
+   * @en The label text displayed after (on the right side of) the input-tag field
+   * @version 2.47.0
+   */
+  addAfter?: ReactNode;
   /**
    * @zh 自定义图标
    * @en Custom icons
    */
   icon?: { removeIcon?: ReactNode; clearIcon?: ReactNode };
   /**
+   * @zh 触发自动分词的分隔符
+   * @en Separator used to tokenize
+   * @version 2.44.0
+   */
+  tokenSeparators?: string[];
+  /**
    * @zh 校验函数，默认在 按下enter时候触发。
    * @en Function to check user's input, which is triggered when `Enter` is pressed
    * @defaultValue (inputValue, values) => inputValue && values.every((item) => item !== inputValue)
+   * @version return type T and `Promise<T>` in 2.37.0
    */
-  validate?: (inputValue: string, values: T[]) => boolean;
+  validate?: (inputValue: string, values: T[]) => boolean | Promise<boolean> | T | Promise<T>;
   /**
    * @zh 自定义标签渲染，`props` 为当前标签属性，`index` 为当前标签的顺序，`values` 为所有标签的值.
    * @en Custom tag rendering, `props` is the current tag attribute, `index` is the order of the current tag, `values` is the value of all tags
@@ -104,7 +165,7 @@ export interface InputTagProps<T = any> {
     },
     index: number,
     values: ObjectValueType[]
-  ) => React.ReactNode;
+  ) => ReactNode;
   /**
    * @zh 移除某一个标签时改变时触发
    * @en Callback when a tag is removed
@@ -113,8 +174,9 @@ export interface InputTagProps<T = any> {
   /**
    * @zh 控件值改变时触发
    * @en Callback when value changes
+   * @version `reason` in 2.27.0
    */
-  onChange?: (value: T[]) => void;
+  onChange?: (value: T[], reason: ValueChangeReason) => void;
   /**
    * @zh 失去焦点时候触发
    * @en Callback when input is blurred
@@ -151,11 +213,11 @@ export interface InputTagProps<T = any> {
    * @version 2.20.0
    */
   onClear?: () => void;
-  tagClassName?: string;
-  disableInput?: boolean;
   /**
    * @zh 单击组件的回调。
    * @en Callback when the component is clicked
    */
   onClick?: (e) => void;
+  tagClassName?: string;
+  disableInput?: boolean;
 }

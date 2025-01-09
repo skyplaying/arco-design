@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { fireEvent, render } from '../../../tests/util';
 import mountTest from '../../../tests/mountTest';
 import componentConfigTest from '../../../tests/componentConfigTest';
 import Collapse from '../collapse';
@@ -47,7 +47,7 @@ afterAll(() => {
 
 describe('Collapse', () => {
   it('collapse render basic', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Collapse defaultActiveKey="1">
         {data.map((item, index) => (
           <CollapseItem key={index} header={item.header} name={index.toString()}>
@@ -58,16 +58,13 @@ describe('Collapse', () => {
     );
 
     expect(wrapper.find(`${prefixCls}-item`)).toHaveLength(data.length);
-    expect(
-      wrapper
-        .find(`${prefixCls}-item`)
-        .at(1)
-        .hasClass(`arco-collapse-item-active`)
-    ).toBe(true);
+    expect(wrapper.find(`${prefixCls}-item`).item(1).className).toContain(
+      'arco-collapse-item-active'
+    );
   });
 
   it('collapse expandIcon', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Collapse>
         <CollapseItem key="1" header={data[0].header} expandIcon={<IconPlus />} name="2">
           {data[0].content}
@@ -80,30 +77,21 @@ describe('Collapse', () => {
 
     expect(wrapper.find(`${prefixCls}-item`)).toHaveLength(2);
     expect(
-      wrapper
-        .find(`${prefixCls}-item`)
-        .at(0)
-        .find('IconPlus')
+      wrapper.find(`${prefixCls}-item`).item(0).querySelectorAll('.arco-icon-plus')
     ).toHaveLength(1);
     expect(
-      wrapper
-        .find(`${prefixCls}-item`)
-        .at(1)
-        .find('IconPlus')
+      wrapper.find(`${prefixCls}-item`).item(1).querySelectorAll('.arco-icon-plus')
     ).toHaveLength(0);
-    expect(
-      wrapper
-        .find(`${prefixCls}-item`)
-        .at(1)
-        .hasClass('arco-collapse-item-no-icon')
-    ).toBe(true);
+    expect(wrapper.find(`${prefixCls}-item`).item(1).className).toContain(
+      'arco-collapse-item-no-icon'
+    );
   });
 
   it('could be expand and collapse', () => {
     jest.useFakeTimers();
     const changeCollapse = jest.fn();
     const activeKeys = ['2'];
-    const wrapper = mount(
+    const wrapper = render(
       <Collapse defaultActiveKey={activeKeys} onChange={changeCollapse}>
         {data.map((item, index) => (
           <CollapseItem key={index} header={item.header} name={index.toString()}>
@@ -114,40 +102,84 @@ describe('Collapse', () => {
     );
 
     expect(wrapper.find(`${prefixCls}-item-active`)).toHaveLength(activeKeys.length);
-    wrapper
-      .find(`${prefixCls}-item-active`)
-      .first()
-      .find(`${prefixCls}-item-header`)
-      .simulate('click');
+    fireEvent.click(
+      wrapper.find(`${prefixCls}-item-active`).item(0).querySelector(`${prefixCls}-item-header`)!
+    );
     expect(wrapper.find(`${prefixCls}-item-active`)).toHaveLength(0);
     expect(changeCollapse.mock.calls).toHaveLength(1);
 
     for (let i = 0; i < data.length; i++) {
-      wrapper
-        .find(`${prefixCls}-item-header`)
-        .at(i)
-        .simulate('click');
+      fireEvent.click(wrapper.find(`${prefixCls}-item-header`).item(i));
     }
 
     expect(wrapper.find(`${prefixCls}-item-active`)).toHaveLength(data.length);
   });
 
-  it('render correctly when content empty', () => {
-    const wrapper = mount(
-      <Collapse>
-        {[].map((item, index) => (
+  it('onChange should be called only once on expanded or collapsed', () => {
+    jest.useFakeTimers();
+    const changeCollapse = jest.fn();
+    const activeKeys = ['2'];
+    const wrapper = render(
+      <Collapse defaultActiveKey={activeKeys} onChange={changeCollapse}>
+        {data.map((item, index) => (
           <CollapseItem key={index} header={item.header} name={index.toString()}>
             {item.content}
           </CollapseItem>
         ))}
       </Collapse>
     );
-    expect(wrapper.find('Collapse')).toHaveLength(1);
-    expect(wrapper.find('CollapseItem')).toHaveLength(0);
+
+    // Click icon -> one onChange call
+    fireEvent.click(
+      wrapper.find(`${prefixCls}-item`).item(0).querySelector(`${prefixCls}-item-header-icon`)!
+    );
+    expect(changeCollapse.mock.calls).toHaveLength(1);
+    // Click header -> another one onChange call
+    fireEvent.click(
+      wrapper.find(`${prefixCls}-item`).item(0).querySelector(`${prefixCls}-item-header-title`)!
+    );
+    expect(changeCollapse.mock.calls).toHaveLength(2);
+  });
+
+  it('onClick should propagate to parent nodes', () => {
+    jest.useFakeTimers();
+    const onClickHandler = jest.fn();
+    const activeKeys = ['2'];
+    const wrapper = render(
+      <div onClick={onClickHandler}>
+        <Collapse defaultActiveKey={activeKeys}>
+          {data.map((item, index) => (
+            <CollapseItem key={index} header={item.header} name={index.toString()}>
+              {item.content}
+            </CollapseItem>
+          ))}
+        </Collapse>
+      </div>
+    );
+
+    // Click icon -> one onChange call
+    fireEvent.click(
+      wrapper.find(`${prefixCls}-item`).item(0).querySelector(`${prefixCls}-item-header-icon`)!
+    );
+    expect(onClickHandler.mock.calls).toHaveLength(1);
+  });
+
+  it('render correctly when content empty', () => {
+    const wrapper = render(
+      <Collapse>
+        {([] as any).map((item, index) => (
+          <CollapseItem key={index} header={item.header} name={index.toString()}>
+            {item.content}
+          </CollapseItem>
+        ))}
+      </Collapse>
+    );
+    expect(wrapper.find('.arco-collapse')).toHaveLength(1);
+    expect(wrapper.find('.arco-collapse-item')).toHaveLength(0);
   });
 
   it('render self header correctly', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Collapse>
         {data.map((item, index) => (
           <CollapseItem
@@ -164,13 +196,13 @@ describe('Collapse', () => {
         ))}
       </Collapse>
     );
-    expect(wrapper.find('IconInfoCircle')).toHaveLength(data.length);
+    expect(wrapper.find('.arco-icon-info-circle')).toHaveLength(data.length);
   });
 
   it('expand and collapse correctly when accordion', () => {
     jest.useFakeTimers();
     let activeKey;
-    const wrapper = mount(
+    const wrapper = render(
       <Collapse
         accordion
         onChange={(_, keys) => {
@@ -186,10 +218,7 @@ describe('Collapse', () => {
     );
 
     for (let i = 0; i < data.length; i++) {
-      wrapper
-        .find(`${prefixCls}-item-header`)
-        .at(i)
-        .simulate('click');
+      fireEvent.click(wrapper.find(`${prefixCls}-item-header`).item(i));
     }
 
     expect(activeKey).toHaveLength(1);
@@ -203,7 +232,7 @@ describe('Collapse', () => {
       activeKey = keys;
     };
     const disabledIndex = 2;
-    const wrapper = mount(
+    const wrapper = render(
       <Collapse onChange={changeCollapse}>
         {data.map((item, index) => (
           <CollapseItem
@@ -218,24 +247,18 @@ describe('Collapse', () => {
       </Collapse>
     );
     for (let i = 0; i < data.length; i++) {
-      wrapper
-        .find(`${prefixCls}-item-header`)
-        .at(i)
-        .simulate('click');
+      fireEvent.click(wrapper.find(`${prefixCls}-item-header`).item(i));
     }
 
     expect(activeKey).toHaveLength(data.length - 1);
 
-    expect(
-      wrapper
-        .find(`${prefixCls}-item-header`)
-        .at(disabledIndex)
-        .hasClass(`arco-collapse-item-header-disabled`)
-    ).toBe(true);
+    expect(wrapper.find(`${prefixCls}-item-header`).item(disabledIndex).className).toContain(
+      'arco-collapse-item-header-disabled'
+    );
   });
 
   it('render extra correctly', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Collapse expandIconPosition="right" expandIcon={<IconPlus />}>
         {data.map((item, index) => (
           <CollapseItem
@@ -249,18 +272,15 @@ describe('Collapse', () => {
         ))}
       </Collapse>
     );
-    expect(wrapper.find('IconInfoCircle')).toHaveLength(data.length);
-    expect(wrapper.find('IconPlus')).toHaveLength(data.length);
-    expect(
-      wrapper
-        .find('.arco-collapse-item-header')
-        .at(0)
-        .hasClass('arco-collapse-item-header-right')
+    expect(wrapper.find('.arco-icon-info-circle')).toHaveLength(data.length);
+    expect(wrapper.find('.arco-icon-plus')).toHaveLength(data.length);
+    expect(wrapper.find('.arco-collapse-item-header').item(0).className).toContain(
+      'arco-collapse-item-header-right'
     );
   });
 
   it('render lazyload correctly', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Collapse lazyload defaultActiveKey={['0']}>
         {data.map((item, index) => (
           <CollapseItem
@@ -275,10 +295,25 @@ describe('Collapse', () => {
       </Collapse>
     );
     expect(wrapper.find('.arco-collapse-item-content')).toHaveLength(1);
-    wrapper
-      .find(`${prefixCls}-item-header`)
-      .at(1)
-      .simulate('click');
+    fireEvent.click(wrapper.find(`${prefixCls}-item-header`).item(1));
     expect(wrapper.find('.arco-collapse-item-content')).toHaveLength(2);
+  });
+
+  it('expand and collapse correctly with trigger region', () => {
+    let activeKey = [];
+    const wrapper = render(
+      <Collapse triggerRegion="header" onChange={(_, keys) => (activeKey = keys)}>
+        <CollapseItem header="header" name="name">
+          Hello world
+        </CollapseItem>
+      </Collapse>
+    );
+
+    fireEvent.click(wrapper.querySelector(`${prefixCls}-item-header`));
+    expect(activeKey).toHaveLength(0);
+    fireEvent.click(wrapper.querySelector(`${prefixCls}-item-header-title`));
+    expect(activeKey).toHaveLength(1);
+    fireEvent.click(wrapper.querySelector('.arco-icon-hover'));
+    expect(activeKey).toHaveLength(0);
   });
 });

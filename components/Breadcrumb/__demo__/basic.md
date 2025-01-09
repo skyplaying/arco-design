@@ -1,6 +1,6 @@
 ---
 order: 0
-title: 
+title:
   zh-CN: 基础用法
   en-US: Basic
 ---
@@ -15,17 +15,21 @@ Basic usage. Two separation options are available: separated with icon and separ
 
 ```js
 import { Breadcrumb } from '@arco-design/web-react';
-
 const BreadcrumbItem = Breadcrumb.Item;
 
-ReactDOM.render(
-  <div>
-    <Breadcrumb>
-      <BreadcrumbItem>Home</BreadcrumbItem>
-      <BreadcrumbItem><a href="#">Channel</a></BreadcrumbItem>
-      <BreadcrumbItem>News</BreadcrumbItem>
-    </Breadcrumb>
-  </div>,
-  CONTAINER
-);
+const App = () => {
+  return (
+    <div>
+      <Breadcrumb>
+        <BreadcrumbItem>Home</BreadcrumbItem>
+        <BreadcrumbItem href="#">
+          Channel
+        </BreadcrumbItem>
+        <BreadcrumbItem>News</BreadcrumbItem>
+      </Breadcrumb>
+    </div>
+  );
+};
+
+export default App;
 ```

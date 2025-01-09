@@ -2,15 +2,15 @@
  * 该组件用来切换tree 展开收起时的动画
  */
 
-import React, { PropsWithChildren, useMemo, useContext, useEffect } from 'react';
+import React, { PropsWithChildren, useMemo, useContext, useEffect, useRef } from 'react';
 
-import { CSSTransition } from 'react-transition-group';
 import { TreeContext } from './context';
 import { NodeProps } from './interface';
 import VirtualList from '../_class/VirtualList';
 import { ConfigContext } from '../ConfigProvider';
 import Node from './node';
 import { isNumber } from '../_util/is';
+import ArcoCSSTransition from '../_util/CSSTransition';
 
 function getKey(option) {
   return option.key || option._key;
@@ -22,6 +22,8 @@ const TreeAnimation = (props: PropsWithChildren<NodeProps>) => {
   const prefixCls = getPrefixCls('tree-node');
   const { expandedKeys, currentExpandKeys } = treeContext.getTreeState();
   const expanded = props.expanded;
+  const propsChildrenDataRef = useRef(props.childrenData);
+  propsChildrenDataRef.current = props.childrenData;
 
   useEffect(() => {
     return () => {
@@ -41,9 +43,9 @@ const TreeAnimation = (props: PropsWithChildren<NodeProps>) => {
       });
     };
 
-    loop(props.childrenData || []);
+    loop(propsChildrenDataRef.current || []);
     return result;
-  }, [props.childrenData]);
+  }, [expanded]);
 
   const filtedData = useMemo(() => {
     const result = [];
@@ -72,20 +74,28 @@ const TreeAnimation = (props: PropsWithChildren<NodeProps>) => {
         if (isShow) {
           result.push({
             ...itemProps,
-            ...treeContext.getNodeProps(itemProps, expandedKeysSet),
+
             key: data.key,
           });
         }
       });
     }
-    return result;
-  }, [childrenPropsList, props._key, expanded]);
+    return treeContext.getNodeProps(result);
+  }, [childrenPropsList, props._key, expanded, expandedKeys]);
 
   let realHeight = treeContext.virtualListProps?.height;
   realHeight = isNumber(realHeight) ? realHeight : 0;
 
+  useEffect(() => {
+    // node set loadingMore but has no child nodes.
+    // Animation will not be triggered and needs to be removed manually
+    if (currentExpandKeys.indexOf(props._key) > -1 && filtedData.length === 0) {
+      treeContext.onExpandEnd(props._key);
+    }
+  }, [filtedData, currentExpandKeys]);
+
   return (
-    <CSSTransition
+    <ArcoCSSTransition
       in={currentExpandKeys.indexOf(props._key) > -1 && filtedData.length > 0}
       unmountOnExit
       classNames="tree-slide-expand"
@@ -94,19 +104,22 @@ const TreeAnimation = (props: PropsWithChildren<NodeProps>) => {
         exit: 0,
       }}
       onEnter={(e) => {
+        if (!e) return;
         const scrollHeight = e.scrollHeight;
         e.style.height = expanded ? 0 : `${Math.min(realHeight || scrollHeight, e.scrollHeight)}px`;
       }}
       onEntering={(e) => {
+        if (!e) return;
         const scrollHeight = e.scrollHeight;
-
         e.style.height = expanded ? `${Math.min(realHeight || scrollHeight, scrollHeight)}px` : 0;
       }}
       onEntered={(e) => {
+        if (!e) return;
         e.style.height = props.expanded ? '' : 0;
         treeContext.onExpandEnd(props._key);
       }}
       onExit={(e) => {
+        if (!e) return;
         e.style.display = 'none';
       }}
     >
@@ -116,13 +129,14 @@ const TreeAnimation = (props: PropsWithChildren<NodeProps>) => {
         isStaticItemHeight={false}
         {...treeContext.virtualListProps}
         data={filtedData}
+        aria-hidden
         style={{ overflow: 'hidden' }}
       >
         {(child) => {
           return <Node {...child} />;
         }}
       </VirtualList>
-    </CSSTransition>
+    </ArcoCSSTransition>
   );
 };
 

@@ -17,7 +17,7 @@ import useMergeValue from '../_util/hooks/useMergeValue';
 import InputComponent from './input-element';
 import Group from './group';
 import { contains } from '../_util/dom';
-import useMergeProps from '../_util/hooks/useMergeProps';
+import useMergeProps, { MergePropsOptions } from '../_util/hooks/useMergeProps';
 
 const keepFocus = (e) => {
   e.target.tagName !== 'INPUT' && e.preventDefault();
@@ -46,11 +46,11 @@ export function formatValue(value, maxLength) {
 }
 
 function Input(baseProps: InputProps, ref) {
-  const { getPrefixCls, size: ctxSize, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, size: ctxSize, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<InputProps>(baseProps, {}, componentConfig?.Input);
   const {
     className,
-    style,
+    style: propsStyle,
     addBefore,
     addAfter,
     suffix,
@@ -62,13 +62,26 @@ function Input(baseProps: InputProps, ref) {
     maxLength,
     showWordLimit,
     allowClear,
+    autoWidth: propsAutoWidth,
   } = props;
+
+  const autoWidth = propsAutoWidth
+    ? { minWidth: 0, maxWidth: '100%', ...(isObject(propsAutoWidth) ? propsAutoWidth : {}) }
+    : null;
+
+  const style = {
+    minWidth: autoWidth?.minWidth,
+    maxWidth: autoWidth?.maxWidth,
+    width: autoWidth && 'auto',
+    ...propsStyle,
+  };
 
   const trueMaxLength = isObject(maxLength) ? maxLength.length : maxLength;
   const mergedMaxLength = isObject(maxLength) && maxLength.errorOnly ? undefined : trueMaxLength;
 
   const [focus, setFocus] = useState(false);
   const inputRef = useRef<RefInputType>();
+  const rootNodeRef = useRef<HTMLDivElement>();
   const inputWrapperRef = useRef();
   const [value, setValue] = useMergeValue('', {
     defaultValue:
@@ -76,7 +89,16 @@ function Input(baseProps: InputProps, ref) {
     value: 'value' in props ? formatValue(props.value, mergedMaxLength) : undefined,
   });
 
-  useImperativeHandle(ref, () => inputRef.current, []);
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus: inputRef.current?.focus,
+      blur: inputRef.current?.blur,
+      dom: inputRef.current?.dom, // 保持之前逻辑
+      getRootDOMNode: () => rootNodeRef.current || inputRef.current?.dom,
+    }),
+    []
+  );
 
   const onChange = (value, e) => {
     if (!('value' in props)) {
@@ -99,13 +121,14 @@ function Input(baseProps: InputProps, ref) {
   }, [valueLength, trueMaxLength, mergedMaxLength]);
 
   if (trueMaxLength && showWordLimit) {
+    const [leftWord, rightWord] = rtl ? [trueMaxLength, valueLength] : [valueLength, trueMaxLength];
     suffixElement = (
       <span
         className={cs(`${prefixCls}-word-limit`, {
           [`${prefixCls}-word-limit-error`]: lengthError,
         })}
       >
-        {valueLength}/{trueMaxLength}
+        {leftWord}/{rightWord}
       </span>
     );
   }
@@ -117,15 +140,20 @@ function Input(baseProps: InputProps, ref) {
       [`${prefixCls}-custom-height`]: isCustomHeight,
       [`${prefixCls}-has-suffix`]: suffixElement,
       [`${prefixCls}-group-wrapper-disabled`]: disabled,
+      [`${prefixCls}-group-wrapper-rtl`]: rtl,
+      [`${prefixCls}-group-wrapper-autowidth`]: autoWidth,
     },
     className
   );
-
+  const status = props.status || (props.error || lengthError ? 'error' : undefined);
   const needWrapper = addBefore || addAfter || suffixElement || prefix;
   const inputElement = (
     <InputComponent
       ref={inputRef}
       {...props}
+      autoFitWidth={!!autoWidth}
+      style={style}
+      status={status}
       onFocus={(e) => {
         setFocus(true);
         props.onFocus && props.onFocus(e);
@@ -134,25 +162,30 @@ function Input(baseProps: InputProps, ref) {
         setFocus(false);
         props.onBlur && props.onBlur(e);
       }}
+      onChange={onChange}
       prefixCls={prefixCls}
       value={value}
-      onValueChange={onChange}
       hasParent={!!needWrapper || allowClear}
       size={size}
     />
   );
 
   const innerWrapperClassnames = cs(`${prefixCls}-inner-wrapper`, {
-    [`${prefixCls}-inner-wrapper-error`]: props.error || lengthError,
+    [`${prefixCls}-inner-wrapper-${status}`]: status,
     [`${prefixCls}-inner-wrapper-disabled`]: disabled,
     [`${prefixCls}-inner-wrapper-focus`]: focus,
     [`${prefixCls}-inner-wrapper-has-prefix`]: prefix,
     [`${prefixCls}-inner-wrapper-${size}`]: size,
     [`${prefixCls}-clear-wrapper`]: allowClear,
+    [`${prefixCls}-inner-wrapper-rtl`]: rtl,
   });
 
   return needWrapper ? (
-    <div className={classnames} style={{ ...style, ...(isCustomHeight ? { height } : {}) }}>
+    <div
+      ref={rootNodeRef}
+      className={classnames}
+      style={{ ...style, ...(isCustomHeight ? { height } : {}) }}
+    >
       <span className={`${prefixCls}-group`}>
         {inputAddon(`${prefixCls}-group-addbefore`, addBefore, beforeStyle)}
         <span
@@ -184,6 +217,7 @@ function Input(baseProps: InputProps, ref) {
     </div>
   ) : allowClear ? (
     <span
+      ref={rootNodeRef}
       className={cs(className, innerWrapperClassnames)}
       style={{ ...style, ...(isCustomHeight ? { height } : {}) }}
       onMouseDown={keepFocus}
@@ -198,16 +232,16 @@ function Input(baseProps: InputProps, ref) {
   );
 }
 
-type InputRefType = ForwardRefExoticComponent<InputProps & React.RefAttributes<RefInputType>> & {
+type InputRefType = ForwardRefExoticComponent<
+  InputProps & React.RefAttributes<RefInputType> & MergePropsOptions
+> & {
   Search: typeof Search;
   TextArea: typeof TextArea;
   Password: typeof Password;
   Group: typeof Group;
 };
 
-const InputElement: InputRefType = React.forwardRef<RefInputType, InputProps>(
-  Input
-) as InputRefType;
+const InputElement = React.forwardRef(Input) as InputRefType;
 
 InputElement.displayName = 'Input';
 

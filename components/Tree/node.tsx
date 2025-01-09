@@ -123,7 +123,13 @@ function TreeNode(props: PropsWithChildren<NodeProps>, ref) {
 
     if (icon) {
       icon = (
-        <span className={`${prefixCls}-switcher-icon`} onClick={switchExpandStatus}>
+        <span
+          className={`${prefixCls}-switcher-icon`}
+          aria-label={expanded ? 'fold button' : 'expand button'}
+          role="button"
+          tabIndex={0}
+          onClick={switchExpandStatus}
+        >
           {icon}
         </span>
       );
@@ -154,10 +160,29 @@ function TreeNode(props: PropsWithChildren<NodeProps>, ref) {
     [treeContext.onNodeDragOver]
   );
 
+  const handleCheck = useCallback(
+    (checked, e) => {
+      const { disableCheckbox, disabled } = props;
+      if (disableCheckbox || disabled) {
+        return;
+      }
+      treeContext.onCheck && treeContext.onCheck(checked, _key, e);
+    },
+    [props.disabled, props.disableCheckbox]
+  );
+
   return (
     <>
-      <div style={props.style} className={classNames} ref={ref}>
-        <span className={`${prefixCls}-indent`}>
+      <div
+        style={props.style}
+        className={classNames}
+        ref={ref}
+        role="treeitem"
+        aria-disabled={disabled}
+        aria-expanded={expanded}
+        aria-level={props._level}
+      >
+        <span className={`${prefixCls}-indent`} aria-hidden>
           {[...Array(props._level)].map((_, i) => (
             <span
               className={cs(`${prefixCls}-indent-block`, {
@@ -180,16 +205,11 @@ function TreeNode(props: PropsWithChildren<NodeProps>, ref) {
             value={_key}
             indeterminate={props.indeterminated}
             checked={props.checked}
-            onChange={(checked, e) => {
-              const { disableCheckbox, disabled } = props;
-              if (disableCheckbox || disabled) {
-                return;
-              }
-              treeContext.onCheck && treeContext.onCheck(checked, _key, e);
-            }}
+            onChange={handleCheck}
           />
         ) : null}
         <span
+          aria-grabbed={state.isDragging}
           ref={nodeTitleRef}
           className={cs(`${prefixCls}-title`, {
             [`${prefixCls}-title-draggable`]: draggable,
@@ -206,8 +226,19 @@ function TreeNode(props: PropsWithChildren<NodeProps>, ref) {
             [`${prefixCls}-title-block`]: props.blockNode,
           })}
           onClick={(e) => {
-            const { onSelect } = treeContext;
-            !props.disabled && selectable && onSelect && onSelect(_key, e);
+            const { onSelect, actionOnClick } = treeContext;
+            if (!props.disabled) {
+              const actions = [].concat(actionOnClick);
+              if (selectable && actions.indexOf('select') > -1) {
+                onSelect && onSelect(_key, e);
+              }
+              if (actions.indexOf('expand') > -1) {
+                switchExpandStatus();
+              }
+              if (checkable && actions.indexOf('check') > -1) {
+                handleCheck(!props.checked, e);
+              }
+            }
           }}
           draggable={draggable}
           onDrop={(e) => {
@@ -228,7 +259,6 @@ function TreeNode(props: PropsWithChildren<NodeProps>, ref) {
             // 当前节点正在被拖拽
             setState({ ...state, isDragging: true });
 
-            treeContext.onNodeDragStart && treeContext.onNodeDragStart(e, props);
             try {
               // ie throw error
               // firefox-need-it
@@ -236,6 +266,8 @@ function TreeNode(props: PropsWithChildren<NodeProps>, ref) {
             } catch (error) {
               // empty
             }
+
+            treeContext.onNodeDragStart && treeContext.onNodeDragStart(e, props);
           }}
           onDragEnd={(e) => {
             if (!draggable) return;
@@ -271,7 +303,7 @@ function TreeNode(props: PropsWithChildren<NodeProps>, ref) {
         </span>
         {isFunction(treeContext.renderExtra) && treeContext.renderExtra(props)}
       </div>
-      <AnimationNode {...props} />
+      {treeContext.animation && <AnimationNode {...props} />}
     </>
   );
 }

@@ -7,14 +7,21 @@ import React, {
   useRef,
 } from 'react';
 import scrollIntoView, { Options as ScrollIntoViewOptions } from 'scroll-into-view-if-needed';
+import merge from 'lodash/merge';
 import cs from '../_util/classNames';
 import useForm from './useForm';
 import { FormProps, FormInstance, FieldError, KeyType } from './interface';
 import ConfigProvider, { ConfigContext } from '../ConfigProvider';
-import { FormContext as RawFormContext, FormContextType as RawFormContextType } from './context';
+import {
+  FormContext as RawFormContext,
+  FormContextType as RawFormContextType,
+  FormProviderContext,
+} from './context';
 import { isObject } from '../_util/is';
 import omit from '../_util/omit';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import useCreate from '../_util/hooks/useCreate';
+import { ID_SUFFIX } from './utils';
 
 function getFormElementId<FieldKey extends KeyType = string>(
   prefix: string | undefined,
@@ -31,6 +38,7 @@ const defaultProps = {
   wrapperCol: { span: 19, offset: 0 },
   requiredSymbol: true,
   wrapper: 'form' as FormProps['wrapper'],
+  validateTrigger: 'onChange',
 };
 
 const Form = <
@@ -42,9 +50,9 @@ const Form = <
   ref: React.Ref<FormInstance<FormData, FieldValue, FieldKey>>
 ) => {
   const ctx = useContext(ConfigContext);
+  const formProviderCtx = useContext(FormProviderContext);
   const wrapperRef = useRef<HTMLElement>(null);
   const [formInstance] = useForm<FormData, FieldValue, FieldKey>(baseProps.form);
-  const isMount = useRef<boolean>();
 
   const props = useMergeProps<FormProps>(baseProps, defaultProps, ctx.componentConfig?.Form);
 
@@ -59,18 +67,27 @@ const Form = <
     disabled,
     colon,
     className,
+    validateTrigger,
     prefixCls: formPrefixCls,
+    validateMessages,
     ...rest
   } = props;
   const prefixCls = formPrefixCls || ctx.getPrefixCls('form');
+  const rtl = ctx.rtl;
   const size = 'size' in props ? props.size : ctx.size;
   const innerMethods = formInstance.getInnerMethods(true);
-  if (!isMount.current) {
+
+  useCreate(() => {
     innerMethods.innerSetInitialValues(props.initialValues);
-  }
+  });
+
   useEffect(() => {
-    isMount.current = true;
-  }, []);
+    let unregister;
+    if (formProviderCtx.register) {
+      unregister = formProviderCtx.register(props.id, formInstance);
+    }
+    return unregister;
+  }, [props.id, formInstance]);
 
   useImperativeHandle(ref, () => {
     return formInstance;
@@ -83,7 +100,11 @@ const Form = <
     if (!node) {
       return;
     }
-    const fieldNode = node.querySelector(`#${getFormElementId(id, field as string)}`);
+    let fieldNode = node.querySelector(`#${getFormElementId(id, field as string)}`);
+    if (!fieldNode) {
+      // 如果设置了nostyle， fieldNode不存在，尝试直接查询表单控件
+      fieldNode = node.querySelector(`#${getFormElementId(id, field as string)}${ID_SUFFIX}`);
+    }
     fieldNode &&
       scrollIntoView(fieldNode, {
         behavior: 'smooth',
@@ -94,7 +115,10 @@ const Form = <
   };
 
   innerMethods.innerSetCallbacks({
-    onValuesChange: props.onValuesChange,
+    onValuesChange: (value, values) => {
+      props.onValuesChange && props.onValuesChange(value, values);
+      formProviderCtx.onFormValuesChange && formProviderCtx.onFormValuesChange(props.id, value);
+    },
     onChange: props.onChange,
     onValidateFail: (errors: { [key in FieldKey]: FieldError<FieldValue> }) => {
       if (props.scrollToFirstError) {
@@ -103,7 +127,11 @@ const Form = <
       }
     },
     onSubmitFailed: props.onSubmitFailed,
-    onSubmit: props.onSubmit,
+    onSubmit: (values) => {
+      const returnValue = props.onSubmit && props.onSubmit(values);
+      formProviderCtx.onFormSubmit && formProviderCtx.onFormSubmit(props.id, values);
+      return returnValue;
+    },
   });
 
   const contextProps = {
@@ -116,10 +144,12 @@ const Form = <
     layout,
     store: formInstance,
     prefixCls,
+    validateTrigger,
+    validateMessages: merge({}, ctx.locale.Form?.validateMessages, validateMessages),
     getFormElementId: (field: FieldKey) => getFormElementId(id, field),
   };
 
-  const FormContext = (RawFormContext as unknown) as RawFormContextType<
+  const FormContext = RawFormContext as unknown as RawFormContextType<
     FormData,
     FieldValue,
     FieldKey
@@ -146,6 +176,7 @@ const Form = <
             prefixCls,
             `${prefixCls}-${layout}`,
             `${prefixCls}-size-${size}`,
+            { [`${prefixCls}-rtl`]: rtl },
             className
           )}
           style={props.style}

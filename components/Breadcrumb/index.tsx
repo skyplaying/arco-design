@@ -7,6 +7,7 @@ import IconObliqueLine from '../../icon/react-icon/IconObliqueLine';
 import omit from '../_util/omit';
 import { RouteProps, BreadcrumbProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import { isEmptyReactNode } from '../_util/is';
 
 const defaultItemRender = (route: RouteProps, routes: RouteProps[], paths: string[]): ReactNode => {
   if (routes.indexOf(route) === routes.length - 1) {
@@ -20,7 +21,7 @@ const defaultProps: BreadcrumbProps = {
 };
 
 function Breadcrumb(baseProps: PropsWithChildren<BreadcrumbProps>, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<PropsWithChildren<BreadcrumbProps>>(
     baseProps,
     defaultProps,
@@ -31,8 +32,16 @@ function Breadcrumb(baseProps: PropsWithChildren<BreadcrumbProps>, ref) {
   const prefixCls = getPrefixCls('breadcrumb');
   const itemRender = 'itemRender' in props ? props.itemRender : defaultItemRender;
 
-  const Ellipses = <span className={`${prefixCls}-item-ellipses`}>...</span>;
-  const Separator = <span className={`${prefixCls}-item-separator`}>{separator}</span>;
+  const Ellipses = (
+    <span aria-label="ellipses of breadcrumb items" className={`${prefixCls}-item-ellipses`}>
+      ...
+    </span>
+  );
+  const Separator = (
+    <span aria-hidden className={`${prefixCls}-item-separator`}>
+      {separator}
+    </span>
+  );
 
   const getValidChild = (itemToRender: ReactNode, delta: number, index: number) => {
     const SeparatorWithKey = React.cloneElement(Separator, { key: `${index}_separator` });
@@ -83,26 +92,30 @@ function Breadcrumb(baseProps: PropsWithChildren<BreadcrumbProps>, ref) {
   };
 
   const getItemsByChildren = () => {
-    const delta = React.Children.toArray(children).length - maxCount;
-    return React.Children.map(children, (child: React.ReactElement, index) => {
-      return (
-        child &&
-        getValidChild(
-          React.cloneElement(child, {
-            prefixCls,
-          }),
-          delta,
-          index
-        )
+    const _children = [];
+    React.Children.forEach(children, (child) => {
+      if (!isEmptyReactNode(child)) {
+        _children.push(child);
+      }
+    });
+    const delta = _children.length - maxCount;
+    return React.Children.map(_children, (child: React.ReactElement, index) => {
+      return getValidChild(
+        React.cloneElement(child, {
+          prefixCls,
+        }),
+        delta,
+        index
       );
     });
   };
 
   return (
     <div
+      role="list"
       ref={ref}
       style={style}
-      className={cs(prefixCls, className)}
+      className={cs(prefixCls, { [`${prefixCls}-rtl`]: rtl }, className)}
       {...omit(rest, ['itemRender'])}
     >
       {routes && routes.length ? getItemsByRoute() : getItemsByChildren()}

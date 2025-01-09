@@ -1,9 +1,16 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, InputHTMLAttributes, ReactNode } from 'react';
+
+// 造成输入框值改变的原因：用户输入、增加、减少、超出范围值修正
+export type InputNumberValueChangeReason = 'manual' | 'increase' | 'decrease' | 'outOfRange';
 
 /**
  * @title InputNumber
  */
-export interface InputNumberProps {
+export interface InputNumberProps
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    'prefix' | 'className' | 'size' | 'onChange' | 'onKeyDown'
+  > {
   style?: CSSProperties;
   className?: string | string[];
   /**
@@ -46,10 +53,16 @@ export interface InputNumberProps {
    */
   readOnly?: boolean;
   /**
+   * @zh 严格模式下，`onChange` 回调将返回字符串类型
+   * @en `onChange` will return a string in strict mode
+   * @version 2.42.0
+   */
+  strictMode?: boolean;
+  /**
    * @zh 初始值
    * @en To set default value
    */
-  defaultValue?: number;
+  defaultValue?: number | string;
   /**
    * @zh 当前值
    * @en To set value
@@ -84,8 +97,9 @@ export interface InputNumberProps {
   /**
    * @zh 定义输入框展示值
    * @en Specifies the format of the value presented
+   * @version Param `info` in `2.41.0`
    */
-  formatter?: (value: number | string) => string;
+  formatter?: (value: number | string, info: { userTyping: boolean; input: string }) => string;
   /**
    * @zh 从 formatter 转换为数字，和 formatter 搭配使用。
    * @en Specifies the value extracted from formatter
@@ -95,8 +109,9 @@ export interface InputNumberProps {
   /**
    * @zh 变化回调
    * @en Callback when the value changes
+   * @version `reason` in 2.61.0
    */
-  onChange?: (value: number) => void;
+  onChange?: (value: number, reason?: InputNumberValueChangeReason) => void;
   /**
    * @zh 输入框聚焦事件的回调
    * @en Callback when the input is focused
@@ -127,5 +142,4 @@ export interface InputNumberProps {
     plus?: ReactNode;
     minus?: ReactNode;
   };
-  width?: number | string;
 }

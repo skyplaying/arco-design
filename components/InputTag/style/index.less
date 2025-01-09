@@ -1,17 +1,9 @@
 @import '../../style/mixin.less';
 @import './token.less';
+@import '../../_class/Draggable/style/index.less';
+@import './mixin.less';
 
 @input-tag-prefix-cls: ~'@{prefix}-input-tag';
-
-.input-tag-input-element-padding(@paddingLeft) {
-  .@{input-tag-prefix-cls}-has-placeholder {
-    input,
-    .@{input-tag-prefix-cls}-input-mirror {
-      box-sizing: border-box;
-      padding-left: @paddingLeft;
-    }
-  }
-}
 
 .@{input-tag-prefix-cls} {
   display: inline-block;
@@ -39,12 +31,21 @@
     overflow: hidden;
   }
 
+  &-prefix,
   &-suffix {
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
     min-width: 22px;
+  }
+
+  &-prefix {
+    padding-left: 8px;
+    padding-right: 4px;
+  }
+
+  &-suffix {
     padding-right: 8px;
   }
 
@@ -68,12 +69,20 @@
     }
   }
 
-  &:not(&-focus) &-clear-icon:hover::before {
-    background-color: @input-tag-color-icon-clear-bg_hover;
+  &:not(&-focus) {
+    .@{input-tag-prefix-cls}-clear-icon:hover::before {
+      background-color: @input-tag-color-icon-clear-bg_hover;
+    }
+
+    .@{prefix}-draggable-item {
+      cursor: move;
+    }
   }
 
   &-input {
-    width: 100%;
+    width: 4px;
+    // width might be overwrite by inline-style, max-width make text-ellipsis work
+    max-width: 100%;
     padding: 0;
     border: none;
     outline: none;
@@ -81,6 +90,18 @@
     font-size: inherit;
     cursor: inherit;
     color: inherit;
+    .text-ellipsis();
+
+    // input is the first child means that input-tag has an empty value
+    // we set width of input to 4px by default, and 100% when input-tag is empty to avoid wrap
+    // see https://github.com/arco-design/arco-design/pull/1863
+    &:first-child {
+      width: 100%;
+    }
+
+    .@{prefix}-tag + &[disabled] {
+      width: 0;
+    }
 
     &-mirror {
       position: absolute;
@@ -96,8 +117,14 @@
   }
 
   &-tag {
+    max-width: 100%;
     margin-right: @input-tag-tag-margin-right;
     font-size: @input-tag-tag-font-size;
+
+    &-ellipsis {
+      font-size: @input-tag-tag-font-size;
+      margin: 0 4px;
+    }
   }
 
   // 多状态下的颜色处理
@@ -131,14 +158,6 @@
       color: @input-tag-color-text_default;
       border-color: @input-tag-tag-color-border;
       background-color: @input-tag-tag-color-bg;
-      display: inline-flex;
-      align-items: center;
-
-      &-content {
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
     }
 
     .@{prefix}-icon-hover:hover::before {
@@ -168,6 +187,14 @@
   .status-color(default);
   .status-tag-color();
 
+  &-warning {
+    .status-color(warning);
+  }
+
+  &-error {
+    .status-color(error);
+  }
+
   &-disabled {
     .status-color(disabled);
 
@@ -178,12 +205,53 @@
     }
   }
 
-  &-error {
-    .status-color(error);
-  }
-
   &-readonly {
     cursor: default;
+  }
+
+  &-wrapper {
+    display: inline-flex;
+    align-items: stretch;
+    width: 100%;
+
+    .@{input-tag-prefix-cls} {
+      min-width: 0; // 避免 .arco-input-tag 宽度超出 .arco-input-tag-wrapper
+    }
+
+    .@{input-tag-prefix-cls}:not(.@{input-tag-prefix-cls}-focused) {
+      &:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      &:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+
+  &-addafter,
+  &-addbefore {
+    display: flex;
+    align-items: center;
+    padding: 0 @input-tag-addon-padding-horizontal;
+    color: @input-tag-color-addon-text;
+    background-color: @input-tag-color-addon-bg;
+    white-space: nowrap;
+    border: 1px solid @input-tag-color-addon-border_default;
+  }
+
+  &-addbefore {
+    border-right: @input-tag-border-addon-separator-width solid @input-tag-color-addon-border;
+    border-top-left-radius: @input-tag-border-radius;
+    border-bottom-left-radius: @input-tag-border-radius;
+  }
+
+  &-addafter {
+    border-left: @input-tag-border-addon-separator-width solid @input-tag-color-addon-border;
+    border-top-right-radius: @input-tag-border-radius;
+    border-bottom-right-radius: @input-tag-border-radius;
   }
 }
 
@@ -234,4 +302,63 @@
   .size(default);
   .size(small);
   .size(large);
+}
+
+.@{input-tag-prefix-cls}-rtl {
+  direction: rtl;
+  padding-right: @input-tag-padding-horizontal;
+  padding-left: @input-tag-padding-horizontal;
+
+  .@{input-tag-prefix-cls}-prefix {
+    padding-right: 8px;
+    padding-left: 4px;
+  }
+
+  .@{input-tag-prefix-cls}-suffix {
+    padding-right: 0;
+    padding-left: 8px;
+  }
+
+  .@{input-tag-prefix-cls}-tag {
+    margin-right: 0;
+    margin-left: @input-tag-tag-margin-right;
+  }
+
+  .@{input-tag-prefix-cls}-input {
+    &-mirror {
+      right: 0;
+      left: initial;
+    }
+  }
+
+  .size(@size) {
+    @ref-padding-horizontal_not_tag: ~'input-tag-size-@{size}-padding_no_tag';
+    @padding-horizontal_not_tag: @@ref-padding-horizontal_not_tag;
+
+    &.@{input-tag-prefix-cls}-size-@{size} {
+      &.@{input-tag-prefix-cls}-has-placeholder {
+        input,
+        .@{input-tag-prefix-cls}-input-mirror {
+          padding-right: @padding-horizontal_not_tag - @input-tag-padding-horizontal;
+        }
+      }
+    }
+  }
+
+  .size(mini);
+  .size(default);
+  .size(small);
+  .size(large);
+}
+
+.@{input-tag-prefix-cls}-wrapper-rtl {
+  .@{input-tag-prefix-cls}-addbefore {
+    border-right: unset;
+    border-left: @input-tag-border-addon-separator-width solid @input-tag-color-addon-border;
+  }
+
+  .@{input-tag-prefix-cls}-addafter {
+    border-left: unset;
+    border-right: @input-tag-border-addon-separator-width solid @input-tag-color-addon-border;
+  }
 }

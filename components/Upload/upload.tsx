@@ -9,39 +9,44 @@ import React, {
 import cs from '../_util/classNames';
 import UploadList from './list/index';
 import Uploader from './uploader';
-import { isFunction, isArray, isNumber } from '../_util/is';
+import { isFunction, isNumber } from '../_util/is';
 import { UploadProps, STATUS, UploadItem, UploadInstance } from './interface';
 import { ConfigContext } from '../ConfigProvider';
 import omit from '../_util/omit';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import warning from '../_util/warning';
 
-const processFile = function(fileList?: UploadItem[]): { [key: string]: UploadItem } {
-  const res = {};
-  if (!isArray(fileList)) {
-    return res;
-  }
-  fileList.forEach((file, index) => {
+const processFile = function (fileList?: UploadItem[]): UploadItem[] {
+  const files = [].concat(fileList || []).filter(Boolean);
+
+  return files.reduce((total, file, index) => {
     if (file.uid) {
-      res[file.uid] = {
+      const repeatUidIndex = files.findIndex((item) => file.uid === item.uid && file !== item);
+      warning(repeatUidIndex !== -1, '[Upload]: duplicate uid');
+      const item = {
         status: STATUS.success,
         percent: 100,
         ...file,
       };
+      if (repeatUidIndex === -1) {
+        total.push(item);
+      } else {
+        // TODO: remove splice logic.
+        // 这里是为了兼容以前 uid 出现重复时，会以最后传入的 file 为主的逻辑。p.s: Use bugs as feature
+        total.splice(repeatUidIndex, 1, item);
+      }
     } else {
+      warning(true, '[Upload]: uid is required');
       const uid = `${String(+new Date())}${index}`;
-      res[uid] = {
-        ...file,
+      total.push({
         uid,
         status: STATUS.success,
         percent: 100,
-      };
+        ...file,
+      });
     }
-  });
-  return res;
-};
-
-const getFileList = (uploadState): UploadItem[] => {
-  return Object.keys(uploadState).map((x) => uploadState[x]);
+    return total;
+  }, []);
 };
 
 export type UploadState = {
@@ -55,13 +60,14 @@ const defaultProps: UploadProps = {
   autoUpload: true,
   showUploadList: true,
   beforeUpload: () => true,
+  method: 'post',
 };
 
 const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<UploadProps>> = (
   baseProps: PropsWithChildren<UploadProps>,
   ref
 ) => {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<PropsWithChildren<UploadProps>>(
     baseProps,
     defaultProps,
@@ -70,28 +76,24 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
 
   const prefixCls = getPrefixCls('upload');
   const uploaderRef = useRef<Uploader>();
-  const uploadState = useRef<{ [key: string]: UploadItem }>({});
+  const inputWrapperRef = useRef<HTMLDivElement>();
 
-  const [innerUploadState, setInnerUploadState] = useState<{
-    [key: string]: UploadItem;
-  }>(
-    'fileList' in props
+  const [innerUploadState, setInnerUploadState] = useState<UploadItem[]>(() => {
+    return 'fileList' in props
       ? processFile(props.fileList)
       : 'defaultFileList' in props
       ? processFile(props.defaultFileList)
-      : {}
-  );
+      : [];
+  });
 
-  uploadState.current = 'fileList' in props ? processFile(props.fileList) : innerUploadState;
+  const mergeFileList = 'fileList' in props ? processFile(props.fileList) : innerUploadState;
 
-  const deleteUpload = (file: UploadItem) => {
-    const obj = { ...uploadState.current };
-    delete obj[file.uid];
-
+  const tryUpdateUploadList = (fileList, file) => {
     if (!('fileList' in props)) {
-      setInnerUploadState(obj);
+      setInnerUploadState(fileList);
     }
-    props.onChange && props.onChange(getFileList(obj), file);
+
+    props.onChange?.(fileList, file);
   };
 
   const uploadFile = (file: UploadItem) => {
@@ -111,11 +113,14 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
   const removeFile = (file: UploadItem) => {
     if (file) {
       const { onRemove } = props;
-      Promise.resolve(isFunction(onRemove) ? onRemove(file) : onRemove)
+      Promise.resolve(isFunction(onRemove) ? onRemove(file, mergeFileList) : onRemove)
         .then((val) => {
           if (val !== false) {
             uploaderRef.current && uploaderRef.current.abort(file);
-            deleteUpload(file);
+            tryUpdateUploadList(
+              mergeFileList.filter((x) => x.uid !== file.uid),
+              file
+            );
           }
         })
         .catch((e) => {
@@ -138,7 +143,7 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
         if (file) {
           list = [file];
         } else {
-          list = getFileList(uploadState.current).filter((x) => x.status === STATUS.init);
+          list = mergeFileList.filter((x) => x.status === STATUS.init);
         }
         list.forEach((x) => {
           uploadFile(x);
@@ -152,11 +157,13 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
       reupload: (file: UploadItem) => {
         reuploadFile(file);
       },
+      getRootDOMNode: () => {
+        return inputWrapperRef.current;
+      },
     };
   });
 
   const {
-    disabled,
     listType,
     className,
     style,
@@ -164,14 +171,23 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
     showUploadList,
     renderUploadList,
     progressProps,
+    imagePreview,
     ...rest
   } = props;
 
-  const fileList = getFileList(uploadState.current);
+  // const fileList = getFileList(uploadState.current);
+  const limit = isNumber(props.limit)
+    ? { hideOnExceedLimit: true, maxCount: props.limit }
+    : { hideOnExceedLimit: true, ...props.limit };
+
+  const exceedLimit = limit.maxCount && limit.maxCount <= mergeFileList.length;
+  const disabledUploadDom =
+    'disabled' in props ? props.disabled : !limit.hideOnExceedLimit && exceedLimit;
 
   const uploadDom = (
     <div
       {...omit(rest, [
+        'disabled',
         'directory',
         'onReupload',
         'defaultFileList',
@@ -179,6 +195,7 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
         'autoUpload',
         'error',
         'action',
+        'method',
         'multiple',
         'name',
         'accept',
@@ -197,49 +214,45 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
         'onProgress',
         'onExceedLimit',
         'beforeUpload',
+        'onDrop',
+        'onDragOver',
+        'onDragLeave',
       ])}
       className={cs(
         prefixCls,
         {
           [`${prefixCls}-type-${listType}`]: listType,
           [`${prefixCls}-drag`]: props.drag,
-          [`${prefixCls}-disabled`]: props.disabled,
-          [`${prefixCls}-hide`]: isNumber(props.limit) && props.limit <= fileList.length,
+          [`${prefixCls}-disabled`]: disabledUploadDom,
+          [`${prefixCls}-hide`]: limit.hideOnExceedLimit && exceedLimit,
+          [`${prefixCls}-rtl`]: rtl,
         },
         className
       )}
       style={style}
+      ref={inputWrapperRef}
     >
       <Uploader
         ref={uploaderRef}
         {...props}
+        limit={limit.maxCount}
+        hide={limit.hideOnExceedLimit && exceedLimit}
+        disabled={disabledUploadDom}
         prefixCls={prefixCls}
-        fileList={fileList}
+        fileList={mergeFileList}
         onProgress={(file: UploadItem, e: ProgressEvent) => {
           if (file) {
             if (!('fileList' in props)) {
-              setInnerUploadState((v) => {
-                return {
-                  ...v,
-                  [file.uid]: file,
-                };
-              });
+              setInnerUploadState(
+                mergeFileList.map((item) => {
+                  return item.uid === file.uid ? file : item;
+                })
+              );
             }
             props.onProgress && props.onProgress(file, e);
           }
         }}
-        onFileStatusChange={(file: UploadItem) => {
-          if (!('fileList' in props)) {
-            setInnerUploadState((v) => {
-              return {
-                ...v,
-                [file.uid]: file,
-              };
-            });
-          }
-          props.onChange &&
-            props.onChange(getFileList({ ...uploadState.current, [file.uid]: file }), file);
-        }}
+        onFileStatusChange={tryUpdateUploadList}
       />
     </div>
   );
@@ -249,11 +262,12 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
       {listType !== 'picture-card' && uploadDom}
       {showUploadList && (
         <UploadList
+          imagePreview={imagePreview}
           progressProps={progressProps}
           showUploadList={showUploadList}
-          disabled={disabled}
+          disabled={props.disabled}
           listType={listType}
-          fileList={fileList}
+          fileList={mergeFileList}
           renderUploadItem={renderUploadItem}
           renderUploadList={renderUploadList}
           onUpload={uploadFile}
@@ -265,6 +279,9 @@ const Upload: React.ForwardRefRenderFunction<UploadInstance, PropsWithChildren<U
         />
       )}
       {listType === 'picture-card' && uploadDom}
+      {props.tip && listType === 'picture-card' && (
+        <div className={`${prefixCls}-trigger-tip`}>{props.tip}</div>
+      )}
     </>
   );
 };

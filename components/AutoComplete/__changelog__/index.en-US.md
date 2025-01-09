@@ -1,3 +1,27 @@
+## 2.64.1
+
+2024-10-28
+
+### 🐛 BugFix
+
+- 修复 `AutoComplete` 下拉框未完全对齐 bug。([#2804](https://github.com/arco-design/arco-design/pull/2804))
+
+## 2.31.0
+
+2022-03-25
+
+### 🆕 Feature
+
+- `AutoComplete` component's `triggerElement` property allows passing in a function to customize the component trigger node.([#686](https://github.com/arco-design/arco-design/pull/686))
+
+## 2.25.1
+
+2021-11-26
+
+### 💎 Optimization
+
+- `AutoComplete`'s property `onPressEnter` adds the `activeOption` parameter to distinguish whether there is an active option in the drop-down list when the Enter key is pressed.([#223](https://github.com/arco-design/arco-design/pull/223))
+
 ## 2.15.3
 
 2021-05-21

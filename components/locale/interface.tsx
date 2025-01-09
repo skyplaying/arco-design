@@ -9,10 +9,16 @@ type CalendarType = {
     short: Record<string, any>;
     long: Record<string, any>;
   };
+  formatYear?: string;
+  formatMonth?: string;
+  monthBeforeYear?: boolean;
+  monthFormat?: string;
+  yearFormat?: string;
 };
 
 export interface Locale {
   locale: string;
+  dayjsLocale?: string;
   Calendar: CalendarType;
   DatePicker: {
     Calendar: CalendarType;
@@ -30,4 +36,6 @@ export interface Locale {
   Typography: Record<string, any>;
   Transfer: Record<string, any>;
   ImagePreview: Record<string, any>;
+  Form?: Record<string, any>;
+  ColorPicker: Record<string, any>;
 }

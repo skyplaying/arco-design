@@ -1,3 +1,19 @@
+## 2.58.1
+
+2024-01-05
+
+### 🐛 问题修复
+
+- 修复 `Breadcrumb.Item` 存在条件渲染时，出现多余分隔符的 bug。([#2477](https://github.com/arco-design/arco-design/pull/2477))
+
+## 2.40.0
+
+2022-09-16
+
+### 🆕 功能升级
+
+- `Breadcrumb` 新增 `href`, `onClick` 和 `tagName` 属性([#1363](https://github.com/arco-design/arco-design/pull/1363))
+
 ## 2.12.0
 
 2021-03-19

@@ -4,29 +4,28 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  setup:
+  jest-test:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@master
 
-      - name: init package-lock.json
-        run: npm i --package-lock-only
-
       - name: install
-        run: npm ci
-
+        run: yarn run dependencies
       - name: setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
+          cache: 'yarn'
 
-      - name: report-compressed-size
-        uses: preactjs/compressed-size-action@v2
-        with:
-          repo-token: '${{ secrets.GITHUB_TOKEN }}'
-          build-script: 'prepublishOnly'
-          pattern: './{dist,es,lib,icon}/**/*.{js,css}'
+      - name: run-icon
+        run: yarn icon
+
+      - name: build:cjs
+        run: yarn build:cjs
+
+      - name: build:es
+        run: yarn build:es
 
       - name: mock-time
         uses: szenius/set-timezone@v1.0
@@ -35,11 +34,8 @@ jobs:
           timezoneMacos: 'Asia/Singapore'
           timezoneWindows: 'Singapore Standard Time'
 
-      - name: test
-        run: npm run test
-      # - name: report coverage
-      #   uses: mattallty/jest-github-action@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     test-command: echo "done"
+      - name: test:client
+        run: yarn test:client
+
+      - name: test:node
+        run: yarn test:node

@@ -28,7 +28,7 @@ function TreeList(props: TreeListProps, ref) {
   const treeRef = useRef<Tree>();
 
   const handleCheck = useCallback(
-    (keys, { checkedNodes }) => {
+    (keys, { checkedNodes, checked, node }) => {
       const newValue = keys.map((key) => {
         const item = checkedNodes.find((x) => x && x.props._key === key);
         if (!item) {
@@ -46,13 +46,16 @@ function TreeList(props: TreeListProps, ref) {
           disabled: item.props.disabled,
         };
       });
-      props.onChange(newValue);
+      props.onChange(newValue, {
+        checked,
+        trigger: node?.props,
+      });
     },
     [props.onChange, value]
   );
 
   const handleChange = useCallback(
-    (_, { node }) => {
+    (_, { node, selected }) => {
       let newValue = [
         {
           value: node.props._key,
@@ -71,7 +74,7 @@ function TreeList(props: TreeListProps, ref) {
           });
         }
       }
-      props.onChange(newValue);
+      props.onChange(newValue, { trigger: node?.props, selected });
     },
     [props.onChange, value, multiple]
   );
@@ -166,6 +169,9 @@ function TreeList(props: TreeListProps, ref) {
       loadMore={props.loadMore ? handleLoadMore : undefined}
       checkedStrategy={treeCheckedStrategy}
       checkStrictly={treeCheckStrictly}
+      onMouseDown={(e) => {
+        e.preventDefault();
+      }}
       {...extraProps}
       treeData={treeData}
       fieldNames={props.fieldNames}

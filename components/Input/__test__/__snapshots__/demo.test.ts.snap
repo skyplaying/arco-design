@@ -27,7 +27,7 @@ exports[`renders Input/demo/addon.md correctly 1`] = `
             >
               <input
                 class="arco-input arco-input-size-default"
-                placeholder="Please enter"
+                placeholder="Enter amount"
                 value=""
               />
             </span>
@@ -60,7 +60,7 @@ exports[`renders Input/demo/addon.md correctly 1`] = `
             >
               <input
                 class="arco-input arco-input-size-default"
-                placeholder="Please enter"
+                placeholder="Enter phone number"
                 value=""
               />
             </span>
@@ -96,7 +96,7 @@ exports[`renders Input/demo/addon.md correctly 1`] = `
             >
               <input
                 class="arco-input arco-input-size-default"
-                placeholder="Please enter"
+                placeholder="Enter host"
                 value=""
               />
             </span>
@@ -104,7 +104,11 @@ exports[`renders Input/demo/addon.md correctly 1`] = `
               class="arco-input-group-addafter"
             >
               <div
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-haspopup="listbox"
                 class="arco-select arco-select-single arco-select-show-search arco-select-size-default"
+                role="combobox"
                 style="width:80px"
                 tabindex="0"
               >
@@ -112,35 +116,41 @@ exports[`renders Input/demo/addon.md correctly 1`] = `
                   class="arco-select-view"
                   title=".com"
                 >
-                  <input
-                    class="arco-select-view-input arco-select-hidden"
-                    placeholder=".com"
-                    style="width:100%"
-                    value=".com"
-                  />
                   <span
-                    class="arco-select-view-value"
+                    class="arco-select-view-selector"
                   >
-                    .com
+                    <input
+                      aria-hidden="true"
+                      autocomplete="off"
+                      class="arco-select-view-input arco-select-hidden"
+                      placeholder=".com"
+                      style="width:100%"
+                      value=""
+                    />
+                    <span
+                      class="arco-select-view-value"
+                    >
+                      .com
+                    </span>
                   </span>
                   <div
+                    aria-hidden="true"
                     class="arco-select-suffix"
                   >
                     <div
-                      class="arco-select-expand-icon"
+                      class="arco-select-arrow-icon"
                     >
                       <svg
-                        class="arco-icon arco-icon-expand"
+                        aria-hidden="true"
+                        class="arco-icon arco-icon-down"
                         fill="none"
-                        height="1em"
+                        focusable="false"
                         stroke="currentColor"
                         stroke-width="4"
-                        style="transform:rotate(-45deg)"
                         viewBox="0 0 48 48"
-                        width="1em"
                       >
                         <path
-                          d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                          d="M39.6 17.443 24.043 33 8.487 17.443"
                         />
                       </svg>
                     </div>
@@ -172,7 +182,7 @@ exports[`renders Input/demo/addon.md correctly 1`] = `
             >
               <input
                 class="arco-input arco-input-size-default"
-                placeholder="Please enter"
+                placeholder="Enter host"
                 value=""
               />
             </span>
@@ -189,6 +199,132 @@ exports[`renders Input/demo/addon.md correctly 1`] = `
 </div>
 `;
 
+exports[`renders Input/demo/autoWidth.md correctly 1`] = `
+<div>
+  <div
+    class="arco-divider arco-divider-horizontal arco-divider-with-text arco-divider-with-text-center"
+    role="separator"
+  >
+    <span
+      class="arco-divider-text arco-divider-text-center"
+    >
+      <span
+        class="arco-typography"
+      >
+        <code>
+          {"minWidth":0,"maxWidth":500}
+        </code>
+      </span>
+    </span>
+  </div>
+  <input
+    class="arco-input arco-input-size-default arco-input-autowidth"
+    placeholder="Enter something"
+    style="min-width:0;max-width:500px;width:auto"
+    value=""
+  />
+  <span
+    class="arco-input-mirror"
+    style="min-width:0;max-width:500px;width:auto"
+  >
+    Enter something
+  </span>
+  <div
+    class="arco-divider arco-divider-horizontal arco-divider-with-text arco-divider-with-text-center"
+    role="separator"
+  >
+    <span
+      class="arco-divider-text arco-divider-text-center"
+    >
+      <span
+        class="arco-typography"
+      >
+        <code>
+          {"minWidth":300,"maxWidth":500}
+        </code>
+      </span>
+    </span>
+  </div>
+  <input
+    class="arco-input arco-input-size-default arco-input-autowidth"
+    placeholder="Enter something"
+    style="min-width:300px;max-width:500px;width:auto"
+    value=""
+  />
+  <span
+    class="arco-input-mirror"
+    style="min-width:300px;max-width:500px;width:auto"
+  >
+    Enter something
+  </span>
+  <br />
+  <br />
+  <div
+    class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-group-wrapper-autowidth"
+    style="min-width:300px;max-width:500px;width:auto"
+  >
+    <span
+      class="arco-input-group"
+    >
+      <span
+        class="arco-input-inner-wrapper arco-input-inner-wrapper-has-prefix arco-input-inner-wrapper-default"
+      >
+        <span
+          class="arco-input-group-prefix"
+        >
+          Prefix
+        </span>
+        <input
+          class="arco-input arco-input-size-default arco-input-autowidth"
+          placeholder="Enter something"
+          value=""
+        />
+        <span
+          class="arco-input-mirror"
+        >
+          Enter something
+        </span>
+      </span>
+    </span>
+  </div>
+  <br />
+  <br />
+  <div
+    class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-group-wrapper-autowidth"
+    style="min-width:300px;max-width:500px;width:auto"
+  >
+    <span
+      class="arco-input-group"
+    >
+      <span
+        class="arco-input-group-addbefore"
+      >
+        Before
+      </span>
+      <span
+        class="arco-input-inner-wrapper arco-input-inner-wrapper-has-prefix arco-input-inner-wrapper-default"
+      >
+        <span
+          class="arco-input-group-prefix"
+        >
+          Prefix
+        </span>
+        <input
+          class="arco-input arco-input-size-default arco-input-autowidth"
+          placeholder="Enter something"
+          value=""
+        />
+        <span
+          class="arco-input-mirror"
+        >
+          Enter something
+        </span>
+      </span>
+    </span>
+  </div>
+</div>
+`;
+
 exports[`renders Input/demo/basic.md correctly 1`] = `
 <span
   class="arco-input-inner-wrapper arco-input-inner-wrapper-default arco-input-clear-wrapper"
@@ -196,7 +332,7 @@ exports[`renders Input/demo/basic.md correctly 1`] = `
 >
   <input
     class="arco-input arco-input-size-default"
-    placeholder="Please Enter something"
+    placeholder="Enter something"
     value=""
   />
 </span>
@@ -214,7 +350,11 @@ exports[`renders Input/demo/group.md correctly 1`] = `
         class="arco-input-group arco-input-group-compact"
       >
         <div
+          aria-autocomplete="list"
+          aria-expanded="false"
+          aria-haspopup="listbox"
           class="arco-select arco-select-single arco-select-show-search arco-select-size-default"
+          role="combobox"
           style="width:25%"
           tabindex="0"
         >
@@ -222,35 +362,41 @@ exports[`renders Input/demo/group.md correctly 1`] = `
             class="arco-select-view"
             title="Beijing"
           >
-            <input
-              class="arco-select-view-input arco-select-hidden"
-              placeholder="Beijing"
-              style="width:100%"
-              value="Beijing"
-            />
             <span
-              class="arco-select-view-value"
+              class="arco-select-view-selector"
             >
-              Beijing
+              <input
+                aria-hidden="true"
+                autocomplete="off"
+                class="arco-select-view-input arco-select-hidden"
+                placeholder="Beijing"
+                style="width:100%"
+                value=""
+              />
+              <span
+                class="arco-select-view-value"
+              >
+                Beijing
+              </span>
             </span>
             <div
+              aria-hidden="true"
               class="arco-select-suffix"
             >
               <div
-                class="arco-select-expand-icon"
+                class="arco-select-arrow-icon"
               >
                 <svg
-                  class="arco-icon arco-icon-expand"
+                  aria-hidden="true"
+                  class="arco-icon arco-icon-down"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
-                  style="transform:rotate(-45deg)"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
-                    d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                    d="M39.6 17.443 24.043 33 8.487 17.443"
                   />
                 </svg>
               </div>
@@ -259,7 +405,7 @@ exports[`renders Input/demo/group.md correctly 1`] = `
         </div>
         <input
           class="arco-input arco-input-size-default"
-          placeholder="Please enter an address"
+          placeholder="Enter an address"
           style="width:75%"
           value=""
         />
@@ -272,7 +418,11 @@ exports[`renders Input/demo/group.md correctly 1`] = `
         class="arco-input-group arco-input-group-compact"
       >
         <div
+          aria-autocomplete="list"
+          aria-expanded="false"
+          aria-haspopup="listbox"
           class="arco-select arco-select-single arco-select-show-search arco-select-size-default"
+          role="combobox"
           style="width:25%"
           tabindex="0"
         >
@@ -280,35 +430,41 @@ exports[`renders Input/demo/group.md correctly 1`] = `
             class="arco-select-view"
             title="Beijing"
           >
-            <input
-              class="arco-select-view-input arco-select-hidden"
-              placeholder="Beijing"
-              style="width:100%"
-              value="Beijing"
-            />
             <span
-              class="arco-select-view-value"
+              class="arco-select-view-selector"
             >
-              Beijing
+              <input
+                aria-hidden="true"
+                autocomplete="off"
+                class="arco-select-view-input arco-select-hidden"
+                placeholder="Beijing"
+                style="width:100%"
+                value=""
+              />
+              <span
+                class="arco-select-view-value"
+              >
+                Beijing
+              </span>
             </span>
             <div
+              aria-hidden="true"
               class="arco-select-suffix"
             >
               <div
-                class="arco-select-expand-icon"
+                class="arco-select-arrow-icon"
               >
                 <svg
-                  class="arco-icon arco-icon-expand"
+                  aria-hidden="true"
+                  class="arco-icon arco-icon-down"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
-                  style="transform:rotate(-45deg)"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
-                    d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                    d="M39.6 17.443 24.043 33 8.487 17.443"
                   />
                 </svg>
               </div>
@@ -335,13 +491,13 @@ exports[`renders Input/demo/group.md correctly 1`] = `
               class="arco-picker-suffix-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-calendar"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M7 22h34M14 5v8m20-8v8M8 41h32a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v30a1 1 0 0 0 1 1Z"
@@ -359,7 +515,11 @@ exports[`renders Input/demo/group.md correctly 1`] = `
         class="arco-input-group arco-input-group-compact"
       >
         <div
+          aria-autocomplete="list"
+          aria-expanded="false"
+          aria-haspopup="listbox"
           class="arco-select arco-select-single arco-select-show-search arco-select-size-default"
+          role="combobox"
           style="width:25%"
           tabindex="0"
         >
@@ -367,35 +527,41 @@ exports[`renders Input/demo/group.md correctly 1`] = `
             class="arco-select-view"
             title="Beijing"
           >
-            <input
-              class="arco-select-view-input arco-select-hidden"
-              placeholder="Beijing"
-              style="width:100%"
-              value="Beijing"
-            />
             <span
-              class="arco-select-view-value"
+              class="arco-select-view-selector"
             >
-              Beijing
+              <input
+                aria-hidden="true"
+                autocomplete="off"
+                class="arco-select-view-input arco-select-hidden"
+                placeholder="Beijing"
+                style="width:100%"
+                value=""
+              />
+              <span
+                class="arco-select-view-value"
+              >
+                Beijing
+              </span>
             </span>
             <div
+              aria-hidden="true"
               class="arco-select-suffix"
             >
               <div
-                class="arco-select-expand-icon"
+                class="arco-select-arrow-icon"
               >
                 <svg
-                  class="arco-icon arco-icon-expand"
+                  aria-hidden="true"
+                  class="arco-icon arco-icon-down"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
-                  style="transform:rotate(-45deg)"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
-                    d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                    d="M39.6 17.443 24.043 33 8.487 17.443"
                   />
                 </svg>
               </div>
@@ -421,13 +587,13 @@ exports[`renders Input/demo/group.md correctly 1`] = `
                 class="arco-input-group-suffix"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-search"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M33.072 33.071c6.248-6.248 6.248-16.379 0-22.627-6.249-6.249-16.38-6.249-22.628 0-6.248 6.248-6.248 16.379 0 22.627 6.248 6.248 16.38 6.248 22.628 0Zm0 0 8.485 8.485"
@@ -476,14 +642,14 @@ exports[`renders Input/demo/group.md correctly 1`] = `
           value="010"
         />
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-minus"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           style="color:var(--color-text-1)"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M5 24h38"
@@ -509,96 +675,162 @@ exports[`renders Input/demo/max-length.md correctly 1`] = `
     class="arco-space-item"
     style="margin-bottom:8px"
   >
-    <div>
+    <div
+      class="arco-space arco-space-horizontal arco-space-align-start"
+    >
       <div
-        class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-has-suffix"
-        style="width:300px;margin-bottom:24px;margin-right:20px"
+        class="arco-space-item"
+        style="margin-right:24px"
       >
-        <span
-          class="arco-input-group"
+        <div
+          class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-has-suffix"
+          style="width:300px"
         >
           <span
-            class="arco-input-inner-wrapper arco-input-inner-wrapper-default"
+            class="arco-input-group"
           >
-            <input
-              class="arco-input arco-input-size-default"
-              maxlength="10"
-              placeholder="Please enter no more than 10 letters"
-              value=""
-            />
             <span
-              class="arco-input-group-suffix"
+              class="arco-input-inner-wrapper arco-input-inner-wrapper-default"
             >
+              <input
+                class="arco-input arco-input-size-default"
+                maxlength="10"
+                placeholder="Enter no more than 10 letters"
+                value=""
+              />
               <span
-                class="arco-input-word-limit"
+                class="arco-input-group-suffix"
               >
-                0/10
+                <span
+                  class="arco-input-word-limit"
+                >
+                  0/10
+                </span>
               </span>
             </span>
           </span>
-        </span>
+        </div>
       </div>
       <div
-        class="arco-textarea-wrapper"
-        style="width:300px;margin-bottom:24px"
+        class="arco-space-item"
       >
-        <textarea
-          class="arco-textarea"
-          maxlength="50"
-          placeholder="Please enter no more than 50 letters"
-        />
-        <span
-          class="arco-textarea-word-limit"
+        <div
+          class="arco-textarea-wrapper"
+          style="width:300px"
         >
-          0/50
-        </span>
+          <textarea
+            class="arco-textarea"
+            maxlength="50"
+            placeholder="Enter no more than 50 letters"
+          />
+          <span
+            class="arco-textarea-word-limit"
+          >
+            0/50
+          </span>
+        </div>
       </div>
     </div>
   </div>
   <div
     class="arco-space-item"
   >
-    <div>
+    <div
+      class="arco-space arco-space-horizontal arco-space-align-start"
+    >
       <div
-        class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-has-suffix"
-        style="width:300px;margin-bottom:24px;margin-right:20px"
+        class="arco-space-item"
+        style="margin-right:24px"
       >
-        <span
-          class="arco-input-group"
+        <div
+          class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-has-suffix"
+          style="width:300px"
         >
           <span
-            class="arco-input-inner-wrapper arco-input-inner-wrapper-error arco-input-inner-wrapper-default"
+            class="arco-input-group"
           >
-            <input
-              class="arco-input arco-input-size-default"
-              value="More than 10 letters will be error"
-            />
             <span
-              class="arco-input-group-suffix"
+              class="arco-input-inner-wrapper arco-input-inner-wrapper-error arco-input-inner-wrapper-default"
             >
+              <input
+                aria-invalid="true"
+                class="arco-input arco-input-size-default arco-input-error"
+                value="More than 10 letters will be error"
+              />
               <span
-                class="arco-input-word-limit arco-input-word-limit-error"
+                class="arco-input-group-suffix"
               >
-                34/10
+                <span
+                  class="arco-input-word-limit arco-input-word-limit-error"
+                >
+                  34/10
+                </span>
               </span>
             </span>
           </span>
-        </span>
+        </div>
       </div>
       <div
-        class="arco-textarea-wrapper"
-        style="width:300px;margin-bottom:24px"
+        class="arco-space-item"
       >
-        <textarea
-          class="arco-textarea"
-          placeholder="More than 50 letters will be error"
-        />
-        <span
-          class="arco-textarea-word-limit"
+        <div
+          class="arco-textarea-wrapper"
+          style="width:300px"
         >
-          0/50
-        </span>
+          <textarea
+            class="arco-textarea"
+            placeholder="More than 50 letters will be error"
+          />
+          <span
+            class="arco-textarea-word-limit"
+          >
+            0/50
+          </span>
+        </div>
       </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders Input/demo/normalize.md correctly 1`] = `
+<div
+  class="arco-space arco-space-horizontal arco-space-align-center arco-space-wrap"
+>
+  <div
+    class="arco-space-item"
+    style="margin-right:20px;margin-bottom:20px"
+  >
+    <div>
+      <div
+        class="arco-typography"
+      >
+        trim whitespace when out of focus：
+      </div>
+      <input
+        class="arco-input arco-input-size-default"
+        placeholder="Enter something"
+        style="width:350px"
+        value=""
+      />
+    </div>
+  </div>
+  <div
+    class="arco-space-item"
+    style="margin-bottom:20px"
+  >
+    <div>
+      <div
+        class="arco-typography"
+      >
+        trim whitespace when press enter：
+      </div>
+      <input
+        class="arco-input arco-input-size-default"
+        placeholder="Enter something"
+        style="width:350px"
+        value=""
+      />
     </div>
   </div>
 </div>
@@ -631,13 +863,12 @@ exports[`renders Input/demo/password.md correctly 1`] = `
             class="arco-input-group-suffix"
           >
             <svg
-              class="arco-icon arco-icon-eye-invisible"
+              class="arco-input-password-visibility-icon arco-icon arco-icon-eye-invisible"
               fill="none"
-              height="1em"
               stroke="currentColor"
               stroke-width="4"
+              tabindex="0"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M14 14.5c-2.69 2-5.415 5.33-8 9.5 5.373 8.667 11.373 13 18 13 3.325 0 6.491-1.09 9.5-3.271M17.463 12.5C19 11 21.75 11 24 11c6.627 0 12.627 4.333 18 13-1.766 2.848-3.599 5.228-5.5 7.14"
@@ -667,7 +898,7 @@ exports[`renders Input/demo/password.md correctly 1`] = `
         >
           <input
             class="arco-input arco-input-size-default"
-            placeholder="Please enter ..."
+            placeholder="Enter password"
             type="text"
             value="password"
           />
@@ -675,13 +906,12 @@ exports[`renders Input/demo/password.md correctly 1`] = `
             class="arco-input-group-suffix"
           >
             <svg
-              class="arco-icon arco-icon-eye"
+              class="arco-input-password-visibility-icon arco-icon arco-icon-eye"
               fill="none"
-              height="1em"
               stroke="currentColor"
               stroke-width="4"
+              tabindex="0"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 clip-rule="evenodd"
@@ -728,13 +958,13 @@ exports[`renders Input/demo/prefix_suffix.md correctly 1`] = `
                 class="arco-input-group-prefix"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-user"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M7 37c0-4.97 4.03-8 9-8h16c4.97 0 9 3.03 9 8v3a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-3Z"
@@ -748,7 +978,7 @@ exports[`renders Input/demo/prefix_suffix.md correctly 1`] = `
               </span>
               <input
                 class="arco-input arco-input-size-default"
-                placeholder="Please enter"
+                placeholder="Enter something"
                 value=""
               />
             </span>
@@ -771,20 +1001,20 @@ exports[`renders Input/demo/prefix_suffix.md correctly 1`] = `
             >
               <input
                 class="arco-input arco-input-size-default"
-                placeholder="Please enter"
+                placeholder="Enter something"
                 value=""
               />
               <span
                 class="arco-input-group-suffix"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-info-circle"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M24 20v14m0-16v-4m18 10c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6s18 8.059 18 18Z"
@@ -821,13 +1051,13 @@ exports[`renders Input/demo/prefix_suffix.md correctly 1`] = `
                 class="arco-input-group-prefix"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-user"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M7 37c0-4.97 4.03-8 9-8h16c4.97 0 9 3.03 9 8v3a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-3Z"
@@ -841,20 +1071,20 @@ exports[`renders Input/demo/prefix_suffix.md correctly 1`] = `
               </span>
               <input
                 class="arco-input arco-input-size-default"
-                placeholder="Please enter"
+                placeholder="Enter something"
                 value=""
               />
               <span
                 class="arco-input-group-suffix"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-info-circle"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M24 20v14m0-16v-4m18 10c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6s18 8.059 18 18Z"
@@ -888,13 +1118,13 @@ exports[`renders Input/demo/prefix_suffix.md correctly 1`] = `
                 class="arco-input-group-prefix"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-user"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M7 37c0-4.97 4.03-8 9-8h16c4.97 0 9 3.03 9 8v3a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-3Z"
@@ -908,20 +1138,20 @@ exports[`renders Input/demo/prefix_suffix.md correctly 1`] = `
               </span>
               <input
                 class="arco-input arco-input-size-default"
-                placeholder="Please enter"
+                placeholder="Enter something"
                 value=""
               />
               <span
                 class="arco-input-group-suffix"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-info-circle"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M24 20v14m0-16v-4m18 10c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6s18 8.059 18 18Z"
@@ -933,13 +1163,13 @@ exports[`renders Input/demo/prefix_suffix.md correctly 1`] = `
               class="arco-input-group-addafter"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-search"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M33.072 33.071c6.248-6.248 6.248-16.379 0-22.627-6.249-6.249-16.38-6.249-22.628 0-6.248 6.248-6.248 16.379 0 22.627 6.248 6.248 16.38 6.248 22.628 0Zm0 0 8.485 8.485"
@@ -981,13 +1211,13 @@ exports[`renders Input/demo/search.md correctly 1`] = `
             class="arco-input-group-suffix"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-search"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M33.072 33.071c6.248-6.248 6.248-16.379 0-22.627-6.249-6.249-16.38-6.249-22.628 0-6.248 6.248-6.248 16.379 0 22.627 6.248 6.248 16.38 6.248 22.628 0Zm0 0 8.485 8.485"
@@ -1026,13 +1256,13 @@ exports[`renders Input/demo/search.md correctly 1`] = `
             type="button"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-search"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M33.072 33.071c6.248-6.248 6.248-16.379 0-22.627-6.249-6.249-16.38-6.249-22.628 0-6.248 6.248-6.248 16.379 0 22.627 6.248 6.248 16.38 6.248 22.628 0Zm0 0 8.485 8.485"
@@ -1108,13 +1338,13 @@ exports[`renders Input/demo/search_loading.md correctly 1`] = `
             class="arco-input-group-suffix"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-loading"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M42 24c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6"
@@ -1153,13 +1383,13 @@ exports[`renders Input/demo/search_loading.md correctly 1`] = `
             type="button"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-loading"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M42 24c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6"
@@ -1198,13 +1428,13 @@ exports[`renders Input/demo/search_loading.md correctly 1`] = `
             type="button"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-loading"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M42 24c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6"
@@ -1225,6 +1455,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
 <div>
   <div
     class="arco-radio-group arco-radio-group-type-button arco-radio-size-default arco-radio-mode-fill"
+    role="radiogroup"
     style="margin-bottom:24px"
   >
     <label
@@ -1306,8 +1537,15 @@ exports[`renders Input/demo/size.md correctly 1`] = `
           style="left:0%;right:100%"
         />
         <div
+          aria-disabled="false"
+          aria-valuemax="60"
+          aria-valuemin="24"
+          aria-valuenow="24"
+          aria-valuetext="24"
           class="arco-slider-button"
+          role="slider"
           style="left:0%"
+          tabindex="0"
         />
       </div>
     </div>
@@ -1315,7 +1553,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
   <div>
     <div
       class="arco-input-group-wrapper arco-input-group-wrapper-default"
-      style="width:350px;margin-right:24px;margin-bottom:24px"
+      style="width:350px;margin:12px"
     >
       <span
         class="arco-input-group"
@@ -1327,13 +1565,13 @@ exports[`renders Input/demo/size.md correctly 1`] = `
             class="arco-input-group-prefix"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-clock-circle"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M24 14v10h9.5m8.5 0c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6s18 8.059 18 18Z"
@@ -1342,7 +1580,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
           </span>
           <input
             class="arco-input arco-input-size-default"
-            placeholder="Please enter something"
+            placeholder="Enter something"
             value=""
           />
         </span>
@@ -1350,7 +1588,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
     </div>
     <div
       class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-has-suffix"
-      style="width:350px;margin-bottom:24px"
+      style="width:350px;margin:12px"
     >
       <span
         class="arco-input-group"
@@ -1360,20 +1598,20 @@ exports[`renders Input/demo/size.md correctly 1`] = `
         >
           <input
             class="arco-input arco-input-size-default"
-            placeholder="Please enter something"
+            placeholder="Enter something"
             value=""
           />
           <span
             class="arco-input-group-suffix"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-info-circle"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M24 20v14m0-16v-4m18 10c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6s18 8.059 18 18Z"
@@ -1387,7 +1625,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
   <div>
     <div
       class="arco-input-group-wrapper arco-input-group-wrapper-default"
-      style="width:350px;margin-right:24px;margin-bottom:24px"
+      style="width:350px;margin:12px"
     >
       <span
         class="arco-input-group"
@@ -1397,7 +1635,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
         >
           <input
             class="arco-input arco-input-size-default"
-            placeholder="Please enter something"
+            placeholder="Enter something"
             value=""
           />
         </span>
@@ -1410,7 +1648,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
     </div>
     <div
       class="arco-input-group-wrapper arco-input-group-wrapper-default"
-      style="width:350px;margin-bottom:24px"
+      style="width:350px;margin:12px"
     >
       <span
         class="arco-input-group"
@@ -1425,7 +1663,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
         >
           <input
             class="arco-input arco-input-size-default"
-            placeholder="Please enter something"
+            placeholder="Enter phone number"
             value=""
           />
         </span>
@@ -1435,7 +1673,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
   <div>
     <div
       class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-has-suffix"
-      style="width:350px;margin-bottom:24px;margin-right:24px"
+      style="width:350px;margin:12px"
     >
       <span
         class="arco-input-group"
@@ -1452,13 +1690,13 @@ exports[`renders Input/demo/size.md correctly 1`] = `
             class="arco-input-group-prefix"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-clock-circle"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M24 14v10h9.5m8.5 0c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6s18 8.059 18 18Z"
@@ -1467,20 +1705,20 @@ exports[`renders Input/demo/size.md correctly 1`] = `
           </span>
           <input
             class="arco-input arco-input-size-default"
-            placeholder="Please enter something"
+            placeholder="Enter phone number"
             value=""
           />
           <span
             class="arco-input-group-suffix"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-info-circle"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M24 20v14m0-16v-4m18 10c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6s18 8.059 18 18Z"
@@ -1492,13 +1730,13 @@ exports[`renders Input/demo/size.md correctly 1`] = `
           class="arco-input-group-addafter"
         >
           <svg
+            aria-hidden="true"
             class="arco-icon arco-icon-search"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
               d="M33.072 33.071c6.248-6.248 6.248-16.379 0-22.627-6.249-6.249-16.38-6.249-22.628 0-6.248 6.248-6.248 16.379 0 22.627 6.248 6.248 16.38 6.248 22.628 0Zm0 0 8.485 8.485"
@@ -1509,7 +1747,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
     </div>
     <div
       class="arco-input-group-wrapper arco-input-group-wrapper-default arco-input-search arco-input-search-button"
-      style="width:350px;margin-bottom:24px"
+      style="width:350px;margin:12px"
     >
       <span
         class="arco-input-group"
@@ -1519,7 +1757,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
         >
           <input
             class="arco-input arco-input-size-default"
-            placeholder="Please enter something"
+            placeholder="Enter something"
             value=""
           />
         </span>
@@ -1531,13 +1769,13 @@ exports[`renders Input/demo/size.md correctly 1`] = `
             type="button"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-search"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M33.072 33.071c6.248-6.248 6.248-16.379 0-22.627-6.249-6.249-16.38-6.249-22.628 0-6.248 6.248-6.248 16.379 0 22.627 6.248 6.248 16.38 6.248 22.628 0Zm0 0 8.485 8.485"
@@ -1551,7 +1789,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
   <div>
     <div
       class="arco-input-group-wrapper arco-input-group-wrapper-default"
-      style="width:350px;margin-bottom:24px;margin-right:24px"
+      style="width:350px;margin:12px"
     >
       <span
         class="arco-input-group"
@@ -1560,7 +1798,11 @@ exports[`renders Input/demo/size.md correctly 1`] = `
           class="arco-input-group-addbefore"
         >
           <div
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-haspopup="listbox"
             class="arco-select arco-select-single arco-select-size-default"
+            role="combobox"
             style="width:100px"
             tabindex="0"
           >
@@ -1568,30 +1810,44 @@ exports[`renders Input/demo/size.md correctly 1`] = `
               class="arco-select-view"
               title=""
             >
-              <input
-                class="arco-select-view-input"
-                placeholder="Please select"
-                style="width:100%;pointer-events:none"
-                tabindex="-1"
-                value=""
-              />
               <span
-                class="arco-select-view-value arco-select-hidden"
-              />
+                class="arco-select-view-selector"
+              >
+                <input
+                  autocomplete="off"
+                  class="arco-select-view-input"
+                  placeholder="Select protocol"
+                  style="width:100%;pointer-events:none"
+                  tabindex="-1"
+                  value=""
+                />
+                <span
+                  class="arco-select-view-value-mirror"
+                >
+                  Select protocol
+                </span>
+                <span
+                  class="arco-select-view-value"
+                  style="display:none"
+                >
+                  Select protocol
+                </span>
+              </span>
               <div
+                aria-hidden="true"
                 class="arco-select-suffix"
               >
                 <div
                   class="arco-select-arrow-icon"
                 >
                   <svg
+                    aria-hidden="true"
                     class="arco-icon arco-icon-down"
                     fill="none"
-                    height="1em"
+                    focusable="false"
                     stroke="currentColor"
                     stroke-width="4"
                     viewBox="0 0 48 48"
-                    width="1em"
                   >
                     <path
                       d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -1607,7 +1863,7 @@ exports[`renders Input/demo/size.md correctly 1`] = `
         >
           <input
             class="arco-input arco-input-size-default"
-            placeholder="Please enter something"
+            placeholder="Enter something"
             value=""
           />
         </span>
@@ -1615,11 +1871,11 @@ exports[`renders Input/demo/size.md correctly 1`] = `
     </div>
     <span
       class="arco-input-inner-wrapper arco-input-inner-wrapper-default arco-input-clear-wrapper"
-      style="width:350px;margin-bottom:24px"
+      style="width:350px;margin:12px"
     >
       <input
         class="arco-input arco-input-size-default"
-        placeholder="Please enter something"
+        placeholder="Enter something"
         value=""
       />
     </span>
@@ -1636,8 +1892,20 @@ exports[`renders Input/demo/status.md correctly 1`] = `
     style="margin-right:8px;margin-bottom:8px"
   >
     <input
+      aria-invalid="true"
       class="arco-input arco-input-size-default arco-input-error"
       placeholder="error status"
+      style="width:350px"
+      value=""
+    />
+  </div>
+  <div
+    class="arco-space-item"
+    style="margin-right:8px;margin-bottom:8px"
+  >
+    <input
+      class="arco-input arco-input-size-default arco-input-warning"
+      placeholder="warning status"
       style="width:350px"
       value=""
     />
@@ -1667,7 +1935,7 @@ exports[`renders Input/demo/textarea.md correctly 1`] = `
   >
     <textarea
       class="arco-textarea"
-      placeholder="Please enter ..."
+      placeholder="Enter something"
       style="min-height:64px;width:350px"
     />
   </div>
@@ -1696,7 +1964,7 @@ exports[`renders Input/demo/textarea_autosize.md correctly 1`] = `
   >
     <textarea
       class="arco-textarea"
-      placeholder="Please enter ..."
+      placeholder="Enter something"
       style="width:350px"
     >
       This is the contents of the textarea. 
@@ -1708,7 +1976,7 @@ exports[`renders Input/demo/textarea_autosize.md correctly 1`] = `
   >
     <textarea
       class="arco-textarea"
-      placeholder="Please enter ..."
+      placeholder="Enter something"
       style="width:350px"
     >
       This is the contents of the textarea. This is the contents of the textarea. This is the contents of the textarea. 

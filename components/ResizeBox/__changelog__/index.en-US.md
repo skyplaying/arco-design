@@ -1,3 +1,63 @@
+## 2.55.2
+
+2023-11-10
+
+### 🐛 BugFix
+
+- Fixed the bug where `ResizeBox` covered the body inline cursor style after dragging.([#2352](https://github.com/arco-design/arco-design/pull/2352))
+
+## 2.45.1
+
+2023-03-01
+
+### 🐛 BugFix
+
+- Fix the bug of stretching error after `ResizeBox.Split` sets `min` attribute to pixel value([#1809](https://github.com/arco-design/arco-design/pull/1809))
+
+## 2.35.0
+
+2022-06-10
+
+### 🆕 Feature
+
+- `ResizeBox.Split` added `horizontal-reverse` and `vertical-reverse` two arrangements.([#984](https://github.com/arco-design/arco-design/pull/984))
+
+## 2.34.0
+
+2022-05-27
+
+### 🐛 BugFix
+
+- Fix `ResizeBox.SplitGroup` responsive error bug([#934](https://github.com/arco-design/arco-design/pull/934))
+
+## 2.33.1
+
+2022-05-20
+
+### 🐛 BugFix
+
+- Fixed a bug that `Split.Group` of `ResizeBox` could not adapt to certain scenes([#892](https://github.com/arco-design/arco-design/pull/892))
+
+## 2.27.0
+
+2021-12-17
+
+### 🆕 Feature
+
+- `ResizeBox` adds `SplitGroup` sub-component, supports splitting multiple panels and quick folding function([#327](https://github.com/arco-design/arco-design/pull/327))
+
+## 2.25.0
+
+2021-11-19
+
+### 🆕 Feature
+
+- add property `onPaneResize` to `ResizeBox.Split`([#169](https://github.com/arco-design/arco-design/pull/169))
+
+### 🐛 BugFix
+
+- Fix the bug that the ratio of the panels changes when the `ResizeBox.Split` component switches the `direction`.([#188](https://github.com/arco-design/arco-design/pull/188))
+
 ## 2.14.0
 
 2021-04-09

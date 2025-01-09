@@ -10,17 +10,20 @@ import React, {
 } from 'react';
 import cs from '../_util/classNames';
 import { on, off } from '../_util/dom';
-import { isFunction } from '../_util/is';
+import { isFunction, isNumber, isString } from '../_util/is';
 import Trigger from '../Trigger';
 import { TooltipPosition } from './interface';
 import { ConfigContext } from '../ConfigProvider';
 import useMergeValue from '../_util/hooks/useMergeValue';
+import useKeyboardEvent from '../_util/hooks/useKeyboardEvent';
 
 interface SliderButtonProps {
   style?: CSSProperties;
   disabled?: boolean;
   prefixCls: string;
   value: number;
+  maxValue?: number;
+  minValue?: number;
   vertical?: boolean;
   tooltipVisible?: boolean;
   tooltipPosition?: TooltipPosition;
@@ -30,9 +33,24 @@ interface SliderButtonProps {
   onMoving?: (x: number, y: number) => void;
   onMoveEnd?: () => void;
   onMoveBegin?: () => void;
+  onArrowEvent?: (type: 'addition' | 'subtraction') => void;
 }
 
-const SliderButton = function(props: SliderButtonProps) {
+const triggerStyle = { maxWidth: 350 };
+
+const triggerDuration = {
+  enter: 300,
+  exit: 100,
+};
+
+const triggerPopupAlign = {
+  left: 12,
+  right: 12,
+  top: 12,
+  bottom: 12,
+};
+
+const SliderButton = function (props: SliderButtonProps) {
   // props
   const {
     style,
@@ -49,15 +67,17 @@ const SliderButton = function(props: SliderButtonProps) {
     onMoveBegin,
   } = props;
 
+  const getKeyboardEvents = useKeyboardEvent();
+
   // state
   const [isActive, setIsActive] = useState(false);
   const [popupVisible, setPopupVisible] = useMergeValue(false, { value: tooltipVisible });
 
   const { getPrefixCls } = useContext(ConfigContext);
-  const position = useMemo(() => tooltipPosition || (vertical ? 'right' : 'top'), [
-    tooltipPosition,
-    vertical,
-  ]);
+  const position = useMemo(
+    () => tooltipPosition || (vertical ? 'right' : 'top'),
+    [tooltipPosition, vertical]
+  );
   const delayTimer = useRef(null as any);
   const inButtonOrPopup = useRef(false);
   const isDragging = useRef(false);
@@ -155,6 +175,10 @@ const SliderButton = function(props: SliderButtonProps) {
     clearDelayTimer();
   }
 
+  const tooltipText = useMemo(() => {
+    return isFunction(formatTooltip) ? formatTooltip(value) : value;
+  }, [formatTooltip, value]);
+
   function renderTooltipContent(position: TooltipPosition) {
     const tooltipPrefixCls = getPrefixCls('tooltip');
     return (
@@ -166,9 +190,7 @@ const SliderButton = function(props: SliderButtonProps) {
           e.stopPropagation();
         }}
       >
-        <div className={`${tooltipPrefixCls}-content-inner`}>
-          {isFunction(formatTooltip) ? formatTooltip(value) : value}
-        </div>
+        <div className={`${tooltipPrefixCls}-content-inner`}>{tooltipText}</div>
       </div>
     );
   }
@@ -179,19 +201,11 @@ const SliderButton = function(props: SliderButtonProps) {
 
   return (
     <Trigger
-      style={{ maxWidth: 350 }}
+      style={triggerStyle}
       classNames="zoomInFadeOut"
-      duration={{
-        enter: 300,
-        exit: 100,
-      }}
+      duration={triggerDuration}
       showArrow
-      popupAlign={{
-        left: 12,
-        right: 12,
-        top: 12,
-        bottom: 12,
-      }}
+      popupAlign={triggerPopupAlign}
       ref={tooltip}
       popup={() => renderTooltipContent(position)}
       popupVisible={popupVisible}
@@ -206,6 +220,33 @@ const SliderButton = function(props: SliderButtonProps) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={style}
+        role="slider"
+        aria-valuemax={props.maxValue}
+        aria-valuemin={props.minValue}
+        aria-valuenow={value}
+        aria-disabled={!!disabled}
+        tabIndex={disabled ? -1 : 0}
+        aria-valuetext={
+          isString(tooltipText) || isNumber(tooltipText) ? String(tooltipText) : undefined
+        }
+        {...getKeyboardEvents({
+          onArrowRight: (e) => {
+            e.preventDefault();
+            props.onArrowEvent?.('addition');
+          },
+          onArrowUp: (e) => {
+            e.preventDefault();
+            props.onArrowEvent?.('addition');
+          },
+          onArrowLeft: (e) => {
+            e.preventDefault();
+            props.onArrowEvent?.('subtraction');
+          },
+          onArrowDown: (e) => {
+            e.preventDefault();
+            props.onArrowEvent?.('subtraction');
+          },
+        })}
       />
     </Trigger>
   );

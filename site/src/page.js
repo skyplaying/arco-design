@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback, useContext, useMemo } from 'react';
 import { BackTop, Button } from '@arco-design/web-react';
 import { IconUp, IconLeft } from '@arco-design/web-react/icon';
-import Footer from '@arco-design/arco-site-footer';
+import Footer from '@arco-materials/site-footer';
 import { useHistory } from 'react-router-dom';
 import getRoutes from './routes';
 import WidgetMenu from './widget/Menu';
 import WidgetBody from './widget/Body';
 import DocAnchor from './widget/Anchor';
 import ThemeBox from './widget/ThemeBox';
-import { GlobalContext } from './context';
+import { GlobalContext, GlobalNoticeContext } from './context';
 
 const noAnchorPaths = [
   '/react',
@@ -17,6 +17,8 @@ const noAnchorPaths = [
   '/react/en-US/docs/overview',
   '/react/docs/changelog',
   '/react/en-US/docs/changelog',
+  '/react/docs/token',
+  '/react/en-US/docs/token',
 ];
 
 function Components() {
@@ -29,6 +31,7 @@ function Components() {
 
   const { lang, locale } = useContext(GlobalContext);
   const routes = useMemo(() => getRoutes(lang, locale), [lang, locale]);
+  const { noticeHeight } = useContext(GlobalNoticeContext);
 
   const onResize = useCallback(() => {
     const windowWidth = window.innerWidth;
@@ -61,10 +64,11 @@ function Components() {
           onClick={() => {
             setMenuCollapse(!menuCollapse);
           }}
+          aria-label="menu collapse button"
         />
-        <div className="content-wrapper">
+        <div className="content-wrapper" style={{ marginTop: `${noticeHeight}px` }}>
           <WidgetBody lang={lang} routes={routes} />
-          <Footer style={{ marginTop: 100 }} lang={lang} />
+          <Footer style={{ marginTop: 100 }} lang={lang} larkGroup />
         </div>
         {!noAnchor && (
           <div
@@ -86,11 +90,12 @@ function Components() {
             onClick={() => {
               setAnchorCollapse(!anchorCollapse);
             }}
+            aria-label="anchor collapse button"
           />
         )}
       </div>
       <ThemeBox lang={lang} />
-      <BackTop style={{ right: 70, bottom: 80 }}>
+      <BackTop className="ac-back-top">
         <Button shape="circle" size="large" className="ac-backtop-btn">
           <IconUp />
         </Button>

@@ -1,3 +1,19 @@
+## 2.59.0
+
+2024-01-19
+
+### 💎 Enhancement
+
+- The `Popover` component does not display the popup box when the content is empty.([#2504](https://github.com/arco-design/arco-design/pull/2504))
+
+## 2.48.0
+
+2023-05-12
+
+### 🆕 Feature
+
+- `Popover` component supports `title`, `content` properties of function type([#1964](https://github.com/arco-design/arco-design/pull/1964))
+
 ## 2.23.5
 
 2021-10-29

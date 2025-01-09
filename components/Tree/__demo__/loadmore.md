@@ -1,6 +1,6 @@
 ---
 order: 6
-title: 
+title:
   zh-CN: 动态加载
   en-US: Dynamic Loading
 ---
@@ -14,26 +14,14 @@ title:
 Load nodes dynamically.
 
 ```js
+import React from 'react';
 import { Tree } from '@arco-design/web-react';
 
 const TreeNode = Tree.Node;
-
-// 从treedata 生成 treenode
-const generatorTreeNodes = (treeData) => {
-  return treeData.map((item) => {
-    const { children, key, ...rest } = item;
-    return (
-      <Tree.Node key={key} {...rest} dataRef={item}>
-        {children ? generatorTreeNodes(item.children) : null}
-      </Tree.Node>
-    );
-  });
-};
-
 const defaultTreeData = [
   {
     title: 'Trunk 0-0',
-    key: '0-0'
+    key: '0-0',
   },
   {
     title: 'Trunk 0-1',
@@ -41,20 +29,24 @@ const defaultTreeData = [
     children: [
       {
         title: 'Branch 0-1-1',
-        key: '0-1-1'
-      }
+        key: '0-1-1',
+      },
     ],
   },
 ];
 
-function Demo() {
+function App() {
   const [treeData, setTreeData] = React.useState(defaultTreeData);
 
   const loadMore = (treeNode) => {
     return new Promise((resolve) => {
       setTimeout(() => {
         treeNode.props.dataRef.children = [
-          { title: `leaf`, key: `${treeNode.props._key}-1`, isLeaf: true },
+          {
+            title: `leaf`,
+            key: `${treeNode.props._key}-1`,
+            isLeaf: true,
+          },
         ];
         setTreeData([...treeData]);
         resolve();
@@ -62,12 +54,8 @@ function Demo() {
     });
   };
 
-  return (
-    <Tree defaultSelectedKeys={['node1']} loadMore={loadMore}>
-      {generatorTreeNodes(treeData)}
-    </Tree>
-  );
+  return <Tree defaultSelectedKeys={['node1']} loadMore={loadMore} treeData={treeData}></Tree>;
 }
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```

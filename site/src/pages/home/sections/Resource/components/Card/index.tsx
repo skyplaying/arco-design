@@ -1,8 +1,10 @@
 import React, { ReactNode, CSSProperties } from 'react';
+import { teaLog } from '@arco-materials/site-utils';
 import styles from './index.module.less';
 import IconRoundArrow from '../../../../assets/ic_round_arrow.svg';
 import IconCommonArrow from '../../../../assets/ic_common_arrow.svg';
 import cs from '../../../../utils/classNames';
+import { EventMap } from '../../../../utils/eventMap';
 
 interface ResourceItem {
   logo?: ReactNode;
@@ -30,10 +32,14 @@ export default function ResourceCard(props: ResourceCardProps) {
     footerResourceList,
     bodyStyle,
   } = props;
-  const openLink = (link: string) => {
-    if (link) {
-      window.open(link);
-    }
+
+  const reportTea = (resource: ResourceItem) => {
+    teaLog(EventMap.clickResourceBtn, {
+      menu: title,
+      name: resource.name,
+      link: resource.href,
+      target: '_blank',
+    });
   };
 
   return (
@@ -47,39 +53,45 @@ export default function ResourceCard(props: ResourceCardProps) {
           <div className={styles['card-title']}>{title}</div>
           <div className={styles['card-desc']}>{description}</div>
         </div>
-        <div className={styles['card-header-right']}>
-          <div className={styles['card-link']} onClick={() => openLink(href)}>
+        <a className={styles['card-header-right']} href={href}>
+          <div className={styles['card-link']}>
             <IconRoundArrow />
           </div>
-        </div>
+        </a>
       </div>
       <div className={styles['card-body']} style={bodyStyle}>
         <div className={styles['card-body-resource-list']}>
           {bodyResourceList.map(({ name, href, logo }) => (
-            <div
+            <a
+              href={href}
               className={styles['card-body-resource-item']}
               key={name}
-              onClick={() => openLink(href)}
+              onClick={() => {
+                reportTea({ name, href, logo });
+              }}
             >
               <div className={styles['card-body-resource-item-logo']}>{logo}</div>
               <div className={styles['card-body-resource-item-name']}>{name}</div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
       <div className={styles['card-footer']}>
         {footerResourceList.map(({ name, href, logo }) => (
-          <div
+          <a
+            href={href}
             className={styles['card-footer-resource-item']}
             key={name}
-            onClick={() => openLink(href)}
+            onClick={() => {
+              reportTea({ name, href, logo });
+            }}
           >
             {logo && <div className={styles['card-footer-resource-item-logo']}>{logo}</div>}
             <div className={styles['card-footer-resource-item-name']}>{name}</div>
             <div className={styles['card-footer-resource-item-arrow']}>
               <IconCommonArrow />
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>

@@ -1,15 +1,14 @@
 import React from 'react';
-import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import mountTest from '../../../tests/mountTest';
-import { sleep } from '../../../tests/util';
+import { sleep, render, fireEvent } from '../../../tests/util';
 import { Form, Grid, Input, Button, Select, Radio } from '../..';
 import { FormListProps, FormProps } from '../interface';
 
 mountTest(Form);
 
 function mountForm(component: React.ReactElement) {
-  return mount<typeof Form, React.PropsWithChildren<FormProps>>(component);
+  return render(component);
 }
 
 let formRef;
@@ -99,24 +98,20 @@ describe('FormList test', () => {
       const getItems = () => {
         return wrapper.find('.arco-row.form-list-item');
       };
-      const addButton = wrapper.find('.add-button').at(0);
+      const addButton = wrapper.find('.add-button')[0];
       // const removeButton = wrapper.find('.remove-button');
       expect(getItems()).toHaveLength(0);
 
-      addButton.simulate('click');
-
-      act(() => {});
+      fireEvent.click(addButton);
 
       expect(getItems()).toHaveLength(1);
 
-      addButton.simulate('click');
-
-      act(() => {});
+      fireEvent.click(addButton);
 
       expect(getItems()).toHaveLength(2);
 
       wrapper.find('input').forEach((input, i) => {
-        (input.props().onChange as Function)({ target: { value: `hello${i}` } });
+        fireEvent.change(input, { target: { value: `hello${i}` } });
       });
 
       expect(formRef.getFieldsValue()).toEqual({
@@ -141,10 +136,8 @@ describe('FormList test', () => {
         ],
       });
 
-      const removeBtn = getItems()
-        .at(0)
-        .find('Button');
-      removeBtn.simulate('click');
+      const removeBtn = getItems()[0].querySelector('.remove-button') as Element;
+      fireEvent.click(removeBtn);
 
       act(() => {});
 
@@ -154,7 +147,7 @@ describe('FormList test', () => {
         users: [{ name: '111', age: '111' }],
       });
 
-      addButton.simulate('click');
+      fireEvent.click(addButton);
       expect(getItems()).toHaveLength(2);
 
       expect(formRef.getFieldsValue()).toEqual({
@@ -166,7 +159,7 @@ describe('FormList test', () => {
     }
     test();
 
-    wrapper.find('Button.reset-button').simulate('click');
+    fireEvent.click(wrapper.querySelector('.reset-button') as Element);
 
     // 重置后回到初始状态，再次执行测试case
     test();
@@ -191,8 +184,9 @@ describe('FormList test', () => {
       };
       expect(getItems()).toHaveLength(3);
 
-      const addButton = wrapper.find('Button.add-button-A');
-      addButton.simulate('click');
+      const addButton = wrapper.querySelector('.add-button-A') as Element;
+
+      fireEvent.click(addButton);
       act(() => {});
 
       expect(getItems()).toHaveLength(4);
@@ -202,12 +196,11 @@ describe('FormList test', () => {
       });
 
       let curValues = formRef.getFieldsValue().users;
-      const removeBtn = getItems()
-        .at(0)
-        .find('Button');
-      removeBtn.simulate('click');
+      const removeBtn = getItems()[0].querySelector('.remove-button') as Element;
 
-      act(() => {});
+      act(() => {
+        fireEvent.click(removeBtn);
+      });
 
       expect(getItems()).toHaveLength(3);
 
@@ -216,9 +209,10 @@ describe('FormList test', () => {
       });
       curValues = formRef.getFieldsValue().users;
 
-      wrapper.find('Button.add-button').simulate('click');
+      act(() => {
+        fireEvent.click(wrapper.querySelector('.add-button') as Element);
+      });
 
-      act(() => {});
       expect(getItems()).toHaveLength(4);
       expect(formRef.getFieldsValue()).toEqual({
         users: [...curValues, { name: undefined, age: undefined }],
@@ -226,7 +220,7 @@ describe('FormList test', () => {
     }
     test();
 
-    wrapper.find('Button.reset-button').simulate('click');
+    fireEvent.click(wrapper.find('.reset-button')[0]);
 
     // 重置后回到初始状态，再次执行测试case
     test();
@@ -275,9 +269,9 @@ describe('FormList test', () => {
     };
     expect(getItems()).toHaveLength(0);
 
-    const addButton = wrapper.find('Button.add-button');
+    const addButton = wrapper.querySelector('.add-button') as Element;
     // 再添加一个用户
-    addButton.simulate('click');
+    fireEvent.click(addButton);
     act(() => {});
 
     expect(getItems()).toHaveLength(1);
@@ -287,14 +281,12 @@ describe('FormList test', () => {
     });
 
     // 再添加一个用户
-    addButton.simulate('click');
+    fireEvent.click(addButton);
     act(() => {});
 
     expect(getItems()).toHaveLength(2);
-    const removeBtn = getItems()
-      .at(0)
-      .find('Button');
-    removeBtn.simulate('click');
+    const removeBtn = getItems()[0].querySelector('.remove-button') as Element;
+    fireEvent.click(removeBtn);
 
     act(() => {});
 
@@ -338,8 +330,7 @@ describe('FormList test', () => {
       },
     });
 
-    wrapper.update();
-
+    await sleep(10);
     expect(wrapper.find('.arco-form-message').length).toBe(1);
   });
 
@@ -402,38 +393,31 @@ describe('FormList test', () => {
     };
     expect(getItems()).toHaveLength(0);
 
-    const addButton = wrapper.find('Button.add-button');
+    const addButton = wrapper.find('Button.add-button')[0];
     // 再添加一个用户
-    addButton.simulate('click');
+    fireEvent.click(addButton);
     act(() => {});
 
     expect(getItems()).toHaveLength(1);
 
-    wrapper.find('Select').simulate('click');
+    fireEvent.click(wrapper.querySelector('.arco-select-view') as Element);
 
-    wrapper
-      .find('.arco-select-option')
-      .at(1)
-      .simulate('click');
+    fireEvent.click(wrapper.find('.arco-select-option')[1]);
 
     expect(formRef.getFieldsValue()).toEqual({ posts: [{ type: undefined, b: 'B2' }] });
 
-    wrapper
-      .find('.arco-radio input')
-      .at(0)
-      .simulate('change');
+    act(() => {
+      fireEvent.click(wrapper.find('.arco-radio')[0]);
+    });
 
     expect(formRef.getFields()).toEqual({ posts: [{ type: 'A', b: 'B2' }] });
     expect(formRef.getFieldsValue()).toEqual({ posts: [{ type: 'A', a: undefined }] });
 
-    wrapper
-      .find('input.arco-input')
-      .at(0)
-      .simulate('change', {
-        target: {
-          value: 'Hello',
-        },
-      });
+    fireEvent.change(wrapper.find('input.arco-input')[0], {
+      target: {
+        value: 'Hello',
+      },
+    });
 
     expect(formRef.getFields()).toEqual({ posts: [{ b: 'B2', type: 'A', a: 'Hello' }] });
     expect(formRef.getFieldsValue()).toEqual({ posts: [{ type: 'A', a: 'Hello' }] });
@@ -462,11 +446,9 @@ describe('FormList test', () => {
     };
 
     expect(getItems()).toHaveLength(4);
-    const moveBtn = wrapper.find('Button.move-button');
+    const moveBtn = wrapper.querySelector('.move-button') as Element;
 
-    await act(() => {
-      moveBtn.simulate('click');
-    });
+    fireEvent.click(moveBtn);
 
     expect(formRef.getFieldsValue()).toEqual({
       users: [
@@ -492,10 +474,11 @@ describe('FormList test', () => {
     };
 
     expect(getItems()).toHaveLength(1);
-    const moveBtn = wrapper.find('Button.remove-button');
 
-    await act(() => {
-      moveBtn.simulate('click');
+    const moveBtn = wrapper.querySelector('.remove-button') as Element;
+
+    act(() => {
+      fireEvent.click(moveBtn);
     });
 
     expect(formRef.getFieldsValue()).toEqual({});

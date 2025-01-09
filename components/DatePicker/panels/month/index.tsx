@@ -47,7 +47,7 @@ function MonthPicker(props: InnerMonthPickerProps & PrivateCType) {
     ...rest
   } = props;
 
-  const { locale: globalLocale, getPrefixCls } = useContext(ConfigContext);
+  const { locale: globalLocale, getPrefixCls, rtl } = useContext(ConfigContext);
   const DATEPICKER_LOCALE = merge(globalLocale.DatePicker, locale);
   const CALENDAR_LOCALE = DATEPICKER_LOCALE.Calendar;
 
@@ -76,7 +76,7 @@ function MonthPicker(props: InnerMonthPickerProps & PrivateCType) {
     ].map((month, index) => {
       return {
         name: CALENDAR_LOCALE.month.short[month],
-        time: dayjs(`${showYear}-${padStart(index + 1, 2, '0')}-01`),
+        time: dayjs(`${showYear}-${padStart(index + 1, 2, '0')}`, 'YYYY-MM').endOf('month'),
       };
     });
 
@@ -131,19 +131,17 @@ function MonthPicker(props: InnerMonthPickerProps & PrivateCType) {
     <div className={classNames} style={style}>
       <Header
         {...headerOperations}
+        DATEPICKER_LOCALE={DATEPICKER_LOCALE}
         icons={icons}
         prefixCls={getPrefixCls('picker')}
         value={pageShowDate}
         mode={panelMode}
         onChangePanel={onChangePanel}
+        rtl={rtl}
       />
       {renderCalendar()}
     </div>
   );
 }
-
-MonthPicker.defaultProps = {
-  pickerType: 'month',
-};
 
 export default MonthPicker;

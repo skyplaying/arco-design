@@ -33,7 +33,7 @@ export interface TriggerProps {
   /**
    * @zh 动画类名
    * @en Animation class name
-   * @defaultValue fadeId
+   * @defaultValue fadeIn
    */
   classNames?: string;
   /**
@@ -121,11 +121,21 @@ export interface TriggerProps {
    */
   popup?: () => ReactNode;
   /**
-   * @zh 是否根据空间自动调整弹出框的位置
+   * @zh 是否根据空间自动调整弹出框的位置。
    * @en Whether to automatically adjust the position of the popup according to the viewport
    * @defaultValue true
    */
   autoFitPosition?: boolean;
+  /**
+   * @zh 默认弹出层位置会根据视口边界进行定位及微调，此参数可以设置到视口边界一定距离时即进行定位调整。仅在 autoFitPosition=true 且 alignPoint=false 生效。
+   * @en The default pop-up layer position will be positioned and fine-tuned according to the viewport boundary. This parameter can be set to adjust the positioning when it is a certain distance from the viewport boundary. Only takes effect when autoFitPosition=true and alignPoint=false.
+   * @version 2.59.0
+   */
+  boundaryDistance?:
+    | { left?: number; bottom?: number }
+    | { left?: number; top?: number }
+    | { right?: number; bottom?: number }
+    | { right?: number; top?: number };
   /**
    * @zh 是否在鼠标移出触发节点，移入弹出框时保留弹出框。
    * @en Whether the popup is visible when the mouse hovers over the popup.
@@ -146,22 +156,33 @@ export interface TriggerProps {
    */
   mouseLeaveToClose?: boolean;
   /**
-   * @zh 是否能通过点击触发节点来关闭弹出框
-   * @en Whether to allow close the popup by clicking the child node.
-   * @defaultValue true
+   * @zh 是否能通过点击触发节点来关闭弹出框。trigger 包含 click, contextMenu 时，默认为 true。否则为 false
+   * @en Whether to allow close the popup by clicking the child node.When trigger contains click, contextMenu, the default is true. otherwise false
    */
   clickToClose?: boolean;
   /**
-   * @zh 是否在点击空白处（触发节点和弹出框以外的区域）时关闭弹出层。 关闭时会触发 `onVisibleChange`。
-   * @en Whether to allow close the popup by clicking the area outside the child node and the popup box.
+   * @zh 是否在点击空白处（触发节点和弹出框以外的区域）时关闭弹出层。 关闭时会触发 `onVisibleChange`。默认是在冒泡阶段触发该逻辑，可设置 `{ capture: true }` 指定捕获阶段触发
+   * @en Whether to allow close the popup by clicking the area outside the child node and the popup box.By default, this logic is triggered in the bubbling phase. You can set `{ capture: true }` to specify the triggering phase in the capture phase.
    * @defaultValue true
+   * @version `{ capture: boolean }` in `2.55.0`
    */
-  clickOutsideToClose?: boolean;
+  clickOutsideToClose?: boolean | { capture: boolean };
+  /**
+   * @zh 是否允许按 `ESC` 键关闭弹出框。
+   * @en Whether to allow close the popup by pressing `ESC`.
+   */
+  escToClose?: boolean;
+  /**
+   * @zh 是否在容器滚动时关闭弹出框
+   * @en Whether to close the popup when the container is scrolled
+   * @version 2.34.0
+   */
+  containerScrollToClose?: boolean;
   /**
    * @zh 按钮点击事件（`trigger` 包含 `click` 时生效）
    * @en Callback when click the child node. (Only work when `trigger` contains `click`)
    */
-  onClick?: (popupVisible: boolean) => void;
+  onClick?: (e) => void;
   /**
    * @zh 点击触发节点和弹出框以外的区域的回调。
    * @en Callback when click the area outside the child and the popup
@@ -212,6 +233,16 @@ export interface TriggerProps {
    * @en The html attributes of the arrow node
    */
   arrowProps?: HTMLAttributes<HTMLDivElement>;
+  /**
+   * @zh 是否在容器滚动时更新弹出框的位置
+   * @en Whether to update the popover's position when the container is scrolled
+   * @version 2.32.0
+   */
+  updateOnScroll?: boolean;
+  children?: ReactNode;
+  getTargetDOMNode?: () => HTMLElement;
+  __onExit?: (event) => void;
+  __onExited?: (event) => void;
 }
 
 export type MouseLocationType = { clientX: number; clientY: number };

@@ -8,8 +8,8 @@ export interface SpinProps {
   className?: string | string[];
   children?: ReactNode;
   /**
-   * @zh 是否为加载状态
-   * @en Whether is loading status
+   * @zh 是否为加载状态（仅在 `Spin` 有子节点时生效）
+   * @en Whether is loading status (Only works when `Spin` has children))
    */
   loading?: boolean;
   /**
@@ -42,4 +42,11 @@ export interface SpinProps {
    * @en Whether to use dot type animation
    */
   dot?: boolean;
+
+  /**
+   * @zh 是否为块级元素
+   * @en Whether it is a block-level element
+   * @version 2.29.0
+   */
+  block?: boolean;
 }

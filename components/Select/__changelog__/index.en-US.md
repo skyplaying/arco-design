@@ -1,3 +1,446 @@
+## 2.65.0
+
+2024-11-29
+
+### 🆕 Feature
+- `Select` / `Cascader` / `TreeSelect` components support displaying hidden tags in `Popover` form through `maxTagCount.showPopover` property([#2877](https://github.com/arco-design/arco-design/pull/2877))
+
+
+### 🐛 BugFix
+
+- Fixed the bug that after `maxTagCount` is set for `Select` / `Cascader` / `TreeSelect` components, drag and sort will cause some selected values ​​to be unselected. (Introduced in` 2.62.0`)([#2877](https://github.com/arco-design/arco-design/pull/2877))
+- Fixed a bug where `Select` component occasionally behaved abnormally when maxTag=responsive.([#2871](https://github.com/arco-design/arco-design/pull/2871))
+
+## 2.63.1
+
+2024-07-02
+
+### 🐛 BugFix
+
+- Fixed a bug where the selected item display was not updated in time when the `Select` component options changed (introduced in `2.63.0`)([#2732](https://github.com/arco-design/arco-design/pull/2732))
+
+## 2.63.0
+
+2024-06-11
+
+### 💎 Enhancement
+
+- Enhance the rendering performance of SelectView([#2690](https://github.com/arco-design/arco-design/pull/2690))
+
+### 🐛 BugFix
+
+- Fixed a bug in which the rendering node style is incorrect when `Select` renderTag and maxTagCount are used at the same time (introduced in `2.62.0`).([#2706](https://github.com/arco-design/arco-design/pull/2706))
+
+## 2.62.0
+
+2024-04-26
+
+### 💎 Enhancement
+
+- Optimize `Select` component focus control([#2657](https://github.com/arco-design/arco-design/pull/2657))
+
+### 🆕 Feature
+
+- `Select` supports responsive Tag number([#2656](https://github.com/arco-design/arco-design/pull/2656))
+
+## 2.60.2
+
+2024-03-01
+
+### 💅 Style
+
+- The font size of the selection box under the `large` size of the `Select` component is adjusted from `16px` to `14px`.([#2570](https://github.com/arco-design/arco-design/pull/2570))
+
+## 2.58.2
+
+2024-01-08
+
+### 🐛 BugFix
+
+- Fix the `effect` infinite loop that may occur in edge cases in `Select` after turning on `allowCreate`.([#2484](https://github.com/arco-design/arco-design/pull/2484))
+
+## 2.58.1
+
+2024-01-05
+
+### 🐛 BugFix
+
+- Fixed page error caused by updating the value to `undefined` when `allowCreate` is enabled `Select` single-mode.([#2473](https://github.com/arco-design/arco-design/pull/2473))
+
+## 2.57.2
+
+2023-12-22
+
+### 🐛 BugFix
+
+- Fixed the issue where the `creating` parameter of the `allowCreate.formatter` property of the `Select` is always `true` in single-select mode.([#2447](https://github.com/arco-design/arco-design/pull/2447))
+
+## 2.54.0
+
+2023-10-09
+
+### 🆕 Feature
+
+- The `Select` component supports setting width adaptation through the `autoWidth` property.([#2274](https://github.com/arco-design/arco-design/pull/2274))
+- The `allowCreate` property of `Select` allows passing in a `formatter` to format user-created options.([#2259](https://github.com/arco-design/arco-design/pull/2259))
+
+## 2.53.1
+
+2023-09-15
+
+### 🐛 BugFix
+
+- Fixed the issue that `Select` needs to be clicked twice to display the drop-down box in Firefox.([#2233](https://github.com/arco-design/arco-design/pull/2233))
+
+## 2.53.0
+
+2023-09-08
+
+### 🐛 BugFix
+
+- Fix the bug that after the `Select` search text is changed, pressing Enter will uncheck the previously selected option.([#2217](https://github.com/arco-design/arco-design/pull/2217))
+
+## 2.52.2
+
+2023-09-01
+
+### 🐛 BugFix
+
+- Fix the issue that when the `Select` is used with `renderFormat` and `showSearch`, the drop-down box needs to be clicked twice to pop up.([#2190](https://github.com/arco-design/arco-design/pull/2190))
+
+## 2.52.0
+
+2023-08-18
+
+### 🆕 Feature
+
+- `Select` adds `onSelect` callback (only valid for multi-select mode).([#2157](https://github.com/arco-design/arco-design/pull/2157))
+- `Select` adjusts `defaultActiveFirstOption` to also take effect for the selected option.([#2157](https://github.com/arco-design/arco-design/pull/2157))
+
+### 🐛 BugFix
+
+- Fix the problem that the drop-down box in the `<input>` area cannot be expanded when the multi-selection `Select` is set to `showSearch=false` in Chrome 116+.([#2156](https://github.com/arco-design/arco-design/pull/2156))
+
+## 2.51.1
+
+2023-08-04
+
+### 🐛 BugFix
+
+- Fix the issue that `Select` lost width after focusing if its width is `auto` and has a selected value.([#2122](https://github.com/arco-design/arco-design/pull/2122))
+
+## 2.50.2
+
+2023-07-21
+
+### 💎 Enhancement
+
+- `Select` still maintains its ability to open a virtual list when the option `label` is rich text but the width of the popup is set by `triggerProps.style`.([#2092](https://github.com/arco-design/arco-design/pull/2092))
+
+## 2.50.0
+
+2023-06-30
+
+### 🐛 BugFix
+
+- Fix `Select` component being affected by default properties set by `ConfigProvider.componentConfig.InputTag`.([#2064](https://github.com/arco-design/arco-design/pull/2064))
+
+## 2.47.2
+
+2023-05-06
+
+### 🐛 BugFix
+
+- Fix the error caused by inputing long text when `Select` is allowed to be created.([#1948](https://github.com/arco-design/arco-design/pull/1948))
+
+## 2.47.1
+
+2023-04-21
+
+### 🐛 BugFix
+
+- Fix the problem that the width of `Select` is slowly restored after the value is cleared in multi-selection mode.([#1935](https://github.com/arco-design/arco-design/pull/1935))
+
+## 2.47.0
+
+2023-04-14
+
+### 🐛 BugFix
+
+- Fix the bug that setting the trigger mode of `Select` popup window to `focus` does not take effect.([#1915](https://github.com/arco-design/arco-design/pull/1915))
+
+## 2.46.3
+
+2023-04-07
+
+### 🐛 BugFix
+
+- Fix the problem that `Select` will be focused when clicking the close button of `Tag` to delete the option in the multi-select mode.([#1894](https://github.com/arco-design/arco-design/pull/1894))
+
+## 2.46.1
+
+2023-03-24
+
+### 🐛 BugFix
+
+- Fix `Select` multi-selection mode, when the first option is selected, the drop-down box shakes.([#1863](https://github.com/arco-design/arco-design/pull/1863))
+
+## 2.46.0
+
+2023-03-17
+
+### 🆕 Feature
+
+- `Select` component `ref` add new `scrollIntoView` method to support scrolling the list to the specified option.([#1843](https://github.com/arco-design/arco-design/pull/1843))
+
+## 2.45.2
+
+2023-03-10
+
+### 🐛 BugFix
+
+- Fix the problem that when the `Select` component `dragToSort` and `maxTagCount` are used together, the drag sorting result is abnormal.([#1830](https://github.com/arco-design/arco-design/pull/1830))
+
+## 2.45.1
+
+2023-03-01
+
+### 🐛 BugFix
+
+- Fix the problem that the option is not displayed in the drop-down list when the content of the `Select` option is an empty string.([#1807](https://github.com/arco-design/arco-design/pull/1807))
+
+## 2.45.0
+
+2023-02-17
+
+### 💎 Enhancement
+
+- Optimize the issue that `Select` user-created option not updated if the search result returns an option with the same `option.value`([#1788](https://github.com/arco-design/arco-design/pull/1788))
+
+## 2.44.1
+
+2023-02-03
+
+### 💎 Enhancement
+
+- Optimize `Select` drop-down box jittering due to out-of-focus after searching/creating options.([#1747](https://github.com/arco-design/arco-design/pull/1747))
+
+## 2.43.2
+
+2023-01-06
+
+### 💎 Enhancement
+
+- Optimize the empty string display of `Select` component option value.([#1703](https://github.com/arco-design/arco-design/pull/1703))
+
+## 2.42.2
+
+2022-12-09
+
+### 💎 Enhancement
+
+- `Select` allows to show dropdown when `allowCreate` is enabled and no option data is present.([#1640](https://github.com/arco-design/arco-design/pull/1640))
+
+## 2.42.0
+
+2022-11-25
+
+### 🐛 BugFix
+
+- Fix the problem that when `showSearch = true` in Firefox browser, Select needs to be clicked twice to pop up the drop-down box.([#1569](https://github.com/arco-design/arco-design/pull/1569))
+
+## 2.41.1
+
+2022-11-04
+
+### 🐛 BugFix
+
+- Fixed `Select` component showing `placeholder` as `value` bug when `value = ''`.([#1536](https://github.com/arco-design/arco-design/pull/1536))
+
+### 💅 Style
+
+- Fixed `Select` vertical alignment problem when used in `Input.Group`.([#1534](https://github.com/arco-design/arco-design/pull/1534))
+
+## 2.41.0
+
+2022-10-28
+
+### 🆕 Feature
+
+- The `Select` component supports setting the front tag through the `addBefore` property([#1464](https://github.com/arco-design/arco-design/pull/1464))
+
+### 🐛 BugFix
+
+- Fix the bug that the width of `Select` does not automatically change with the content when `width: auto` is set. (In the single-selection mode, the new DOM node in the inner layer directly wraps the `.arco-select-view-value` and `input` tags)([#1490](https://github.com/arco-design/arco-design/pull/1490))
+
+## 2.40.0
+
+2022-09-16
+
+### 🆕 Feature
+
+- The `Select` component supports listening to the `onKeyDown` callback.([#1360](https://github.com/arco-design/arco-design/pull/1360))
+
+## 2.39.2
+
+2022-08-26
+
+### 💎 Enhancement
+
+- Make sure that the keyboard shortcuts are still available when the `Select` component uses `dropdownRender` to customize the dropdown box content and gets the page focus.([#1328](https://github.com/arco-design/arco-design/pull/1328))
+
+## 2.39.1
+
+2022-08-19
+
+### 💅 Style
+
+- Unify the style of the right arrow in `Select` multi-select and single-select modes.([#1302](https://github.com/arco-design/arco-design/pull/1302))
+
+## 2.38.0
+
+2022-07-29
+
+### 🐛 BugFix
+
+- Fixed  flickering "no data" placeholder when `allowCreate` in Select.([#1184](https://github.com/arco-design/arco-design/pull/1184))
+
+## 2.37.2
+
+2022-07-22
+
+### 🐛 BugFix
+
+- Fixed an issue where the `onInputValueChange` callback might not be triggered in the `inputValue` controlled mode of the `Select` component.([#1178](https://github.com/arco-design/arco-design/pull/1178))
+
+## 2.37.0
+
+2022-07-08
+
+### 🆕 Feature
+
+- The `Select` component supports customizing the `maxTag` content display through the `maxTagCount` property of the object type([#1112](https://github.com/arco-design/arco-design/pull/1112))
+
+## 2.35.1
+
+2022-06-17
+
+### 💎 Enhancement
+
+- The `Select` component uses the Dom Attribute to mark options that the user is creating and has already created.([#1011](https://github.com/arco-design/arco-design/pull/1011))
+
+## 2.35.0
+
+2022-06-10
+
+### 🐛 BugFix
+
+- Fixed the bug that the callback parameter was wrong when the `Select` component set `LabelInValue`.([#953](https://github.com/arco-design/arco-design/pull/953))
+
+## 2.32.2
+
+2022-04-29
+
+### 🐛 BugFix
+
+- Fixed an issue where the matched option text was not highlighted when the `Select` component searched.([#808](https://github.com/arco-design/arco-design/pull/808))
+
+## 2.32.0
+
+2022-04-15
+
+### 🐛 BugFix
+
+- Fixed the bug that `onMouseEnter` and `onMouseLeave` of `Select.Option` not works.([#729](https://github.com/arco-design/arco-design/pull/729))
+
+## 2.31.0
+
+2022-03-25
+
+### 🆕 Feature
+
+- `Select` component's `triggerElement` property allows passing in a function to customize the component trigger node.([#686](https://github.com/arco-design/arco-design/pull/686))
+
+## 2.30.1
+
+2022-03-11
+
+### 🐛 BugFix
+
+- Fix the bug that the Tag animation fails when `Select` is multiple mode.([#630](https://github.com/arco-design/arco-design/pull/630))
+- Fix the bug that the options of `Select` with `maxTagCount` are not unchecked in the correct order when press `Backspace`.([#630](https://github.com/arco-design/arco-design/pull/630))
+
+## 2.28.2
+
+2022-01-21
+
+### 🐛 BugFix
+
+- `Select` fixes an issue where automatic word segmentation introduced new options when `allowCreate` was `false`.([#466](https://github.com/arco-design/arco-design/pull/466))
+
+## 2.28.1
+
+2022-01-14
+
+### 💎 Optimization
+
+- `Select` optimizes the rendering behavior of `labelInValue` when the initial value is specified as an object.([#448](https://github.com/arco-design/arco-design/pull/448))
+- Disable browser autocomplete for `Select`.([#439](https://github.com/arco-design/arco-design/pull/439))
+- `Select.Option` allows no child nodes to be passed in.([#419](https://github.com/arco-design/arco-design/pull/419))
+
+## 2.27.2
+
+2021-12-31
+
+### 🐛 BugFix
+
+- `Select` fixes the bug that disabled options can be selected by user input when `allowCreate = true`.([#373](https://github.com/arco-design/arco-design/pull/373))
+
+## 2.27.1
+
+2021-12-24
+
+### 🐛 BugFix
+
+- Fix the bug that the text in the input box is not cleared after blur when the `popupVisible` of the `Select` is `false`.([#359](https://github.com/arco-design/arco-design/pull/359))
+
+## 2.27.0
+
+2021-12-17
+
+### 🆕 Feature
+
+- `Select` adds `dragToSort` property to support sorting the entered value by dragging.([#325](https://github.com/arco-design/arco-design/pull/325))
+
+## 2.26.1
+
+2021-12-07
+
+### 🐛 BugFix
+
+- Fix the bug that the `prefix` node loses the style of `font-size` when the `Select` component is multi-selected.([#284](https://github.com/arco-design/arco-design/pull/284))
+
+## 2.26.0
+
+2021-12-03
+
+### 🆕 Feature
+
+- `Select` adds the `clearIcon` property to customize the clear button icon.([#256](https://github.com/arco-design/arco-design/pull/256))
+
+### 🐛 BugFix
+
+- `Select` fixes the bug that the parameter of the `renderFormat` callback does not return an object when the `labelInValue` is `true`.([#257](https://github.com/arco-design/arco-design/pull/257))
+
+## 2.24.1
+
+2021-11-12
+
+### 🐛 BugFix
+
+- `Select` fixes the problem that users cannot cover the height of the pop-up window in the CSS file.([#148](https://github.com/arco-design/arco-design/pull/148))
+- `Select` Fix the problem of abnormal positioning of virtual list in single mode.([#148](https://github.com/arco-design/arco-design/pull/148))
+
 ## 2.23.5
 
 2021-10-29

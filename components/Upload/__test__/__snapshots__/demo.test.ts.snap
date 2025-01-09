@@ -25,13 +25,13 @@ exports[`renders Upload/demo/avatar.md correctly 1`] = `
               class="arco-upload-trigger-picture-text"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-plus"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M5 24h38M24 5v38"
@@ -65,17 +65,18 @@ exports[`renders Upload/demo/basic.md correctly 1`] = `
         class="arco-upload-trigger"
       >
         <button
+          aria-label="点击上传"
           class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
           type="button"
         >
           <svg
+            aria-hidden="true"
             class="arco-icon arco-icon-upload"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
               d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -104,18 +105,19 @@ exports[`renders Upload/demo/basic.md correctly 1`] = `
         class="arco-upload-trigger"
       >
         <button
+          aria-label="点击上传"
           class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-btn-disabled arco-upload-trigger-with-icon"
           disabled=""
           type="button"
         >
           <svg
+            aria-hidden="true"
             class="arco-icon arco-icon-upload"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
               d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -148,17 +150,18 @@ exports[`renders Upload/demo/beforeUpload.md correctly 1`] = `
       class="arco-upload-trigger"
     >
       <button
+        aria-label="点击上传"
         class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
         type="button"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-upload"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -195,19 +198,21 @@ exports[`renders Upload/demo/crop.md correctly 1`] = `
         class="arco-upload-trigger-picture-wrapper"
       >
         <div
+          aria-label="点击上传"
           class="arco-upload-trigger-picture"
+          tabindex="0"
         >
           <div
             class="arco-upload-trigger-picture-text"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-plus"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M5 24h38M24 5v38"
@@ -234,17 +239,18 @@ Array [
       class="arco-upload-trigger"
     >
       <button
+        aria-label="点击上传"
         class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
         type="button"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-upload"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -269,26 +275,26 @@ exports[`renders Upload/demo/directory.md correctly 1`] = `
       class="arco-upload arco-upload-type-text"
     >
       <input
-        directory="directory"
         style="display:none"
         type="file"
-        webkitdirectory="webkitdirectory"
+        webkitdirectory="true"
       />
       <div
         class="arco-upload-trigger"
       >
         <button
+          aria-label="点击上传"
           class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
           type="button"
         >
           <svg
+            aria-hidden="true"
             class="arco-icon arco-icon-upload"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
               d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -322,17 +328,18 @@ Array [
       class="arco-upload-trigger"
     >
       <div
+        aria-label="点击或拖拽文件到此处上传"
         class="arco-upload-trigger-drag"
-        draggable="false"
+        tabindex="0"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-plus"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M5 24h38M24 5v38"
@@ -346,7 +353,7 @@ Array [
         <div
           class="arco-upload-trigger-tip"
         >
-          Only pdf, png, jpg can be uploaded, and the size does not exceed 100MB
+          Only pictures can be uploaded
         </div>
       </div>
     </div>
@@ -367,6 +374,7 @@ exports[`renders Upload/demo/icon.md correctly 1`] = `
     
   <div
     class="arco-radio-group arco-radio-size-default arco-radio-mode-outline"
+    role="radiogroup"
     style="margin-left:20px;margin-bottom:20px"
   >
     <label
@@ -447,17 +455,18 @@ exports[`renders Upload/demo/icon.md correctly 1`] = `
         class="arco-upload-trigger"
       >
         <button
+          aria-label="点击上传"
           class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
           type="button"
         >
           <svg
+            aria-hidden="true"
             class="arco-icon arco-icon-upload"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
               d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -488,13 +497,13 @@ exports[`renders Upload/demo/icon.md correctly 1`] = `
                 class="arco-upload-list-file-icon"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-file-audio"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M37 42H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2Z"
@@ -521,13 +530,13 @@ exports[`renders Upload/demo/icon.md correctly 1`] = `
               class="arco-upload-list-success-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-check"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M41.678 11.05 19.05 33.678 6.322 20.95"
@@ -540,19 +549,21 @@ exports[`renders Upload/demo/icon.md correctly 1`] = `
           class="arco-upload-list-item-operation"
         >
           <span
-            class="arco-icon-hover"
+            aria-label="删除"
+            class="arco-icon-hover arco-upload-list-remove-icon-hover"
+            tabindex="0"
           >
             <span
               class="arco-upload-list-remove-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-close"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -578,13 +589,13 @@ exports[`renders Upload/demo/icon.md correctly 1`] = `
                 class="arco-upload-list-file-icon"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-file-audio"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M37 42H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2Z"
@@ -611,13 +622,13 @@ exports[`renders Upload/demo/icon.md correctly 1`] = `
               class="arco-upload-list-success-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-check"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M41.678 11.05 19.05 33.678 6.322 20.95"
@@ -630,19 +641,21 @@ exports[`renders Upload/demo/icon.md correctly 1`] = `
           class="arco-upload-list-item-operation"
         >
           <span
-            class="arco-icon-hover"
+            aria-label="删除"
+            class="arco-icon-hover arco-upload-list-remove-icon-hover"
+            tabindex="0"
           >
             <span
               class="arco-upload-list-remove-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-close"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -671,17 +684,18 @@ Array [
       class="arco-upload-trigger"
     >
       <button
+        aria-label="点击上传"
         class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
         type="button"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-upload"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -780,17 +794,18 @@ exports[`renders Upload/demo/onRemove.md correctly 1`] = `
       class="arco-upload-trigger"
     >
       <button
+        aria-label="点击上传"
         class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
         type="button"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-upload"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -821,13 +836,13 @@ exports[`renders Upload/demo/onRemove.md correctly 1`] = `
               class="arco-upload-list-file-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-file-image"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="m26 33 5-6v6h-5Zm0 0-3-4-4 4h7Zm11 9H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2ZM17 19h1v1h-1v-1Z"
@@ -847,13 +862,13 @@ exports[`renders Upload/demo/onRemove.md correctly 1`] = `
             class="arco-upload-list-success-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-check"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M41.678 11.05 19.05 33.678 6.322 20.95"
@@ -866,19 +881,21 @@ exports[`renders Upload/demo/onRemove.md correctly 1`] = `
         class="arco-upload-list-item-operation"
       >
         <span
-          class="arco-icon-hover"
+          aria-label="删除"
+          class="arco-icon-hover arco-upload-list-remove-icon-hover"
+          tabindex="0"
         >
           <span
             class="arco-upload-list-remove-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-delete"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -904,13 +921,13 @@ exports[`renders Upload/demo/onRemove.md correctly 1`] = `
               class="arco-upload-list-file-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-file-image"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="m26 33 5-6v6h-5Zm0 0-3-4-4 4h7Zm11 9H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2ZM17 19h1v1h-1v-1Z"
@@ -930,13 +947,13 @@ exports[`renders Upload/demo/onRemove.md correctly 1`] = `
             class="arco-upload-list-success-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-check"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M41.678 11.05 19.05 33.678 6.322 20.95"
@@ -949,19 +966,21 @@ exports[`renders Upload/demo/onRemove.md correctly 1`] = `
         class="arco-upload-list-item-operation"
       >
         <span
-          class="arco-icon-hover"
+          aria-label="删除"
+          class="arco-icon-hover arco-upload-list-remove-icon-hover"
+          tabindex="0"
         >
           <span
             class="arco-upload-list-remove-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-delete"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -989,17 +1008,18 @@ exports[`renders Upload/demo/pictureList.md correctly 1`] = `
       class="arco-upload-trigger"
     >
       <button
+        aria-label="点击上传"
         class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
         type="button"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-upload"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -1046,13 +1066,13 @@ exports[`renders Upload/demo/pictureList.md correctly 1`] = `
             class="arco-upload-list-success-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-check"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M41.678 11.05 19.05 33.678 6.322 20.95"
@@ -1065,19 +1085,21 @@ exports[`renders Upload/demo/pictureList.md correctly 1`] = `
         class="arco-upload-list-item-operation"
       >
         <span
-          class="arco-icon-hover"
+          aria-label="删除"
+          class="arco-icon-hover arco-upload-list-remove-icon-hover"
+          tabindex="0"
         >
           <span
             class="arco-upload-list-remove-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-delete"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -1103,25 +1125,30 @@ exports[`renders Upload/demo/preview.md correctly 1`] = `
         class="arco-upload-list-item-picture"
       >
         <img
+          alt="20200717-103937.png"
           src="//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a8c8cdb109cb051163646151a4a5083b.png~tplv-uwbnlip3yd-webp.webp"
         />
         <div
           class="arco-upload-list-item-picture-mask"
+          role="radiogroup"
         >
           <div
             class="arco-upload-list-item-picture-operation"
           >
             <span
+              aria-label="预览"
               class="arco-upload-list-preview-icon"
+              role="button"
+              tabindex="0"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-eye"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   clip-rule="evenodd"
@@ -1133,16 +1160,19 @@ exports[`renders Upload/demo/preview.md correctly 1`] = `
               </svg>
             </span>
             <span
+              aria-label="删除"
               class="arco-upload-list-remove-icon"
+              role="button"
+              tabindex="0"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-delete"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -1160,25 +1190,30 @@ exports[`renders Upload/demo/preview.md correctly 1`] = `
         class="arco-upload-list-item-picture"
       >
         <img
+          alt="hahhahahahaha.png"
           src="//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/e278888093bef8910e829486fb45dd69.png~tplv-uwbnlip3yd-webp.webp"
         />
         <div
           class="arco-upload-list-item-picture-mask"
+          role="radiogroup"
         >
           <div
             class="arco-upload-list-item-picture-operation"
           >
             <span
+              aria-label="预览"
               class="arco-upload-list-preview-icon"
+              role="button"
+              tabindex="0"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-eye"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   clip-rule="evenodd"
@@ -1190,16 +1225,19 @@ exports[`renders Upload/demo/preview.md correctly 1`] = `
               </svg>
             </span>
             <span
+              aria-label="删除"
               class="arco-upload-list-remove-icon"
+              role="button"
+              tabindex="0"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-delete"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -1226,19 +1264,21 @@ exports[`renders Upload/demo/preview.md correctly 1`] = `
         class="arco-upload-trigger-picture-wrapper"
       >
         <div
+          aria-label="点击上传"
           class="arco-upload-trigger-picture"
+          tabindex="0"
         >
           <div
             class="arco-upload-trigger-picture-text"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-plus"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M5 24h38M24 5v38"
@@ -1268,17 +1308,18 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
       class="arco-upload-trigger"
     >
       <button
+        aria-label="点击上传"
         class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
         type="button"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-upload"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -1309,13 +1350,13 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
               class="arco-upload-list-file-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-file-image"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="m26 33 5-6v6h-5Zm0 0-3-4-4 4h7Zm11 9H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2ZM17 19h1v1h-1v-1Z"
@@ -1343,7 +1384,11 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
                 class="arco-progress-line-wrapper"
               >
                 <div
+                  aria-valuemax="100"
+                  aria-valuemin="0"
+                  aria-valuenow="0"
                   class="arco-progress-line-outer"
+                  role="progressbar"
                   style="height:3px"
                 >
                   <div
@@ -1359,7 +1404,10 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
               </div>
             </div>
             <span
+              aria-label="开始"
               class="arco-upload-list-start-icon"
+              role="button"
+              tabindex="0"
             >
               <button
                 class="arco-btn arco-btn-text arco-btn-size-mini arco-btn-shape-square"
@@ -1377,19 +1425,21 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
         class="arco-upload-list-item-operation"
       >
         <span
-          class="arco-icon-hover"
+          aria-label="删除"
+          class="arco-icon-hover arco-upload-list-remove-icon-hover"
+          tabindex="0"
         >
           <span
             class="arco-upload-list-remove-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-delete"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -1415,13 +1465,13 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
               class="arco-upload-list-file-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-file-image"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="m26 33 5-6v6h-5Zm0 0-3-4-4 4h7Zm11 9H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2ZM17 19h1v1h-1v-1Z"
@@ -1440,13 +1490,13 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
               class="arco-upload-list-error-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-exclamation-circle-fill"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   clip-rule="evenodd"
@@ -1459,7 +1509,10 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
             </span>
           </div>
           <span
+            aria-label="点击重试"
             class="arco-upload-list-reupload-icon"
+            role="button"
+            tabindex="0"
           >
             <button
               class="arco-btn arco-btn-text arco-btn-size-mini arco-btn-shape-square"
@@ -1482,7 +1535,11 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
                 class="arco-progress-line-wrapper"
               >
                 <div
+                  aria-valuemax="100"
+                  aria-valuemin="0"
+                  aria-valuenow="0"
                   class="arco-progress-line-outer"
+                  role="progressbar"
                   style="height:3px"
                 >
                   <div
@@ -1496,13 +1553,13 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
                   <span>
                     0% 
                     <svg
+                      aria-hidden="true"
                       class="arco-icon arco-icon-exclamation-circle-fill"
                       fill="none"
-                      height="1em"
+                      focusable="false"
                       stroke="currentColor"
                       stroke-width="4"
                       viewBox="0 0 48 48"
-                      width="1em"
                     >
                       <path
                         clip-rule="evenodd"
@@ -1523,19 +1580,21 @@ exports[`renders Upload/demo/progress.md correctly 1`] = `
         class="arco-upload-list-item-operation"
       >
         <span
-          class="arco-icon-hover"
+          aria-label="删除"
+          class="arco-icon-hover arco-upload-list-remove-icon-hover"
+          tabindex="0"
         >
           <span
             class="arco-upload-list-remove-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-delete"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -1562,17 +1621,18 @@ exports[`renders Upload/demo/renderUploadList.md correctly 1`] = `
       class="arco-upload-trigger"
     >
       <button
+        aria-label="点击上传"
         class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
         type="button"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-upload"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -1632,14 +1692,14 @@ exports[`renders Upload/demo/renderUploadList.md correctly 1`] = `
                   >
                     <div>
                       <svg
+                        aria-hidden="true"
                         class="arco-icon arco-icon-eye"
                         fill="none"
-                        height="1em"
+                        focusable="false"
                         stroke="currentColor"
                         stroke-width="4"
                         style="font-size:12px"
                         viewBox="0 0 48 48"
-                        width="1em"
                       >
                         <path
                           clip-rule="evenodd"
@@ -1656,14 +1716,14 @@ exports[`renders Upload/demo/renderUploadList.md correctly 1`] = `
                   >
                     <div>
                       <svg
+                        aria-hidden="true"
                         class="arco-icon arco-icon-delete"
                         fill="none"
-                        height="1em"
+                        focusable="false"
                         stroke="currentColor"
                         stroke-width="4"
                         style="font-size:12px"
                         viewBox="0 0 48 48"
-                        width="1em"
                       >
                         <path
                           d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -1719,14 +1779,14 @@ exports[`renders Upload/demo/renderUploadList.md correctly 1`] = `
                   >
                     <div>
                       <svg
+                        aria-hidden="true"
                         class="arco-icon arco-icon-eye"
                         fill="none"
-                        height="1em"
+                        focusable="false"
                         stroke="currentColor"
                         stroke-width="4"
                         style="font-size:12px"
                         viewBox="0 0 48 48"
-                        width="1em"
                       >
                         <path
                           clip-rule="evenodd"
@@ -1743,14 +1803,14 @@ exports[`renders Upload/demo/renderUploadList.md correctly 1`] = `
                   >
                     <div>
                       <svg
+                        aria-hidden="true"
                         class="arco-icon arco-icon-delete"
                         fill="none"
-                        height="1em"
+                        focusable="false"
                         stroke="currentColor"
                         stroke-width="4"
                         style="font-size:12px"
                         viewBox="0 0 48 48"
-                        width="1em"
                       >
                         <path
                           d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -1790,11 +1850,11 @@ exports[`renders Upload/demo/trigger.md correctly 1`] = `
           class="trigger"
         >
           <div>
-            Drag the file here or 
+            Drag the file here or
             <span
-              style="color:#3370FF"
+              style="color:#3370FF;padding:0 4px"
             >
-               Click to upload
+              Click to upload
             </span>
           </div>
         </div>
@@ -1821,17 +1881,18 @@ exports[`renders Upload/demo/uploadList.md correctly 1`] = `
       class="arco-upload-trigger"
     >
       <button
+        aria-label="点击上传"
         class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-upload-trigger-with-icon"
         type="button"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-upload"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M14.93 17.071 24.001 8l9.071 9.071m-9.07 16.071v-25M40 35v6H8v-6"
@@ -1862,13 +1923,13 @@ exports[`renders Upload/demo/uploadList.md correctly 1`] = `
               class="arco-upload-list-file-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-file-image"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="m26 33 5-6v6h-5Zm0 0-3-4-4 4h7Zm11 9H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2ZM17 19h1v1h-1v-1Z"
@@ -1888,13 +1949,13 @@ exports[`renders Upload/demo/uploadList.md correctly 1`] = `
             class="arco-upload-list-success-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-check"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M41.678 11.05 19.05 33.678 6.322 20.95"
@@ -1907,19 +1968,157 @@ exports[`renders Upload/demo/uploadList.md correctly 1`] = `
         class="arco-upload-list-item-operation"
       >
         <span
-          class="arco-icon-hover"
+          aria-label="删除"
+          class="arco-icon-hover arco-upload-list-remove-icon-hover"
+          tabindex="0"
         >
           <span
             class="arco-upload-list-remove-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-delete"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
+            >
+              <path
+                d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
+              />
+            </svg>
+          </span>
+        </span>
+      </div>
+    </div>
+    <div
+      class="arco-upload-list-item arco-upload-list-item-error"
+    >
+      <div
+        class="arco-upload-list-item-text"
+      >
+        <div
+          class="arco-upload-list-item-text-content"
+        >
+          <div
+            class="arco-upload-list-item-text-name"
+          >
+            <span
+              class="arco-upload-list-file-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-file-image"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="m26 33 5-6v6h-5Zm0 0-3-4-4 4h7Zm11 9H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2ZM17 19h1v1h-1v-1Z"
+                />
+              </svg>
+            </span>
+            <a
+              class="arco-upload-list-item-text-name-link"
+              href="//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/e278888093bef8910e829486fb45dd69.png~tplv-uwbnlip3yd-webp.webp"
+              rel="noreferrer"
+              target="_blank"
+            >
+              cat.png
+            </a>
+            <span
+              class="arco-upload-list-error-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-exclamation-circle-fill"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4 4 12.954 4 24s8.954 20 20 20Zm-2-11a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v2Zm4-18a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V15Z"
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  stroke="none"
+                />
+              </svg>
+            </span>
+          </div>
+          <span
+            aria-label="点击重试"
+            class="arco-upload-list-reupload-icon"
+            role="button"
+            tabindex="0"
+          >
+            点击重试
+          </span>
+          <div
+            class="arco-upload-list-status"
+          >
+            <div
+              class="arco-progress arco-progress-circle arco-progress-mini arco-progress-is-error arco-upload-list-progress"
+            >
+              <div
+                aria-valuemax="100"
+                aria-valuemin="0"
+                aria-valuenow="0"
+                class="arco-progress-circle-wrapper"
+                role="progressbar"
+                style="width:16px;height:16px"
+              >
+                <svg
+                  class="arco-progress-circle-svg"
+                  viewBox="0 0 16 16"
+                >
+                  <circle
+                    class="arco-progress-circle-mask"
+                    cx="8"
+                    cy="8"
+                    fill="none"
+                    r="4"
+                    stroke-width="8"
+                  />
+                  <circle
+                    class="arco-progress-circle-path"
+                    cx="8"
+                    cy="8"
+                    fill="none"
+                    r="4"
+                    stroke-width="8"
+                    style="stroke-dasharray:25.132741228718345;stroke-dashoffset:25.132741228718345"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="arco-upload-list-item-operation"
+      >
+        <span
+          aria-label="删除"
+          class="arco-icon-hover arco-upload-list-remove-icon-hover"
+          tabindex="0"
+        >
+          <span
+            class="arco-upload-list-remove-icon"
+          >
+            <svg
+              aria-hidden="true"
+              class="arco-icon arco-icon-delete"
+              fill="none"
+              focusable="false"
+              stroke="currentColor"
+              stroke-width="4"
+              viewBox="0 0 48 48"
             >
               <path
                 d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"
@@ -1945,13 +2144,13 @@ exports[`renders Upload/demo/uploadList.md correctly 1`] = `
               class="arco-upload-list-file-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-file-image"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="m26 33 5-6v6h-5Zm0 0-3-4-4 4h7Zm11 9H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h21l7 7v27a2 2 0 0 1-2 2ZM17 19h1v1h-1v-1Z"
@@ -1971,13 +2170,13 @@ exports[`renders Upload/demo/uploadList.md correctly 1`] = `
             class="arco-upload-list-success-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-check"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M41.678 11.05 19.05 33.678 6.322 20.95"
@@ -1990,19 +2189,21 @@ exports[`renders Upload/demo/uploadList.md correctly 1`] = `
         class="arco-upload-list-item-operation"
       >
         <span
-          class="arco-icon-hover"
+          aria-label="删除"
+          class="arco-icon-hover arco-upload-list-remove-icon-hover"
+          tabindex="0"
         >
           <span
             class="arco-upload-list-remove-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-delete"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M5 11h5.5m0 0v29a1 1 0 0 0 1 1h25a1 1 0 0 0 1-1V11m-27 0H16m21.5 0H43m-5.5 0H32m-16 0V7h16v4m-16 0h16M20 18v15m8-15v15"

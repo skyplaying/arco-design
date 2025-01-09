@@ -31,7 +31,7 @@
       height: 40px;
       line-height: 40px;
       border-bottom: @picker-panel-border-width solid @picker-panel-color-border;
-      color: var(--color-text-1);
+      color: var(~'@{arco-cssvars-prefix}-color-text-1');
     }
 
     .@{time-picker-prefix-cls} {
@@ -52,8 +52,7 @@
       }
 
       ul::after {
-        height: @datepicker-timepicker-height - @timepicker-cell-height - @timepicker-cell-spacing *
-          2;
+        height: @datepicker-timepicker-height - @timepicker-cell-height - @timepicker-cell-spacing;
       }
 
       &-cell {

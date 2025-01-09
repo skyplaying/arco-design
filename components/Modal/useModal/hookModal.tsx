@@ -12,7 +12,9 @@ function HookModal(props, ref) {
   const [config, setConfig] = useState<ConfirmProps>(props);
 
   useImperativeHandle(ref, () => ({
-    update: setConfig,
+    update: (config: ConfirmProps) => {
+      setConfig(config);
+    },
     close: () => {
       setVisible(false);
     },
@@ -21,20 +23,20 @@ function HookModal(props, ref) {
   function onOk() {
     const ret = config.onOk && config.onOk();
     if (ret && ret.then) {
-      setConfig({
+      setConfig((config) => ({
         ...config,
         confirmLoading: true,
-      });
+      }));
       ret.then(
         () => {
           setVisible(false);
         },
         (e: Error) => {
           console.error(e);
-          setConfig({
+          setConfig((config) => ({
             ...config,
             confirmLoading: false,
-          });
+          }));
         }
       );
     }
@@ -49,7 +51,7 @@ function HookModal(props, ref) {
   }
 
   return (
-    <Modal {...config} simple visible={visible} onOk={onOk} onCancel={onCancel} unmountOnExit>
+    <Modal unmountOnExit simple {...config} visible={visible} onOk={onOk} onCancel={onCancel}>
       {config.content}
     </Modal>
   );

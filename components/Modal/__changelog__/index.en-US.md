@@ -1,3 +1,110 @@
+## 2.53.2
+
+2023-09-22
+
+### 🐛 BugFix
+
+- Fixed a bug where re-rendering the component may trigger the loss of sub-component ref when the `Modal` component is hidden.([#2251](https://github.com/arco-design/arco-design/pull/2251))
+
+## 2.53.1
+
+2023-09-15
+
+### 💎 Enhancement
+
+- Export `ModalHookReturnType` type.([#2235](https://github.com/arco-design/arco-design/pull/2235))
+
+## 2.51.0
+
+2023-07-28
+
+### 🐛 BugFix
+
+- Fix the bug that when the `Modal` component sets `unmountOnExit=true` and closes the pop-up window, the outer node of the pop-up window is not `unmount` bug.([#2096](https://github.com/arco-design/arco-design/pull/2096) '')
+
+## 2.48.1
+
+2023-05-19
+
+### 🐛 BugFix
+
+- Fix the bug that internal popup component `zIndex` is calculated incorrectly when `Modal` is mounted for the first time.([#1977](https://github.com/arco-design/arco-design/pull/1977))
+
+## 2.42.1
+
+2022-12-02
+
+### 🐛 BugFix
+
+- Fix the bug that the popup layer is not displayed when `modal.confirm` returned by `Modal.useModal` is called in `useCallback`.([#1628](https://github.com/arco-design/arco-design/pull/1628))
+- Fix the bug that the icon is lost when the title of the popup layer created by `Modal.useModal` is updated by the `update` method([#1628](https://github.com/arco-design/arco-design/pull/1628))
+- Fix the bug that updating the content of the popup layer through `update` in Promise does not take effect when onOK is set to Promise for the popup layer created by `Modal.useModal`.([#1628](https://github.com/arco-design/arco-design/pull/1628))
+
+## 2.42.0
+
+2022-11-25
+
+### 🐛 BugFix
+
+- Fixed the bug that the config passed in when creating the popup layer was lost when the `Modal` component updated the popup content through the `update` method.([#1609](https://github.com/arco-design/arco-design/pull/1609))
+- Fixed a bug where the `.arco-modal-title` node was still rendered when `title={null}` & `icon={null}` were set when the `Modal` component created a popup layer through a static method.([#1609](https://github.com/arco-design/arco-design/pull/1609))
+
+## 2.40.2
+
+2022-09-30
+
+### 🐛 BugFix
+
+- Fix the bug of console warning when `Modal` component is uninstalled under React 18([#1440](https://github.com/arco-design/arco-design/pull/1440))
+
+## 2.40.1
+
+2022-09-23
+
+### 🐛 BugFix
+
+- Fix the bug that the `holderRef` of `useModal` may not exist([#1418](https://github.com/arco-design/arco-design/pull/1418))
+
+## 2.39.3
+
+2022-09-02
+
+### 🐛 BugFix
+
+- Fixed a bug where the `Modal` component was forced to lock the focus inside an `iframe`, causing the parent page to fail to get the focus.([#1359](https://github.com/arco-design/arco-design/pull/1359))
+
+## 2.39.1
+
+2022-08-19
+
+### 🐛 BugFix
+
+- Fix the bug that the method `update` returned by `useModal` is `undefined` when creating a modal instance.([#1300](https://github.com/arco-design/arco-design/pull/1300))
+
+## 2.35.0
+
+2022-06-10
+
+### 🐛 BugFix
+
+- Fixed a bug where the `simple` property passed in when the `Modal` component created a popup via `useModal` did not take effect.([#980](https://github.com/arco-design/arco-design/pull/980))
+
+## 2.32.0
+
+2022-04-15
+
+### 🐛 BugFix
+
+- Optimize 'Modal' closing all popover when closing with ESC([#629](https://github.com/arco-design/arco-design/pull/629))
+
+## 2.27.1
+
+2021-12-24
+
+### 🐛 BugFix
+
+- fix when `Modal` component  the visible is true, the locale does not work([#339](https://github.com/arco-design/arco-design/pull/339))
+
 ## 2.23.0
 
 2021-09-27

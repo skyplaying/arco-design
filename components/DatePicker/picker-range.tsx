@@ -1,29 +1,45 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import { Dayjs, UnitType, QUnitType } from 'dayjs';
 import Trigger from '../Trigger';
 import DateInputRange from '../_class/picker/input-range';
-import { RangePickerProps, ShortcutType, ModeType } from './interface';
-import { isArray, isDayjs, isObject } from '../_util/is';
+import { RangePickerProps, ShortcutType, ModeType, RangePickerHandle } from './interface';
+import { isArray, isDayjs, isObject, isUndefined } from '../_util/is';
 import cs from '../_util/classNames';
+import { pickDataAttributes } from '../_util/pick';
 import { ConfigContext } from '../ConfigProvider';
 import {
   getDayjsValue,
   getValueWithTime,
-  dayjs,
   getNow,
   methods,
   getSortedDayjsArray,
   isDayjsArrayChange,
-  initializeDateLocale,
-  getResolvedDayjsLocaleName,
+  toTimezone,
+  toLocal,
+  isValidTimeString,
 } from '../_util/dayjs';
 import IconCalendar from '../../icon/react-icon/IconCalendar';
 import IconCalendarClock from '../../icon/react-icon/IconCalendarClock';
 import RangePickerPanel from './panels/range';
 import Footer from './panels/footer';
 import Shortcuts from './panels/shortcuts';
-import { getAvailableDayjsLength } from './util';
+import {
+  getAvailableDayjsLength,
+  getDefaultWeekStart,
+  getLocaleDayjsValue,
+  getFormatByIndex,
+} from './util';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import usePrevious from '../_util/hooks/usePrevious';
+import useUpdate from '../_util/hooks/useUpdate';
+import PickerContext from './context';
 
 // get default format by mode
 function getFormat(props) {
@@ -60,11 +76,15 @@ const defaultProps: RangePickerProps = {
   position: 'bl',
   editable: true,
   mode: 'date',
-  dayStartOfWeek: 0,
 };
 
-const Picker = (baseProps: RangePickerProps) => {
-  const { getPrefixCls, locale, size: ctxSize, componentConfig } = useContext(ConfigContext);
+const triggerPopupAlign = { bottom: 4 };
+
+const Picker = (baseProps: RangePickerProps, ref) => {
+  const { getPrefixCls, locale, size: ctxSize, componentConfig, rtl } = useContext(ConfigContext);
+  if (rtl) {
+    defaultProps.position = 'br';
+  }
   const props = useMergeProps<RangePickerProps>(
     baseProps,
     defaultProps,
@@ -79,6 +99,7 @@ const Picker = (baseProps: RangePickerProps) => {
     disabled,
     position,
     error,
+    status,
     unmountOnExit,
     editable,
     triggerProps,
@@ -95,20 +116,24 @@ const Picker = (baseProps: RangePickerProps) => {
     onSelectShortcut,
     extra,
     shortcutsPlacementLeft,
-    dayStartOfWeek,
     onOk,
     defaultPickerValue,
     pickerValue,
+    panelRender,
     onPickerValueChange,
     triggerElement,
     clearRangeOnReselect,
+    separator,
+    utcOffset,
+    timezone,
+    inputProps,
   } = props;
 
   const prefixCls = getPrefixCls('picker-range');
 
-  const localeName = getResolvedDayjsLocaleName(locale.locale);
-
-  initializeDateLocale(localeName, dayStartOfWeek);
+  const weekStart = isUndefined(props.dayStartOfWeek)
+    ? getDefaultWeekStart(locale.dayjsLocale)
+    : props.dayStartOfWeek;
 
   const refInput = useRef(null);
   const refPanel = useRef(null);
@@ -117,9 +142,22 @@ const Picker = (baseProps: RangePickerProps) => {
   const shortcutEnterTimer = useRef(null);
   const shortcutLeaveTimer = useRef(null);
 
+  useImperativeHandle<any, RangePickerHandle>(
+    ref,
+    () => ({
+      focus(index?: number) {
+        refInput.current && refInput.current.focus && refInput.current.focus(index);
+      },
+      blur() {
+        refInput.current && refInput.current.blur && refInput.current.blur();
+      },
+    }),
+    []
+  );
+
   const format = getFormat(props);
 
-  // 获取半禁用时的序号
+  // get input index when half disabled
   function getAvailableInputIndex() {
     if (isArray(disabled)) {
       if (disabled[0] && !disabled[1]) {
@@ -136,10 +174,17 @@ const Picker = (baseProps: RangePickerProps) => {
 
   const disabledTimePickerIndex = isHalfAvailable ? 1 ^ availableInputIndex : undefined;
 
-  // 当前聚焦的输入框
+  // current focus index
   const [focusedInputIndex, setFocusedInputIndex] = useState<number>(
     isHalfAvailable ? availableInputIndex : 0
   );
+
+  useEffect(() => {
+    if (isHalfAvailable) {
+      setFocusedInputIndex(availableInputIndex);
+    }
+  }, [disabled]);
+
   const nextFocusedInputIndex = 1 ^ focusedInputIndex;
 
   const [inputValue, setInputValue] = useState<string | undefined>();
@@ -157,7 +202,7 @@ const Picker = (baseProps: RangePickerProps) => {
   const [isTimePanel, setIsTimePanel] = useState<boolean>(false);
 
   const mergedPopupVisible = 'popupVisible' in props ? props.popupVisible : popupVisible;
-  const propsValueDayjs = getDayjsValue(propsValue, format) as Dayjs[];
+  const propsValueDayjs = getDayjsValue(propsValue, format, utcOffset, timezone) as Dayjs[];
   const mergedValue = 'value' in props ? propsValueDayjs : value;
 
   const panelValue = shortcutsValue || valueShow || mergedValue || [];
@@ -168,26 +213,27 @@ const Picker = (baseProps: RangePickerProps) => {
   const firstRange = useRef<boolean>(true);
 
   const now = getNow();
+  const zoneNow = toTimezone(now, utcOffset, timezone);
 
   function getTimeValues(): Dayjs[] {
     const timeValues: Dayjs[] = [];
     const defaultTimeValue =
-      isObject(showTime) && showTime.defaultValue ? showTime.defaultValue : [];
-    timeValues[0] = panelValue[0] || defaultTimeValue[0] || now;
-    timeValues[1] = panelValue[1] || defaultTimeValue[1] || now;
+      isObject(showTime) && showTime.defaultValue
+        ? getDayjsValue(showTime.defaultValue, showTime.format || 'HH:mm:ss')
+        : [];
+    timeValues[0] = panelValue[0] || defaultTimeValue[0] || zoneNow;
+    timeValues[1] = panelValue[1] || defaultTimeValue[1] || zoneNow;
     return timeValues;
   }
 
   const timeValues = getTimeValues();
 
-  const initialDisabledDate = isHalfAvailable
+  const selectedDisabledDate = isHalfAvailable
     ? (current: Dayjs) =>
         availableInputIndex === 0
           ? current.isAfter(panelValue[1], mode as QUnitType)
           : current.isBefore(panelValue[0], mode as QUnitType)
     : undefined;
-
-  const selectedDisabledDate = useRef<(current?: Dayjs) => boolean>(initialDisabledDate);
 
   // if triggerElement !== undefined, we should activate clearRangeOnReselect by default
   const customTriggerElement = triggerElement !== undefined;
@@ -197,14 +243,14 @@ const Picker = (baseProps: RangePickerProps) => {
     let value;
 
     if (props.value) {
-      value = getDayjsValue(props.value, format);
+      value = getDayjsValue(props.value, format, utcOffset, timezone);
     } else {
-      value = getDayjsValue(props.defaultValue, format);
+      value = getDayjsValue(props.defaultValue, format, utcOffset, timezone);
     }
 
     if (isHalfAvailable && (!value || (value && !value[nextFocusedInputIndex]))) {
       const nv = [];
-      nv[nextFocusedInputIndex] = getNow();
+      nv[nextFocusedInputIndex] = getNow(utcOffset, timezone);
       return nv;
     }
 
@@ -212,15 +258,33 @@ const Picker = (baseProps: RangePickerProps) => {
   }
 
   const defaultPageShowDates = mergedValue ||
-    (getDayjsValue(defaultPickerValue, format) as Dayjs[]) || [getNow(), getNow()];
+    (getDayjsValue(defaultPickerValue, format) as Dayjs[]) || [now, now];
 
-  // 控制两个日期选择器面板显示的日期
+  // show date at two panels
   const [pageShowDates, setPageShowDates] = useState<Dayjs[]>(
     getShowDatesFromFocused(defaultPageShowDates)
   );
 
   const mergedPageShowDate =
-    getShowDatesFromFocused(getDayjsValue(pickerValue, format) as Dayjs[]) || pageShowDates;
+    getShowDatesFromFocused(getDayjsValue(pickerValue, format, utcOffset, timezone) as Dayjs[]) ||
+    pageShowDates;
+
+  const previousUtcOffset = usePrevious(utcOffset);
+  const previousTimezone = usePrevious(timezone);
+
+  // when timezone or utcOffset change changed
+  useUpdate(() => {
+    if (isArray(value) && (previousUtcOffset !== utcOffset || timezone !== previousTimezone)) {
+      const localValue = value.map((v) => toLocal(v, previousUtcOffset, previousTimezone));
+      const zoneValue = localValue.map((v) => toTimezone(v, utcOffset, timezone));
+      setValue(zoneValue);
+    }
+  }, [utcOffset, previousUtcOffset, timezone, previousTimezone]);
+
+  // panel open and change mode
+  useUpdate(() => {
+    setPageShowDates(getShowDatesFromFocused(defaultPageShowDates));
+  }, [mode]);
 
   useEffect(() => {
     setPanelModes([mode, mode]);
@@ -231,9 +295,11 @@ const Picker = (baseProps: RangePickerProps) => {
     setInputValue(undefined);
 
     if (mergedPopupVisible) {
+      const resetPageShowDates = getShowDatesFromFocused(defaultPageShowDates);
       setIsTimePanel(false);
       setPanelModes([mode, mode]);
-      setPageShowDates(getShowDatesFromFocused(defaultPageShowDates));
+      setPageShowDates(resetPageShowDates);
+      handlePickerValueChange(resetPageShowDates);
       setValueShow(mergedValue);
       if (shortcutsPlacementLeft) {
         refShortcuts.current.style.maxHeight = `${refPanel.current.clientHeight}px`;
@@ -242,21 +308,21 @@ const Picker = (baseProps: RangePickerProps) => {
       setValueShow(undefined);
       setValueShowHover(undefined);
       setShortcutsValue(undefined);
-      resetSelectedDisabledDate();
+      blurInput();
     }
     firstRange.current = mergedPopupVisible;
   }, [mergedPopupVisible]);
 
-  const startStr = propsValueDayjs?.[0]?.format(format);
-  const endStr = propsValueDayjs?.[1]?.format(format);
+  const startStr = propsValueDayjs?.[0]?.format(getFormatByIndex(format, 0));
+  const endStr = propsValueDayjs?.[1]?.format(getFormatByIndex(format, 1));
 
   useEffect(() => {
     setValueShow(undefined);
     setValueShowHover(undefined);
   }, [startStr, endStr]);
 
-  function setFixedPageShowDates(innerValue) {
-    const newPageShowDates = getShowDatesFromFocused(innerValue);
+  function setFixedPageShowDates(innerValue, index = focusedInputIndex) {
+    const newPageShowDates = getShowDatesFromFocused(innerValue, index);
     setPageShowDates(newPageShowDates);
     handlePickerValueChange(newPageShowDates);
   }
@@ -264,33 +330,27 @@ const Picker = (baseProps: RangePickerProps) => {
   function handlePickerValueChange(v: Dayjs[]) {
     if (!isSamePanel([v[0], pageShowDates[0]], mode)) {
       onPickerValueChange &&
-        onPickerValueChange(isArray(v) ? v.map((v) => v && v.format(format)) : undefined, v);
+        onPickerValueChange(
+          isArray(v) ? v.map((v, i) => v && v.format(getFormatByIndex(format, i))) : undefined,
+          v
+        );
     }
   }
 
   function getShowDatesFromFocused(dates?: Dayjs[], index = focusedInputIndex) {
     const prev = index === 0 || isSamePanel(dates, mode);
     if (isArray(dates) && dates.length < 2) {
-      return getPageShowDatesByValue(dates[0] || getNow(), mode, 'prev');
+      return getPageShowDatesByValue(dates[0] || getNow(utcOffset, timezone), mode, 'prev');
     }
     if (isArray(dates) && dates.length === 2) {
       if (dates[index]) {
         return getPageShowDatesByValue(dates[index], mode, prev ? 'prev' : 'next');
       }
       return getPageShowDatesByValue(
-        dates[index === 0 ? 1 : 0] || getNow(),
+        dates[index === 0 ? 1 : 0] || getNow(utcOffset, timezone),
         mode,
         prev && !dates[index === 0 ? 1 : 0] ? 'prev' : 'next'
       );
-    }
-  }
-
-  function setNestPageShowDates(dates: Dayjs[], pickerMode: ModeType, index: number) {
-    if (isArray(dates) && dates[index]) {
-      setPageShowDates(
-        getPageShowDatesByValue(dates[index], pickerMode, index === 0 ? 'prev' : 'next')
-      );
-      handlePickerValueChange(dates);
     }
   }
 
@@ -307,9 +367,9 @@ const Picker = (baseProps: RangePickerProps) => {
     }
   }
 
-  // 获取默认的面板显示日期
+  // get page show date by specify value
   function getPageShowDatesByValue(
-    value = getNow(),
+    value = getNow(utcOffset, timezone),
     pickerMode = mode,
     type: 'prev' | 'next' = 'prev'
   ) {
@@ -340,18 +400,20 @@ const Picker = (baseProps: RangePickerProps) => {
       refInput.current.focus(isHalfAvailable ? availableInputIndex : index);
   }
 
+  function blurInput() {
+    refInput.current && refInput.current.blur && refInput.current.blur();
+  }
+
   function visibleChange(visible) {
-    if (!('popupVisible' in props)) {
-      if (visible) {
-        setTimeout(() => focusInput());
-        setOpen(visible);
-      } else {
-        setOpen(false);
-      }
+    if (visible) {
+      setTimeout(() => focusInput());
+      setOpen(visible);
+    } else {
+      setOpen(false);
     }
   }
 
-  // 弹出框打开关闭的回调
+  // open or close popup
   function setOpen(visible: boolean) {
     onVisibleChange && onVisibleChange(visible);
     setPopupVisible(visible);
@@ -372,7 +434,6 @@ const Picker = (baseProps: RangePickerProps) => {
   }
 
   function changeFocusedInputIndex(index: number, silent?: boolean) {
-    setInputValue(undefined);
     setFocusedInputIndex(index);
     if (panelValue && panelValue.length && !silent) {
       const newPageShowDates = getShowDatesFromFocused(panelValue, index);
@@ -383,29 +444,22 @@ const Picker = (baseProps: RangePickerProps) => {
 
   function isDisabledDate(date: Dayjs): boolean {
     const selectedDisabled =
-      typeof selectedDisabledDate.current === 'function'
-        ? selectedDisabledDate.current(date)
-        : false;
+      typeof selectedDisabledDate === 'function' ? selectedDisabledDate(date) : false;
     const originDisabledDate = typeof disabledDate === 'function' ? disabledDate(date) : false;
     return originDisabledDate || selectedDisabled;
   }
 
-  // 判断输入日期是否格式正确
+  // Determine whether the input date is in the correct format
   function isValid(time): boolean {
     return (
-      typeof time === 'string' &&
-      dayjs(time, format).format(format) === time &&
-      !isDisabledDate(dayjs(time, format))
+      isValidTimeString(time, format, focusedInputIndex) &&
+      !isDisabledDate(getDayjsValue(time, format) as Dayjs)
       // (panelValue[nextFocusedInputIndex]
       //   ? nextFocusedInputIndex === 0
       //     ? panelValue[nextFocusedInputIndex].isBefore(dayjs(time, format))
       //     : panelValue[nextFocusedInputIndex].isAfter(dayjs(time, format))
       //   : true)
     );
-  }
-
-  function resetSelectedDisabledDate() {
-    selectedDisabledDate.current = initialDisabledDate;
   }
 
   function onChangeInput(e) {
@@ -423,13 +477,26 @@ const Picker = (baseProps: RangePickerProps) => {
     }
   }
 
-  // 跟上次的值进行对比，如果值改变了才触发 onChange
+  function onBlurInput() {
+    if (inputValue) {
+      setInputValue(undefined);
+    }
+  }
+
+  // Compare with the last value, trigger onChange only if the value changes
   function onHandleChange(newValue: Dayjs[] | undefined) {
     if (isDayjsArrayChange(mergedValue, newValue)) {
+      const localValue = isArray(newValue)
+        ? newValue.map((v) =>
+            getLocaleDayjsValue(toLocal(v, utcOffset, timezone), locale.dayjsLocale)
+          )
+        : undefined;
       onChange &&
         onChange(
-          isArray(newValue) ? newValue.map((v) => v && v.format(format)) : undefined,
-          newValue
+          isArray(localValue)
+            ? localValue.map((v, i) => v && v.format(getFormatByIndex(format, i)))
+            : undefined,
+          localValue
         );
     }
   }
@@ -443,16 +510,12 @@ const Picker = (baseProps: RangePickerProps) => {
       } else if (selectedLength === 2) {
         onConfirmValue(valueShow);
       }
-    } else {
+    } else if (mergedPopupVisible) {
       setOpen(false);
     }
   }
 
-  function onPressTab(e) {
-    e.preventDefault();
-  }
-
-  // 确认更新组件值
+  // Confirm and update component value
   function onConfirmValue(date?: Dayjs[], keepOpen?: boolean) {
     const confirmValue = date || panelValue;
     if (!confirmValue || !confirmValue[0] || !confirmValue[1]) {
@@ -461,26 +524,56 @@ const Picker = (baseProps: RangePickerProps) => {
     const sortedValues = getSortedDayjsArray(confirmValue);
     setValue(sortedValues);
     onHandleChange(sortedValues);
-    resetSelectedDisabledDate();
     if (triggerElement !== null && !keepOpen) {
       setOpen(false);
     }
   }
 
-  // 点击确认按钮的回调
+  // Callback when click the confirm button
   function onClickConfirmBtn() {
     onConfirmValue();
+    const localePanelValue = panelValue.map((v) => getLocaleDayjsValue(v, locale.dayjsLocale));
     onOk &&
       onOk(
-        panelValue.map((v) => v && v.format(format)),
-        panelValue
+        localePanelValue.map((v, i) => v && v.format(getFormatByIndex(format, i))),
+        localePanelValue
       );
   }
 
-  // 点击面板日期的回调
+  function getUnit(): QUnitType {
+    switch (mode) {
+      case 'date':
+      case 'week':
+        return 'date';
+      case 'month':
+        return 'month';
+      case 'year':
+        return 'year';
+      default:
+        return undefined;
+    }
+  }
+
+  function outOfRange(date: Dayjs): boolean {
+    if (selectedLength !== 2) {
+      return false;
+    }
+    const v = valueShow || mergedValue;
+    if (focusedInputIndex === 0 && date.isAfter(v[1], getUnit())) {
+      return true;
+    }
+    if (focusedInputIndex === 1 && date.isBefore(v[0], getUnit())) {
+      return true;
+    }
+    return false;
+  }
+
+  // Callback when click the panel date cell
   function onSelectPanel(_: string, date: Dayjs) {
+    const isOutOfRange = outOfRange(date) && firstRange.current;
     const newValueShow =
       resetRange && selectedLength === 2 && !isHalfAvailable ? [] : [...panelValue];
+
     // if custom triggerElement, focused input index always 0 -> 1
     const focusedIndex = customTriggerElement
       ? selectedLength === 0 || selectedLength === 2
@@ -488,7 +581,13 @@ const Picker = (baseProps: RangePickerProps) => {
         : 1
       : focusedInputIndex;
     const newDate = showTime ? getValueWithTime(date, timeValues[focusedIndex]) : date;
-    newValueShow[focusedIndex] = newDate;
+
+    if (isOutOfRange) {
+      newValueShow[focusedIndex] = newDate;
+      newValueShow[1 ^ focusedIndex] = undefined;
+    } else {
+      newValueShow[focusedIndex] = newDate;
+    }
 
     const sortedValueShow = getSortedDayjsArray(newValueShow);
 
@@ -496,35 +595,34 @@ const Picker = (baseProps: RangePickerProps) => {
     setInputValue(undefined);
     setHoverPlaceholderValue(undefined);
 
+    const newSelectedLength = getAvailableDayjsLength(newValueShow);
+
     if (resetRange) {
       if (selectedLength === 0 || (selectedLength === 2 && !isHalfAvailable)) {
         customTriggerElement ? setFocusedInputIndex(1) : switchFocusedInput(true);
       } else if (!showTime) {
         onConfirmValue(newValueShow);
       }
+    } else if (newSelectedLength <= 1) {
+      switchFocusedInput(true);
+    } else if (selectedLength === 2 && firstRange.current && !isHalfAvailable) {
+      firstRange.current = false;
+      switchFocusedInput(true);
+      if (!showTime && !isOutOfRange) {
+        onConfirmValue(newValueShow, true);
+      }
     } else {
-      setFixedPageShowDates(sortedValueShow);
-      if (selectedLength === 0) {
-        switchFocusedInput(true);
-      } else if (selectedLength === 2 && firstRange.current && !isHalfAvailable) {
-        firstRange.current = false;
-        switchFocusedInput(true);
-        if (!showTime) {
-          onConfirmValue(newValueShow, true);
-        }
-      } else {
-        firstRange.current = false;
-        if (!showTime) {
-          onConfirmValue(newValueShow);
-        }
+      firstRange.current = false;
+      if (!showTime && !isOutOfRange) {
+        onConfirmValue(newValueShow);
       }
     }
   }
 
-  // 点击时间的回调
+  // Callback when click TimePicker
   function onTimePickerSelect(index: number, _: string, time: Dayjs) {
     const newValueShow = isArray(panelValue) ? [...panelValue] : [];
-    const newTimeValue = getValueWithTime(newValueShow[index], time);
+    const newTimeValue = getValueWithTime(newValueShow[index] || getNow(utcOffset, timezone), time);
     newValueShow[index] = newTimeValue;
     onSelectValueShow(newValueShow);
   }
@@ -533,25 +631,28 @@ const Picker = (baseProps: RangePickerProps) => {
     setValueShow(newValueShow);
     setValueShowHover(undefined);
     const sortedValues = getSortedDayjsArray(newValueShow);
+    const zoneValues = sortedValues.map((v) =>
+      getLocaleDayjsValue(toLocal(v, utcOffset, timezone), locale.dayjsLocale)
+    );
     onSelect &&
       onSelect(
-        sortedValues.map((v) => v && v.format(format)),
-        sortedValues,
+        zoneValues.map((v, i) => v && v.format(getFormatByIndex(format, i))),
+        zoneValues,
         { type: focusedInputIndex === 1 ? 'end' : 'start' }
       );
   }
 
-  // 切换到另一个输入框
+  // Switch to next focused input
   function switchFocusedInput(silent?: boolean) {
     changeFocusedInputIndex(nextFocusedInputIndex, silent);
     setTimeout(() => focusInput(nextFocusedInputIndex));
   }
 
-  // 鼠标移入单元格的回调
+  // Callback when mouse entered the date cell
   function onMouseEnterCell(date: Dayjs, disabled: boolean) {
     const newValueShowHover = [...(panelValue || [])];
     const needShowHover = resetRange ? selectedLength === 1 : selectedLength !== 0;
-    if (!disabled && needShowHover) {
+    if (!disabled && needShowHover && !outOfRange(date)) {
       newValueShowHover[focusedInputIndex] = getValueWithTime(date, timeValues[focusedInputIndex]);
       setValueShowHover(newValueShowHover);
       setInputValue(undefined);
@@ -560,7 +661,11 @@ const Picker = (baseProps: RangePickerProps) => {
       const placeHolderValue = showTime
         ? getValueWithTime(date, timeValues[focusedInputIndex])
         : date;
-      setHoverPlaceholderValue(placeHolderValue.format(format));
+      setHoverPlaceholderValue(
+        placeHolderValue
+          .locale(locale.dayjsLocale)
+          .format(getFormatByIndex(format, focusedInputIndex))
+      );
     }
   }
 
@@ -573,7 +678,7 @@ const Picker = (baseProps: RangePickerProps) => {
     return sv && isArray(sv) && sv.length === 2 && isDayjs(sv[0]) && isDayjs(sv[1]);
   }
 
-  // 判断快捷输入的值是否格式正确
+  // Determine whether the value entered in the shortcut is in the correct format
   function isValidShortcut(shortcut) {
     const sv = typeof shortcut.value === 'function' && shortcut.value();
 
@@ -587,37 +692,39 @@ const Picker = (baseProps: RangePickerProps) => {
     shortcutLeaveTimer.current = null;
   }
 
-  // 鼠标移入快捷输入按钮
+  // Callback when mouse entered the shortcuts
   function onMouseEnterShortcut(shortcut) {
     clearShortcutsTimer();
     shortcutEnterTimer.current = setTimeout(() => {
       if (isValidShortcut(shortcut)) {
-        const nv = getDayjsValue(shortcut.value(), format) as Dayjs[];
+        const nv = getDayjsValue(shortcut.value(), format, utcOffset, timezone) as Dayjs[];
         setShortcutsValue(nv);
         setFixedPageShowDates(nv);
       }
     }, 50);
   }
 
-  // 鼠标移出快捷输入按钮
+  // Callback when mouse leaved the shortcuts
   function onMouseLeaveShortcut() {
     clearShortcutsTimer();
     shortcutLeaveTimer.current = setTimeout(() => {
       setShortcutsValue(undefined);
-      setFixedPageShowDates(valueShow || mergedValue || [getNow(), getNow()]);
+      setFixedPageShowDates(
+        valueShow || mergedValue || [getNow(utcOffset, timezone), getNow(utcOffset, timezone)]
+      );
     }, 50);
   }
 
-  // 点击选择快捷输入按钮
+  // Callback when click the shortcuts button
   function onHandleSelectShortcut(shortcut: ShortcutType) {
     onSelectShortcut && onSelectShortcut(shortcut);
     if (isValidShortcut(shortcut)) {
-      const time = shortcut.value() as Dayjs[];
+      const time = getDayjsValue(shortcut.value(), format, utcOffset, timezone) as Dayjs[];
       onConfirmValue(time);
     }
   }
 
-  // 修改面板日期（面板自身的值，并非选中的值）
+  // Modify panel date (the value of the panel itself, not the component value)
   function changePageShowDates(type: 'prev' | 'next', unit: UnitType, num = 1) {
     const index = type === 'prev' ? 0 : 1;
     let newPageShowDates = [...mergedPageShowDate];
@@ -632,7 +739,7 @@ const Picker = (baseProps: RangePickerProps) => {
     setFixedPageShowDates(newPageShowDates);
   }
 
-  // 点击翻页按钮的回调
+  // Callback when click the prev or next button
   function getHeaderOperations(pickerMode: ModeType = mode) {
     if (pickerMode === 'date' || pickerMode === 'week') {
       return {
@@ -660,7 +767,6 @@ const Picker = (baseProps: RangePickerProps) => {
     setIsTimePanel(!isTimePanel);
   }
 
-  // 实际渲染的弹出框的内容
   function renderPopup(panelOnly?: boolean) {
     const classNames = cs(
       `${prefixCls}-container`,
@@ -668,6 +774,7 @@ const Picker = (baseProps: RangePickerProps) => {
         [`${prefixCls}-panel-only`]: panelOnly,
         [`${prefixCls}-container-shortcuts-placement-left`]:
           isArray(shortcuts) && shortcutsPlacementLeft,
+        [`${prefixCls}-container-rtl`]: rtl,
       },
       panelOnly ? className : ''
     );
@@ -692,7 +799,7 @@ const Picker = (baseProps: RangePickerProps) => {
           {...props}
           {...getHeaderOperations()}
           getHeaderOperations={getHeaderOperations}
-          setRangePageShowDates={setNestPageShowDates}
+          setRangePageShowDates={setFixedPageShowDates}
           pageShowDates={mergedPageShowDate}
           value={panelValue}
           format={format}
@@ -702,19 +809,18 @@ const Picker = (baseProps: RangePickerProps) => {
           disabledDate={(current) => isDisabledDate(current)}
           disabledTime={disabledTime}
           mode={mode}
-          localeName={localeName}
+          localeName={locale.dayjsLocale}
           showTime={showTime}
           timeValues={shortcutsValue || timeValues}
           onTimePickerSelect={onTimePickerSelect}
           popupVisible={mergedPopupVisible}
-          dayStartOfWeek={dayStartOfWeek}
           disabledTimePickerIndex={disabledTimePickerIndex}
           isTimePanel={isTimePanel}
           valueShowHover={valueShowHover}
           panelModes={panelModes}
           setPanelModes={setPanelModes}
         />
-        {shouldShowFooter && (
+        {!!shouldShowFooter && (
           <Footer
             {...shortcutsProps}
             DATEPICKER_LOCALE={locale.DatePicker}
@@ -729,18 +835,23 @@ const Picker = (baseProps: RangePickerProps) => {
       </>
     );
 
+    const contentWithShortcuts = shortcutsPlacementLeft ? (
+      <>
+        <Shortcuts ref={refShortcuts} {...shortcutsProps} />
+        <div ref={refPanel} className={`${prefixCls}-panel-wrapper`}>
+          {content}
+        </div>
+      </>
+    ) : (
+      content
+    );
+
+    const panelNode =
+      typeof panelRender === 'function' ? panelRender(contentWithShortcuts) : contentWithShortcuts;
+
     return (
       <div className={classNames} onClick={() => focusInput()} style={panelOnly ? style : {}}>
-        {shortcutsPlacementLeft ? (
-          <>
-            <Shortcuts ref={refShortcuts} {...shortcutsProps} />
-            <div ref={refPanel} className={`${prefixCls}-panel-wrapper`}>
-              {content}
-            </div>
-          </>
-        ) : (
-          content
-        )}
+        {panelNode}
       </div>
     );
   }
@@ -760,53 +871,62 @@ const Picker = (baseProps: RangePickerProps) => {
     format,
     disabled,
     error,
+    status,
     size,
     onPressEnter,
-    onPressTab,
     onClear,
     suffixIcon,
     editable,
     allowClear,
+    prefix: props.prefix,
   };
 
   const triggerDisabled = isArray(disabled) ? disabled[0] && disabled[1] : disabled;
 
-  if (triggerElement === null) {
-    return renderPopup(true);
-  }
-
   return (
-    <Trigger
-      popup={renderPopup}
-      trigger="click"
-      clickToClose={false}
-      position={position}
-      disabled={triggerDisabled}
-      popupAlign={{ bottom: 4 }}
-      getPopupContainer={getPopupContainer}
-      onVisibleChange={visibleChange}
-      popupVisible={mergedPopupVisible}
-      classNames="slideDynamicOrigin"
-      unmountOnExit={unmountOnExit}
-      {...triggerProps}
-    >
-      {triggerElement || (
-        <DateInputRange
-          {...baseInputProps}
-          ref={refInput}
-          placeholder={placeholders}
-          value={valueShow || mergedValue}
-          onChange={onChangeInput}
-          inputValue={hoverPlaceholderValue || inputValue}
-          changeFocusedInputIndex={changeFocusedInputIndex}
-          focusedInputIndex={focusedInputIndex}
-          isPlaceholder={!!hoverPlaceholderValue}
-        />
+    <PickerContext.Provider value={{ utcOffset, timezone, weekStart }}>
+      {triggerElement === null ? (
+        renderPopup(true)
+      ) : (
+        <Trigger
+          popup={renderPopup}
+          trigger="click"
+          clickToClose={false}
+          position={position}
+          disabled={triggerDisabled}
+          popupAlign={triggerPopupAlign}
+          getPopupContainer={getPopupContainer}
+          onVisibleChange={visibleChange}
+          popupVisible={mergedPopupVisible}
+          classNames="slideDynamicOrigin"
+          unmountOnExit={unmountOnExit}
+          {...triggerProps}
+        >
+          {triggerElement || (
+            <DateInputRange
+              {...pickDataAttributes(props)}
+              {...baseInputProps}
+              inputProps={inputProps}
+              ref={refInput}
+              placeholder={placeholders}
+              value={valueShow || mergedValue}
+              onChange={onChangeInput}
+              inputValue={hoverPlaceholderValue || inputValue}
+              changeFocusedInputIndex={changeFocusedInputIndex}
+              focusedInputIndex={focusedInputIndex}
+              isPlaceholder={!!hoverPlaceholderValue}
+              separator={separator}
+              onBlur={onBlurInput}
+            />
+          )}
+        </Trigger>
       )}
-    </Trigger>
+    </PickerContext.Provider>
   );
 };
 
-Picker.displayName = 'RangePicker';
+const PickerComponent = forwardRef<RangePickerHandle, RangePickerProps>(Picker);
 
-export default Picker;
+PickerComponent.displayName = 'RangePicker';
+
+export default PickerComponent;

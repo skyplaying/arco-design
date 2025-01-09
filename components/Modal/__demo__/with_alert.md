@@ -1,24 +1,25 @@
 ---
 order: 10
-title: 
+title:
   zh-CN: 带有通知对话框
-  en-US: Dialog with Notification
+  en-US: Dialog with Alert
 ---
 
 ## zh-CN
 
-对话框中显示 Notification。
+对话框中显示 Alert.
 
 ## en-US
 
-Show Notification in dialog.
+Show Alert in dialog.
 
 ```js
+import React from 'react';
 import { Modal, Button, Table, Alert } from '@arco-design/web-react';
 
-function Demo () {
-  const [visible, setVisible] = React.useState(false);
-  // table
+function App() {
+  const [visible, setVisible] = React.useState(false); // table
+
   const columns = [
     {
       title: 'Name',
@@ -31,10 +32,12 @@ function Demo () {
       sorter: (a, b) => {
         const aVersion = a.version.split('.');
         const bVersion = b.version.split('.');
-        for(let i = 0; i < aVersion.length; i++) {
+
+        for (let i = 0; i < aVersion.length; i++) {
           if (aVersion[i] === bVersion[i]) continue;
-          return aVersion[i] - bVersion[i]
+          return aVersion[i] - bVersion[i];
         }
+
         return 1;
       },
     },
@@ -64,32 +67,28 @@ function Demo () {
         onOk={() => setVisible(false)}
         onCancel={() => setVisible(false)}
       >
-        <Alert 
-          closable
-          type='info' 
-          content='This message displays only once.' />
+        <Alert closable type="info" content="This message displays only once." />
         <div style={{ padding: 20 }}>
           <p>
-            You can select multiple plugins for the current project so that our app will verify that the plugins are installed and enabled. 
+            You can select multiple plugins for the current project so that our app will verify that
+            the plugins are installed and enabled.
           </p>
-          <p style={{ marginTop: 20, marginBottom: 8, fontWeight: 600 }}>
-            List of plugins
-          </p>
-          <Table 
-            columns={columns} 
-            data={data} 
+          <p style={{ marginTop: 20, marginBottom: 8, fontWeight: 600 }}>List of plugins</p>
+          <Table
+            columns={columns}
+            data={data}
             pagination={false}
-            border={{ headerCell: true, wrapper: true, }}
-            rowKey='id'
+            border={{ headerCell: true, wrapper: true }}
+            rowKey="id"
             rowSelection={{ type: 'checkbox', checkAll: true }}
           ></Table>
         </div>
       </Modal>
     </div>
-  )
+  );
 }
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```
 
 ```css
