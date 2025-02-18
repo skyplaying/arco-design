@@ -25,7 +25,7 @@ import { DrawerProps } from '../Drawer/interface';
 import { DropdownProps, DropdownButtonProps } from '../Dropdown/interface';
 import { EmptyProps } from '../Empty/interface';
 import { FormProps } from '../Form/interface';
-import { RowProps, ColProps } from '../Grid/interface';
+import { RowProps, ColProps, GridProps, GridItemProps } from '../Grid/interface';
 import { ImageProps } from '../Image/interface';
 import { InputProps } from '../Input/interface';
 import { InputNumberProps } from '../InputNumber/interface';
@@ -55,7 +55,7 @@ import { SwitchProps } from '../Switch/interface';
 import { TableProps } from '../Table/interface';
 import { TabsProps } from '../Tabs/interface';
 import { TagProps } from '../Tag/interface';
-import { TimelineProps } from '../Timeline/interface';
+import { TimelineProps, TimelineItemProps } from '../Timeline/interface';
 import { PickerProps as TimePickerCommonProps } from '../TimePicker/interface';
 import { TooltipProps } from '../Tooltip/interface';
 import { TransferProps } from '../Transfer/interface';
@@ -64,6 +64,10 @@ import { TreeSelectProps } from '../TreeSelect/interface';
 import { TriggerProps } from '../Trigger/interface';
 // import { TypographyProps } from '../Typography/interface';
 import { UploadProps } from '../Upload/interface';
+import { VerificationCodeProps } from '../VerificationCode/interface';
+import { WatermarkProps } from '../Watermark/interface';
+import { ColorPickerProps } from '../ColorPicker';
+import { TypographyEllipsisProps } from '../Typography';
 
 export type ThemeConfig = Record<string, any>;
 
@@ -86,6 +90,7 @@ export type ComponentConfig = {
   Checkbox?: CheckboxProps;
   Collapse?: CollapseProps;
   Comment?: CommentProps;
+  ColorPicker?: ColorPickerProps;
   DatePicker?: Omit<
     DatePickerCommonProps,
     | 'placeholder'
@@ -95,6 +100,7 @@ export type ComponentConfig = {
     | 'defaultPickerValue'
     | 'pickerValue'
     | 'onPickerValueChange'
+    | 'inputProps'
   >;
   Descriptions?: DescriptionsProps;
   Divider?: DividerProps;
@@ -102,12 +108,17 @@ export type ComponentConfig = {
   Dropdown?: DropdownProps;
   'Dropdown.Button'?: DropdownButtonProps;
   Empty?: EmptyProps;
+  'Typography.Ellipsis'?: TypographyEllipsisProps;
   Form?: FormProps;
   'Grid.Row'?: RowProps;
   'Grid.Col'?: ColProps;
+  Grid?: GridProps;
+  'Grid.GridItem'?: GridItemProps;
   Image?: ImageProps;
   Input?: InputProps;
   InputNumber?: InputNumberProps;
+  VerificationCode?: VerificationCodeProps;
+  Watermark?: WatermarkProps;
   InputTag?: InputTagProps;
   Layout?: LayoutProps;
   Link?: LinkProps;
@@ -140,6 +151,7 @@ export type ComponentConfig = {
   TriggerProps?: TriggerProps;
   Tag?: TagProps;
   Timeline?: TimelineProps;
+  'Timeline.Item'?: TimelineItemProps;
   TimePicker?: TimePickerCommonProps;
   Tooltip?: TooltipProps;
   Transfer?: TransferProps;
@@ -221,6 +233,26 @@ export interface ConfigProviderProps {
     modal?: boolean | { autoFocus?: boolean };
     drawer?: boolean | { autoFocus?: boolean };
   };
+  /**
+   * @zh 视图的表现形式是从右开始向左结束。
+   * @en View starts from the right and ends on the left.
+   * @version 2.36.0
+   */
+  rtl?: boolean;
+  /**
+   * @zh 是否全局设置所有 `Message` 和 `Notification` 的配置。如果用了 `useMessage` 的 hook 局部设置请设置为 false
+   * @en Whether to update the configuration of all `Message` and `Notification` with one click. Set to false if using the hook locale of `useMessage`
+   * @defaultValue true
+   * @version 2.40.0
+   */
+  effectGlobalNotice?: boolean;
+  /**
+   * @zh 是否全局设置所有 `Modal` 的配置。
+   * @en Whether to set all `Modal` configuration globally.
+   * @defaultValue true
+   * @version 2.61.0
+   */
+  effectGlobalModal?: boolean;
   zIndex?: number;
   children?: ReactNode;
 }

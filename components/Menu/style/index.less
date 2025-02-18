@@ -12,6 +12,20 @@
   }
 }
 
+.menu-focus-visible-style() {
+  box-shadow: 0 0 0 2px @color-primary-6 inset;
+}
+
+@keyframes ~'@{prefix}-menu-selected-item-label-enter' {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .@{menu-prefix-cls} {
   position: relative;
   box-sizing: border-box;
@@ -20,14 +34,14 @@
   line-height: @menu-line-height;
   transition: width @transition-duration-2 @transition-timing-function-standard;
 
-  &:focus-visible {
-    outline: 3px solid var(--color-primary-light-2);
-  }
-
   // 设置菜单层级的缩进
   &-indent {
     display: inline-block;
     width: @menu-item-indent-spacing;
+  }
+
+  .text-color-transition() {
+    transition: color @transition-duration-2 @transition-timing-function-linear;
   }
 
   // menu-item 一些与 theme 和 mode 无关的样式
@@ -43,8 +57,12 @@
       }
 
       &.@{menu-prefix-cls}-selected {
-        transition: color @transition-duration-2 @transition-timing-function-linear;
         font-weight: @menu-font-weight-item-selected;
+        .text-color-transition();
+
+        svg {
+          .text-color-transition();
+        }
       }
 
       .@{prefix}-icon {
@@ -71,12 +89,19 @@
 
       .@{menu-prefix-cls}-item-inner {
         .text-ellipsis();
+
         width: 100%;
       }
 
       .@{menu-prefix-cls}-icon-suffix {
         position: absolute;
         right: @menu-vertical-item-padding-horizontal;
+        top: 50%;
+        transform: translateY(-50%);
+
+        &.is-open {
+          transform: translateY(-50%) rotate(180deg);
+        }
       }
     };
 
@@ -116,8 +141,8 @@
           }
         }
 
-        &.@{menu-prefix-cls}-active {
-          box-shadow: 0 0 0 1px @color-primary-6 inset;
+        &:focus-visible {
+          .menu-focus-visible-style();
         }
 
         &.@{menu-prefix-cls}-selected {
@@ -163,7 +188,7 @@
         @item-selected-style: {
           &.@{menu-prefix-cls}-selected {
             background: none;
-            transition: color @transition-duration-2 @transition-timing-function-linear;
+            .text-color-transition();
 
             &:hover {
               background-color: ~'@{menu-@{theme}-color-bg-item_hover}';
@@ -189,6 +214,10 @@
         &:hover {
           background-color: ~'@{menu-@{theme}-color-bg-button_hover}';
         }
+
+        &:focus-visible {
+          box-shadow: 0 0 0 2px @color-primary-6;
+        }
       }
     }
   }
@@ -207,18 +236,22 @@
     text-decoration: none;
   }
 
+  &-item-inner {
+    > a:only-child::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+  }
+
   &-inner {
     box-sizing: border-box;
     width: 100%;
     height: 100%;
     overflow: auto;
-  }
-
-  // 展开折叠图标
-  &-icon-suffix {
-    &.is-open {
-      transform: rotate(180deg);
-    }
   }
 
   &-vertical {
@@ -256,6 +289,7 @@
     .@{menu-prefix-cls}-pop {
       display: inline-block;
       vertical-align: middle;
+      flex-shrink: 0;
 
       &:not(:first-child) {
         margin-left: @menu-horizontal-item-gap;
@@ -278,6 +312,10 @@
       width: 100%;
     }
 
+    &-sub-menu-mirror {
+      margin-left: @menu-horizontal-item-gap;
+    }
+
     &-sub-menu-mirror,
     &-hidden-menu-item {
       position: absolute !important;
@@ -295,6 +333,7 @@
     bottom: -@menu-horizontal-padding-vertical;
     height: @menu-height-label-item-selected;
     background-color: @menu-color-label-item-selected;
+    animation: ~'@{prefix}-menu-selected-item-label-enter' @transition-duration-2 @transition-timing-function-linear;
   }
 
   &-pop-button {
@@ -327,8 +366,25 @@
       padding: @menu-collapse-padding-vertical @menu-collapse-padding-horizontal;
     }
 
+    .@{menu-prefix-cls}-group-title,
     .@{menu-prefix-cls}-icon-suffix {
       display: none;
+    }
+
+    // Hide text after icon when menu is collapsed
+    @style-item-text: {
+      .@{prefix}-icon {
+        margin-left: 1px;
+        margin-right: 100vw;
+      }
+    };
+
+    .applyStyleToItem(@style-item-text);
+
+    & &-button {
+      right: unset;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 
@@ -351,21 +407,27 @@
     overflow: hidden;
     height: auto;
     transition: height @transition-duration-2 @transition-timing-function-standard;
-
-    &-hide {
-      height: 0;
-    }
   }
 
   // 弹出的 ToolTip 中 a 标签的样式
   &-item-tooltip a {
     color: inherit;
-    cursor: text;
+    cursor: pointer;
+    text-decoration: none;
 
     &:hover,
     &:focus,
     &:active {
       color: inherit;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
     }
   }
 
@@ -381,7 +443,7 @@
       }
     }
 
-    &.@{prefix}-trigger-position-rt {
+    &.@{prefix}-trigger[trigger-placement='rt'] {
       transform: translateX(@menu-vertical-padding-horizontal);
 
       .@{prefix}-trigger-arrow {
@@ -391,11 +453,128 @@
       }
     }
 
+    &.@{prefix}-trigger[trigger-placement='lt'] {
+      transform: translateX(-@menu-vertical-padding-horizontal);
+
+      .@{prefix}-trigger-arrow {
+        z-index: 0;
+        border-right: 1px solid @menu-color-border-popup;
+        border-top: 1px solid @menu-color-border-popup;
+      }
+    }
+
     .@{prefix}-dropdown-menu-dark ~ .@{prefix}-trigger-arrow-container {
-      
       .@{prefix}-trigger-arrow {
         background-color: @menu-dark-color-bg;
         border-color: @menu-dark-color-bg;
+      }
+    }
+  }
+}
+
+.@{menu-prefix-cls}-rtl {
+  direction: rtl;
+
+  @rtl-item-style: {
+    .@{prefix}-icon {
+      margin-right: 0;
+      margin-left: @menu-margin-right-item-prefix-icon;
+    }
+  };
+
+  .applyStyleToItem(@rtl-item-style);
+
+  .rtl-item-mode(@mode) {
+    @rtl-style-both: {
+      .@{menu-prefix-cls}-icon-suffix .@{prefix}-icon {
+        margin-left: 0;
+      }
+    };
+
+    @rtl-style-vertical-only: {
+      text-overflow: clip; // ellipsis on rtl layout error
+
+      .@{menu-prefix-cls}-item-inner {
+        text-overflow: clip;
+      }
+
+      .@{menu-prefix-cls}-icon-suffix {
+        right: initial;
+        left: @menu-vertical-item-padding-horizontal;
+      }
+    };
+
+    @rtl-style-horizontal-only: {
+      .@{prefix}-icon {
+        margin-right: 0;
+        margin-left: @menu-horizontal-margin-right-item-prefix-icon;
+      }
+
+      .@{menu-prefix-cls}-icon-suffix {
+        margin-left: 0;
+        margin-right: @menu-margin-left-item-suffix-icon;
+      }
+    };
+
+    .applyStyleToItem(@rtl-style-both);
+    .applyStyleToItem(if(@mode = vertical, @rtl-style-vertical-only, @rtl-style-horizontal-only));
+  }
+
+  &.@{menu-prefix-cls}-horizontal {
+    .rtl-item-mode(horizontal);
+
+    .@{menu-prefix-cls}-item,
+    .@{menu-prefix-cls}-pop {
+      &:not(:first-child) {
+        margin-left: 0;
+        margin-right: @menu-horizontal-item-gap;
+      }
+    }
+  }
+
+  &.@{menu-prefix-cls}-vertical {
+    .rtl-item-mode(vertical);
+
+    .@{menu-prefix-cls}-pop-header,
+    .@{menu-prefix-cls}-inline-header {
+      padding-right: @menu-vertical-item-padding-horizontal;
+      padding-left: @menu-vertical-item-padding-horizontal + 16;
+    }
+  }
+
+  .@{menu-prefix-cls}-pop::after {
+    right: 0;
+    left: initial;
+  }
+
+  .@{menu-prefix-cls}-collapse {
+    @rtl-style-item-text: {
+      .@{prefix}-icon {
+        margin-left: 100vw;
+        margin-right: 1px;
+      }
+    };
+    .applyStyleToItem(  @rtl-style-item-text);
+  }
+
+  .@{menu-prefix-cls}-pop-trigger {
+    &.@{prefix}-trigger-position-bl {
+      .@{prefix}-trigger-arrow {
+        border-left: none;
+        border-right: 1px solid @menu-color-border-popup;
+      }
+    }
+
+    &.@{prefix}-trigger[trigger-placement='rt'] {
+      transform: translateX(-@menu-vertical-padding-horizontal);
+    }
+
+    &.@{prefix}-trigger[trigger-placement='lt'] {
+      transform: translateX(@menu-vertical-padding-horizontal);
+
+      .@{prefix}-trigger-arrow {
+        border-right: none;
+        border-left: 1px solid @menu-color-border-popup;
       }
     }
   }

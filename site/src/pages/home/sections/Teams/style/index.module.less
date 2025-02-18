@@ -16,6 +16,7 @@
 
 .section-content {
   .home-main-content();
+
   display: flex;
 }
 
@@ -97,7 +98,6 @@
 
       &-btn {
         &:last-child {
-          margin-left: 12px;
           border-radius: var(--border-radius-small);
         }
       }
@@ -131,7 +131,7 @@
 .teams-review-box {
   padding: 0 32px;
   width: 344px;
-  box-shadow: 0 2px 3px rgba(78, 89, 105, 0.14);
+  box-shadow: 0 2px 3px rgba(78, 89, 105, 14%);
   border-radius: 8px;
   background: var(--home-color-bg-1);
 
@@ -168,6 +168,7 @@
   0% {
     top: 0;
   }
+
   100% {
     top: -1324px;
   }
@@ -227,7 +228,6 @@ body[arco-theme='dark'] {
     }
 
     .teams-title {
-      margin-top: 16px;
       text-align: center;
       margin-top: 8px;
       font-size: 22px;
@@ -253,6 +253,7 @@ body[arco-theme='dark'] {
 
     .teams-bottom {
       text-align: center;
+
       &-btn {
         &:last-child {
           margin-left: 16px;
@@ -299,6 +300,30 @@ body[arco-theme='dark'] {
   body[arco-theme='dark'] {
     .section-wrapper {
       background: none;
+    }
+  }
+}
+
+:global(html.rtl) {
+  .section-wrapper {
+    padding: 0 20px;
+    border: 1px solid var(--home-color-border);
+    border-left: none;
+    border-right: none;
+    background: linear-gradient(
+      to left,
+      transparent 0,
+      transparent 50%,
+      var(--color-fill-1) 50%,
+      var(--color-fill-1) 100%
+    );
+  }
+
+  .teams-body-left {
+    .teams-logo {
+      &-close {
+        margin: 0 8px 0 4px;
+      }
     }
   }
 }

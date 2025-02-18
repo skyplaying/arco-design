@@ -1,8 +1,10 @@
 const Enzyme = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 
-jest.mock('lodash.debounce', () =>
-  jest.fn(function(fn, time) {
+// import '@testing-library/jest-dom';
+
+jest.mock('lodash/debounce', () =>
+  jest.fn(function (fn, time) {
     let timeoutId;
     function cancel() {
       if (timeoutId) {
@@ -37,4 +39,17 @@ if (typeof window !== 'undefined') {
       dispatchEvent: jest.fn(),
     })),
   });
+
+  // window.requestAnimationFrame = (cb) => {
+  //   let handle = setTimeout(() => {
+  //     handle = null;
+  //     cb();
+  //   }, 0);
+
+  //   return handle;
+  // };
+
+  // window.cancelAnimationFrame = (handle) => {
+  //   return handle && clearTimeout(handle);
+  // };
 }

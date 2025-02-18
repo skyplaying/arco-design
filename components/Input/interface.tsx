@@ -40,10 +40,26 @@ export interface InputProps
    */
   placeholder?: string;
   /**
-   * @zh 是否是错误状态
-   * @en Whether the input is error
+   * @zh 是否是错误状态.(废弃，下个大版本移除，使用 status='error' 替代)
+   * @en Whether the input is error.(Deprecated, removed in the next major version, use status='error' instead)
+   * @deprecated status="error"
    */
   error?: boolean;
+  /**
+   * @zh 状态
+   * @en Status
+   * @version 2.45.0
+   */
+  status?: 'error' | 'warning';
+  /**
+   * @zh 设置宽度自适应。minWidth 默认为 0，maxWidth 默认为 100%
+   * @en auto width. minWidth defaults to 0, maxWidth defaults to 100%
+   * @version 2.54.0
+   */
+  autoWidth?:
+    | boolean
+    | { minWidth?: CSSProperties['minWidth']; maxWidth?: CSSProperties['maxWidth'] };
+  /**
   /**
    * @zh 输入时的回调
    * @en Callback when user input
@@ -59,6 +75,19 @@ export interface InputProps
    * @en Callback when press enter key
    */
   onPressEnter?: (e) => void;
+  /**
+   * @zh 指定 normalize 执行的时机
+   * @en Specify the timing of normalize execution
+   * @version 2.50.0
+   * @defaultValue ['onBlur']
+   */
+  normalizeTrigger?: ('onBlur' | 'onPressEnter')[];
+  /**
+   * @zh 在指定时机对用户输入的值进行格式化处理。前后值不一致时，会触发 onChange
+   * @en Format the value entered by the user at the specified time, and when the previous and subsequent values are inconsistent, onChange will be triggered
+   * @version 2.50.0
+   */
+  normalize?: (value: string) => string;
   /**
    * @zh 输入框前添加元素
    * @en The label text displayed before (on the left side of) the input field
@@ -116,6 +145,12 @@ export interface InputProps
    * @en With `maxLength`, Show word count.
    */
   showWordLimit?: boolean;
+  /**
+   * @zh `allowClear` 时配置清除按钮的图标。
+   * @en Configure the icon of the clear button when `allowClear`.
+   * @version 2.50.0
+   */
+  clearIcon?: ReactNode;
 }
 
 /**
@@ -154,10 +189,17 @@ export interface TextAreaProps
    */
   autoSize?: boolean | { minRows?: number; maxRows?: number };
   /**
-   * @zh 是否是错误状态
-   * @en Whether the textarea is error
+   * @zh 是否是错误状态。(废弃，下个大版本移除，使用 status='error' 替代)
+   * @en Whether the textarea is error.(Deprecated, removed in the next major version, use status='error' instead)
+   * @deprecated
    */
   error?: boolean;
+  /**
+   * @zh 状态
+   * @en Status
+   * @version 2.45.0
+   */
+  status?: 'error' | 'warning';
   /**
    * @zh 输入框提示文字
    * @en textarea placeholder
@@ -192,6 +234,12 @@ export interface TextAreaProps
    * @version 2.2.0
    */
   onClear?: () => void;
+  /**
+   * @zh `allowClear` 时配置清除按钮的图标。
+   * @en Configure the icon of the clear button when `allowClear`.
+   * @version 2.50.0
+   */
+  clearIcon?: ReactNode;
 }
 
 /**
@@ -264,10 +312,16 @@ export interface InputPasswordProps extends InputProps {
 
 export interface InputComponentProps extends InputProps {
   prefixCls?: string;
-  onValueChange?: InputProps['onChange'];
   hasParent?: boolean;
   // input 随输入文本的宽度变化
-  autoFitWidth?: boolean | { delay: number | ((width: number, prevWidth: number) => number) };
+  autoFitWidth?:
+    | boolean
+    | {
+        minWidth?: CSSProperties['minWidth'];
+        maxWidth?: CSSProperties['maxWidth'];
+        pure?: boolean; // 是否只测量内容宽度，排除 padding ，border 等因素
+        delay: number | ((width: number, prevWidth: number) => number);
+      };
 }
 
 export type RefInputType = {

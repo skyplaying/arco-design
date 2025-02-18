@@ -1,9 +1,11 @@
-import React, { ReactNode } from 'react';
+import React, { useContext, ReactNode } from 'react';
 import { Dayjs } from 'dayjs';
 import cs from '../../_util/classNames';
 import WeekList from './week-list';
 import useCellClassName from '../hooks/useCellClassName';
 import { CalendarValue } from '../interface';
+import PickerContext from '../context';
+import { isDisabledDate } from '../util';
 
 type RowType = {
   time?: Dayjs;
@@ -15,12 +17,11 @@ type RowType = {
 
 export interface PanelBodyProps {
   showWeekList?: boolean;
-  dayStartOfWeek?: number;
   isWeek?: boolean;
   prefixCls?: string;
   onSelectDate?: (timeString: string, time: Dayjs) => void;
   CALENDAR_LOCALE?: Record<string, any>;
-  disabledDate?: (current?: Dayjs) => boolean;
+  disabledDate?: (current: Dayjs) => boolean;
   onMouseEnterCell?: (date: Dayjs, disabled: boolean) => void;
   onMouseLeaveCell?: (date: Dayjs, disabled: boolean) => void;
   dateRender?: (date?: Dayjs) => ReactNode;
@@ -42,13 +43,15 @@ function Body(props: PanelBodyProps) {
     dateRender,
     onMouseEnterCell,
     onMouseLeaveCell,
-    dayStartOfWeek,
     CALENDAR_LOCALE,
     rows,
     showWeekList,
     isSameTime,
     format,
+    mode,
   } = props;
+
+  const { utcOffset, timezone, weekStart } = useContext(PickerContext);
 
   const getCellClassName = useCellClassName({
     ...props,
@@ -58,13 +61,13 @@ function Body(props: PanelBodyProps) {
   function renderRow(row: RowType[]) {
     return row.map((col, index) => {
       if (col.time) {
-        const disabled = typeof disabledDate === 'function' && disabledDate(col.time);
+        const disabled = isDisabledDate(col.time, disabledDate, mode);
         const onClickHandler = () => !disabled && onSelectDate(col.time.format(format), col.time);
 
         return (
           <div
             key={index}
-            className={getCellClassName(col, disabled)}
+            className={getCellClassName(col, disabled, utcOffset, timezone)}
             onMouseEnter={() => onMouseEnterCell && onMouseEnterCell(col.time, disabled)}
             onMouseLeave={() => onMouseLeaveCell && onMouseLeaveCell(col.time, disabled)}
             onClick={onClickHandler}
@@ -96,7 +99,7 @@ function Body(props: PanelBodyProps) {
       {showWeekList && (
         <WeekList
           prefixCls={prefixCls}
-          dayStartOfWeek={dayStartOfWeek}
+          weekStart={weekStart}
           isWeek={isWeek}
           CALENDAR_LOCALE={CALENDAR_LOCALE}
         />

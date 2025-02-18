@@ -1,3 +1,182 @@
+## 2.65.0
+
+2024-11-29
+
+### 🐛 BugFix
+
+- Fixed the bug that `Menu` automatically omits the border scene and causes loop calculation, causing the browser to flicker continuously([#2816](https://github.com/arco-design/arco-design/pull/2816))
+
+## 2.57.0
+
+2023-12-08
+
+### 🆕 Feature
+
+- `Menu` component adds a `onEllipsisChange` callback to notify the horizontal menu ellipsis status changed.([#2426](https://github.com/arco-design/arco-design/pull/2426))
+
+## 2.52.2
+
+2023-09-01
+
+### 🐛 BugFix
+
+- Fix the location of the collapse button in the `rtl` mode of the `Menu` component([#2201](https://github.com/arco-design/arco-design/pull/2201))
+
+## 2.51.2
+
+2023-08-11
+
+### 🐛 BugFix
+
+- Fix the problem that `Popover` is reported as a direct child node of `Menu`.([#2138](https://github.com/arco-design/arco-design/pull/2138))
+
+## 2.51.0
+
+2023-07-28
+
+### 🆕 Feature
+
+- The `Menu.Item` adds `renderItemInTooltip` property, which is used to specify the menu item node displayed in `Tooltip` when `Menu` is collapsed.([#2106](https://github.com/arco-design/arco-design/pull/2106))
+
+## 2.48.2
+
+2023-05-26
+
+### 💅 Style
+
+- 优化 `Menu` 折叠之后，菜单项图标未水平居中的问题。([#1991](https://github.com/arco-design/arco-design/pull/1991))
+
+## 2.44.1
+
+2023-02-03
+
+### 💎 Enhancement
+
+- `Menu.SubMenu` allows passing in native HTML attributes.([#1746](https://github.com/arco-design/arco-design/pull/1746))
+- Optimized the default spacing between icon and text within horizontal menu items.([#1746](https://github.com/arco-design/arco-design/pull/1746))
+
+## 2.44.0
+
+2023-01-13
+
+### 🆕 Feature
+
+- Menu property `ellipsis` support `{ text: ReactNode }` to customize the overflow submenu title.([#1700](https://github.com/arco-design/arco-design/pull/1700))
+
+## 2.41.1
+
+2022-11-04
+
+### 💎 Enhancement
+
+- Optimize the jitter problem that may occur when the horizontal mode of the `Menu` component is automatically collapsed.([#1543](https://github.com/arco-design/arco-design/pull/1543))
+
+## 2.39.3
+
+2022-09-02
+
+### 💅 Style
+
+- Optimize the style of inline `<a/>` in `Menu` component.([#1362](https://github.com/arco-design/arco-design/pull/1362))
+
+## 2.39.2
+
+2022-08-26
+
+### 💎 Enhancement
+
+- Optimized the behavior of auto-folding when horizontal `Menu` width changes to avoid occasional line breaks.([#1331](https://github.com/arco-design/arco-design/pull/1331))
+
+### 💅 Style
+
+- Fix the bug that the display position of the built-in collapse button of the `Menu` component is wrong([#1332](https://github.com/arco-design/arco-design/pull/1332))
+
+## 2.36.0
+
+2022-06-24
+
+### 💎 Enhancement
+
+- The `Menu` component supports switching operations using the Tab key.([#1038](https://github.com/arco-design/arco-design/pull/1038))
+
+### 💅 Style
+
+- Fixed the issue that the arrow direction on the right side of `Menu.SubMenu` did not change when it was expanded.([#1022](https://github.com/arco-design/arco-design/pull/1022))
+
+## 2.35.0
+
+2022-06-10
+
+### 💅 Style
+
+- Fixed `Menu` component submenu title bar icons not vertically centered.([#985](https://github.com/arco-design/arco-design/pull/985))
+
+## 2.34.0
+
+2022-05-27
+
+### 💅 Style
+
+- Adjust the position of the popup layer when the submenu of `Menu` pops up from the left.([#923](https://github.com/arco-design/arco-design/pull/923))
+
+## 2.33.1
+
+2022-05-20
+
+### 🐛 BugFix
+
+- Fixed the bug that the icon of SubMenu title was not displayed when Menu is collapsed.([#889](https://github.com/arco-design/arco-design/pull/889))
+
+## 2.32.2
+
+2022-04-29
+
+### 🐛 BugFix
+
+- Fixed the bug that the expanded SubMenu was collapsed when the `collapse` property of the `Menu` component was changed.([#820](https://github.com/arco-design/arco-design/pull/820))
+
+## 2.27.1
+
+2021-12-24
+
+### 💎 Optimization
+
+- `Menu.SubMenu` also supports `selectable` property in non-popup mode.([#355](https://github.com/arco-design/arco-design/pull/355))
+
+## 2.26.0
+
+2021-12-03
+
+### 💅 Style
+
+- Fix the problem that the color change of Icon in the selected menu item of the `Menu` component has no transition effect.([#263](https://github.com/arco-design/arco-design/pull/263))
+
+## 2.24.1
+
+2021-11-12
+
+### 🐛 BugFix
+
+- `Menu.SubMenu` component fixes the bug that the inner `SubMenu` property is overridden by the parent `SubMenu` when used in nesting.([#145](https://github.com/arco-design/arco-design/pull/145))
+
+### 💅 Style
+
+- Hide the text behind the menu item icon when the `Menu` component is collapsed to avoid display `...`.([#151](https://github.com/arco-design/arco-design/pull/151))
+
+## 2.24.0
+
+2021-11-05
+
+### 🆕 Feature
+
+- `Menu` adds property `ellipsis` to forbid the automatic folding of menu items([#115](https://github.com/arco-design/arco-design/pull/115))
+
+### 🐛 BugFix
+
+- When the `tooltipProps` passed by `Menu` contains `triggerProps`, the original class name `menu-item-tooltip` will be overwrite([#99](https://github.com/arco-design/arco-design/pull/99))
+- Fix the problem that the style of the trigger-arrow does not work under the black theme of the `Menu` component([#84](https://github.com/arco-design/arco-design/pull/84))
+- Fix the bug that `Menu` caused an error because of reading an property of `null`([#115](https://github.com/arco-design/arco-design/pull/115))
+
 ## 2.21.1
 
 2021-08-27

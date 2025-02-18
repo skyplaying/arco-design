@@ -1,3 +1,43 @@
+## 2.49.2
+
+2023-06-16
+
+### 🐛 问题修复
+
+- 修复 `Statistic` 组件 `value` 不为数字时，传入的 `prefix` 未被渲染的问题。([#2037](https://github.com/arco-design/arco-design/pull/2037))
+
+## 2.47.0
+
+2023-04-14
+
+### 🆕 功能升级
+
+- `Statistic` 组件新增 `styleDecimal` 属性设置小数部分样式。([#1900](https://github.com/arco-design/arco-design/pull/1900))
+
+## 2.40.0
+
+2022-09-16
+
+### 💅 样式更新
+
+- 修复 `Statistic` 不传 `prefix` / `suffix` 时，对应 dom 节点仍然渲染的 bug。([#1388](https://github.com/arco-design/arco-design/pull/1388))
+
+## 2.36.0
+
+2022-06-24
+
+### 🆕 功能升级
+
+- `Statistic` 新增 `renderFormat` 参数支持自定义渲染。([#1044](https://github.com/arco-design/arco-design/pull/1044))
+
+## 2.29.0
+
+2022-02-11
+
+### 🐛 问题修复
+
+- 修复 `Statistic` 组件 `precision=0` 不生效的 问题([#531](https://github.com/arco-design/arco-design/pull/531))
+
 ## 2.23.0
 
 2021-09-27

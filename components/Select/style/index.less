@@ -1,283 +1,8 @@
-@import '../../style/mixin.less';
 @import './token.less';
-@import '../../InputTag/style/index.less';
+@import './mixin.less';
 
 @select-prefix-cls: ~'@{prefix}-select';
-
-// used by form
-.color(@prefixCls, @status) {
-  @suffix: if(@status = default, ~'', ~'-@{status}');
-
-  .@{prefixCls}@{suffix} {
-    .@{prefixCls}-view {
-      & when (@status = default) , (@status = disabled) {
-        color: ~'@{select-color-text_@{status}}';
-      }
-
-      background-color: ~'@{select-color-bg_@{status}}';
-      border: 1px solid ~'@{select-color-border_@{status}}';
-    }
-
-    &:hover {
-      .@{prefixCls}-view {
-        background-color: ~'@{select-color-bg_@{status}_hover}';
-        border-color: ~'@{select-color-border_@{status}_hover}';
-      }
-    }
-
-    &.@{prefixCls}-focused when not (@status = disabled) {
-      .@{prefixCls}-view {
-        color: @select-color-text_focused;
-        background-color: ~'@{select-color-bg_@{status}_focus}';
-        border-color: ~'@{select-color-border_@{status}_focus}';
-        box-shadow: 0 0 0 ~'@{select-shadow-distance_@{status}_focus}' ~'@{select-color-shadow_@{status}_focus}';
-      }
-    }
-
-    .@{prefixCls}-suffix-icon,
-    .@{prefixCls}-loading-icon,
-    .@{prefixCls}-search-icon,
-    .@{prefixCls}-clear-icon,
-    .@{prefixCls}-arrow-icon,
-    .@{prefixCls}-expand-icon {
-      & when (@status = default) , (@status = disabled) {
-        color: ~'@{select-color-icon_@{status}}';
-      }
-    }
-  }
-
-  .@{prefixCls}-no-border {
-    .@{prefixCls}-view {
-      border: none !important;
-      background: none !important;
-    }
-  }
-}
-
-.select-view(@prefixCls) {
-  @tail-icon-position-right: 10px;
-
-  .size(@size) {
-    @ref-font-size: ~'select-size-@{size}-font-size';
-    @ref-height: ~'select-size-@{size}-height';
-    @ref-padding: ~'select-signal-size-@{size}-padding';
-
-    @font-size: @@ref-font-size;
-    @height: @@ref-height;
-    @padding: @@ref-padding - @select-border-width;
-    @multi-padding: @select-multi-padding - @select-border-width;
-
-    .@{prefixCls} {
-      &-size-@{size}&-multiple {
-        .@{prefixCls}-view {
-          height: auto;
-          padding: 0 @multi-padding;
-          line-height: 0;
-        }
-
-        .input-tag-input-element-padding(@padding - @multi-padding);
-
-        .@{prefixCls}-suffix {
-          padding-right: @padding - @multi-padding;
-        }
-
-        input {
-          font-size: @font-size;
-        }
-      }
-
-      &-size-@{size}&-single {
-        .@{prefixCls}-view {
-          height: @height;
-          line-height: $height - @select-border-width * 2;
-          font-size: @font-size;
-          padding: 0 @padding;
-        }
-
-        input {
-          font-size: @font-size;
-        }
-      }
-
-      &-size-@{size}&-multiple {
-        .@{prefixCls}-view-with-prefix {
-          padding-left: @padding;
-        }
-      }
-    }
-  }
-
-  .color(@prefixCls, default);
-  .color(@prefixCls, error);
-  .color(@prefixCls, disabled);
-
-  .size(mini);
-  .size(small);
-  .size(default);
-  .size(large);
-
-  .@{prefixCls} {
-    display: inline-block;
-    position: relative;
-    box-sizing: border-box;
-    width: 100%;
-    cursor: pointer;
-
-    &-view {
-      display: flex;
-      position: relative;
-      box-sizing: border-box;
-      width: 100%;
-      border-radius: @select-border-radius;
-      outline: none;
-      user-select: none;
-      text-align: left;
-      transition: all @transition-duration-1 @transition-timing-function-linear, padding 0s linear;
-
-      input {
-        color: inherit;
-        cursor: inherit;
-
-        &::placeholder {
-          color: @select-color-placeholder_default;
-        }
-      }
-    }
-
-    .hide-input-element() {
-      // 需要在隐藏 input 的同时保证其能被 Tab 键聚焦
-      // 故不要用 display: none / visibility: hidden
-      width: 0 !important;
-      // width: 0 的 div 还能引起换行导致输入框被撑开，将其脱离标准文档流
-      position: absolute;
-    }
-
-    &-multiple,
-    &-show-search {
-      cursor: text;
-    }
-
-    &-disabled {
-      cursor: not-allowed;
-
-      .@{prefixCls}-view input::placeholder {
-        color: @select-color-placeholder_disabled;
-      }
-    }
-
-    &-single &-view {
-      &-input {
-        box-sizing: border-box;
-        width: 100%;
-        padding: 0;
-        border: none;
-        outline: none;
-        background: transparent;
-        .text-ellipsis();
-      }
-
-      &-value {
-        display: inline-block;
-        box-sizing: border-box;
-        width: 100%;
-        .text-ellipsis();
-
-        // 修复当value为空字符串时，造成select外层div的高度多余了4px的样式问题。
-        &:after {
-          content: '.';
-          font-size: 0;
-          line-height: 0;
-          visibility: hidden;
-        }
-      }
-
-      .@{prefixCls}-hidden {
-        .hide-input-element();
-      }
-    }
-
-    &-multiple {
-      vertical-align: top;
-
-      .@{prefixCls}-view {
-        padding: 0 @select-multi-padding;
-        line-height: 0;
-      }
-      .@{prefixCls}-view-with-prefix {
-        padding-left: @select-signal-size-default-padding;
-      }
-
-      .@{prefix}-input-tag {
-        flex: 1;
-        padding: 0;
-        border: none !important;
-        background: none !important;
-        box-shadow: none !important;
-        overflow: hidden;
-      }
-
-      .@{prefix}-tag {
-        max-width: 100%;
-      }
-
-      // 多选的空白输入框在已存在选择项并且未聚焦时隐藏，避免导致不必要的换行
-      &:not(.@{prefixCls}-focused) {
-        .@{prefix}-input-tag input:not(:first-child)[value=''] {
-          .hide-input-element();
-        }
-      }
-    }
-
-    &-prefix {
-      display: flex;
-      align-items: center;
-      margin-right: 12px;
-      white-space: nowrap;
-      color: @select-color-icon_default;
-    }
-
-    &-suffix {
-      display: flex;
-      align-items: center;
-      margin-left: 4px;
-    }
-
-    &-suffix-icon,
-    &-search-icon,
-    &-loading-icon,
-    &-expand-icon,
-    &-clear-icon {
-      font-size: @select-size-icon;
-      transition: all @transition-duration-1 @transition-timing-function-linear;
-    }
-
-    &-arrow-icon {
-      font-size: @select-size-icon;
-    }
-
-    &-open &-arrow-icon svg {
-      transform: rotateZ(180deg);
-    }
-
-    & &-clear-icon {
-      display: none;
-      cursor: pointer;
-
-      > svg {
-        position: relative;
-        transition: all @transition-duration-1 @transition-timing-function-linear;
-      }
-    }
-
-    &:hover &-clear-icon {
-      display: block;
-
-      & ~ * {
-        display: none;
-      }
-    }
-  }
-}
+@select-prefix-cls-rtl: ~'@{prefix}-select-rtl';
 
 .select-view(@select-prefix-cls);
 
@@ -285,7 +10,7 @@
   &-popup {
     top: 4px;
     box-sizing: border-box;
-    padding: @select-popup-padding-vertical 0;
+    padding: @select-popup-padding-vertical @select-popup-padding-horizontal;
     border: 1px solid @select-popup-color-border;
     border-radius: @select-popup-border-radius;
     background-color: @select-popup-color-bg;
@@ -312,6 +37,7 @@
     text-align: left;
     cursor: pointer;
     line-height: @select-popup-option-height;
+    border-radius: @select-popup-option-border-radius;
 
     .text-ellipsis();
 
@@ -341,6 +67,10 @@
     &-empty {
       height: $line-height;
     }
+  }
+
+  &-popup &-option-rtl {
+    text-align: right;
   }
 
   &-option-wrapper {
@@ -385,3 +115,9 @@
     color: @select-popup-option-color-hightlight-text;
   }
 }
+
+.@{select-prefix-cls}-rtl {
+  direction: rtl;
+}
+
+.select-view-rtl(@select-prefix-cls, @select-prefix-cls-rtl);

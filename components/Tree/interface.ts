@@ -1,12 +1,16 @@
-import { CSSProperties, ReactNode, DragEvent, PropsWithChildren } from 'react';
+import { CSSProperties, ReactNode, ReactElement, DragEvent, PropsWithChildren } from 'react';
 import TreeNode from './node';
 import { AvailableVirtualListProps } from '../_class/VirtualList';
+import { TreeNodeProps } from '.';
 
-export type NodeInstance = React.ReactElement<PropsWithChildren<NodeProps>, typeof TreeNode>;
+export type NodeInstance = ReactElement<PropsWithChildren<NodeProps>, typeof TreeNode>;
+export type FakeNodeInstance = { key: string; props: TreeNodeProps };
 
 export type SHOW_ALL = 'all';
 export type SHOW_PARENT = 'parent';
 export type SHOW_CHILD = 'child';
+
+export type ActionOnClick = 'select' | 'check' | 'expand';
 
 export interface TreeState {
   treeData?: TreeProps['treeData'];
@@ -17,6 +21,7 @@ export interface TreeState {
   expandedKeys?: string[];
   loadedKeys?: string[];
   loadingKeys?: string[];
+  halfCheckedKeys?: string[];
   // 当前正在展开/收起的key，是判定哪些节点需要执行动画的依据。
   currentExpandKeys?: string[];
 }
@@ -38,7 +43,11 @@ export type TreeDataType = NodeProps & {
   [key: string]: any;
 };
 
-export type AllowDrop = (options: { dropNode: NodeInstance; dropPosition: number }) => boolean;
+export type AllowDrop = (options: {
+  dropNode: NodeInstance;
+  dragNode: NodeInstance | null;
+  dropPosition: number;
+}) => boolean;
 
 /**
  * @title Tree
@@ -80,8 +89,14 @@ export interface TreeProps {
    */
   draggable?: boolean;
   /**
-   * @zh 是否允许拖拽时放置在该节点
-   * @en Whether to allow dropping on node
+   * @zh 是否开启展开收起的节点动画。
+   * @en
+   * @defaultValue true
+   */
+  animation?: boolean;
+  /**
+   * @zh 是否允许拖拽时放置在该节点。 (`dragNode` in `2.23.0`)
+   * @en Whether to allow dropping on node. (`dragNode` in `2.23.0`)
    * @defaultValue () => true
    * @version 2.7.0
    */
@@ -127,6 +142,12 @@ export interface TreeProps {
    */
   checkedKeys?: string[];
   /**
+   * @zh 半选状态的节点.仅在 checkable 且 checkStrictly 时生效
+   * @en the keys of half checked
+   * @version 2.27.0
+   */
+  halfCheckedKeys?: string[];
+  /**
    * @zh 默认展开的节点。
    * @en The key of node expanded by default
    */
@@ -154,9 +175,7 @@ export interface TreeProps {
    * @version 2.9.0
    */
   icons?:
-    | ((
-        nodeProps: NodeProps
-      ) => {
+    | ((nodeProps: NodeProps) => {
         dragIcon?: ReactNode;
         switcherIcon?: ReactNode;
         loadingIcon?: ReactNode;
@@ -188,6 +207,12 @@ export interface TreeProps {
    */
   showLine?: boolean;
   /**
+   * @zh 点击节点时对应的操作，可以是选中，复选选中，展开/收起
+   * @en The action when click node
+   * @version select
+   */
+  actionOnClick?: ActionOnClick | ActionOnClick[];
+  /**
    * @zh 异步加载数据的回调，返回一个 `Promise`。
    * @en Callback when loaded data asynchronously, returning a `Promise`.
    */
@@ -211,10 +236,12 @@ export interface TreeProps {
    */
   onCheck?: (
     checkedKeys: string[],
-    exra: {
+    extra: {
       node: NodeInstance;
       checkedNodes: NodeInstance[];
       checked: boolean;
+      halfCheckedKeys: string[];
+      halfCheckedNodes: NodeInstance[];
       e: Event;
     }
   ) => void;
@@ -258,6 +285,9 @@ export interface TreeProps {
   }) => void;
   filterNode?: (node: NodeProps) => boolean; // 仅提供给tree-select使用
   children?: ReactNode;
+  onMouseDown?: (e) => void;
+  // 提升性能
+  __ArcoAdapterMode__?: boolean;
 }
 
 /**
@@ -331,5 +361,6 @@ export interface NodeProps {
   autoExpandParent?: boolean;
   expanded?: boolean;
   childrenData?: NodeProps[];
+  dataRef?: TreeDataType;
   loadMore?: (node: NodeProps) => void;
 }

@@ -1,5 +1,6 @@
 import { ReactNode, CSSProperties } from 'react';
 import { ButtonProps } from '../Button';
+import { ConfirmProps } from './confirm';
 
 /**
  * @title Modal
@@ -58,12 +59,12 @@ export interface ModalProps {
    * @zh 确认按钮文案
    * @en The text of `ok` button
    */
-  okText?: string;
+  okText?: ReactNode;
   /**
    * @zh 取消按钮文案
    * @en The text of `cancel` button
    */
-  cancelText?: string;
+  cancelText?: ReactNode;
   /**
    * @zh 确认按钮的 props
    * @en The props of `ok` button
@@ -115,7 +116,7 @@ export interface ModalProps {
   afterClose?: () => void;
   /**
    * @zh 确认按钮加载中
-   * @en Whether The `ok` button is loading
+   * @en Whether the `ok` button is loading
    */
   confirmLoading?: boolean;
   /**
@@ -168,10 +169,23 @@ export interface ModalProps {
   /**
    * @zh 自定义渲染对话框
    * @en Custom the render of Modal
-   * @defaultValue 2.2.0
+   * @version 2.2.0
    */
   modalRender?: (modalNode: ReactNode) => ReactNode;
   prefixCls?: string;
 }
 
 export type ModalReturnProps = { update: Function; close: Function };
+
+type modalHookFunction = (config: ConfirmProps) => {
+  close: () => void;
+  update: (config: ConfirmProps) => void;
+};
+
+export type ModalHookReturnType = {
+  confirm?: modalHookFunction;
+  info?: modalHookFunction;
+  success?: modalHookFunction;
+  warning?: modalHookFunction;
+  error?: modalHookFunction;
+};

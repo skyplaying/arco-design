@@ -15,6 +15,7 @@ import { isFunction, isObject } from '../_util/is';
 import useMergeValue from '../_util/hooks/useMergeValue';
 import { TabsProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import useId from '../_util/hooks/useId';
 
 const sizeList = ['mini', 'small', 'default', 'large'];
 
@@ -47,17 +48,19 @@ const defaultProps: TabsProps = {
   showAddButton: true,
   lazyload: true,
   headerPadding: true,
+  scrollPosition: 'auto',
 };
 
 export const TabsContext = React.createContext<
   TabsProps & {
+    getIdPrefix?: (suffix?: number | string) => { tab: string; tabpane: string };
     paneChildren?: ReactElement<TabPaneProps, TabPaneType>[];
     prefixCls?: string;
   }
 >({});
 
 function Tabs(baseProps: TabsProps, ref) {
-  const { getPrefixCls, size: ctxSize, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, size: ctxSize, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<TabsProps>(baseProps, defaultProps, componentConfig?.Tabs);
 
   const paneChildren = getPaneChildren(props);
@@ -92,6 +95,7 @@ function Tabs(baseProps: TabsProps, ref) {
     ...rest
   } = props;
 
+  const idPrefix = useId(`${prefixCls}-`);
   const tabPosition = direction === 'vertical' ? 'left' : props.tabPosition;
 
   const tabHeaderProps = {
@@ -141,6 +145,14 @@ function Tabs(baseProps: TabsProps, ref) {
         'overflow',
         'editable',
         'renderTabTitle',
+        'addButton',
+        'deleteButton',
+        'icons',
+        'children',
+        'size',
+        'type',
+        'scrollPosition',
+        'offsetAlign',
       ])}
       style={style}
       className={cs(
@@ -151,12 +163,23 @@ function Tabs(baseProps: TabsProps, ref) {
         `${prefixCls}-size-${size}`,
         {
           [`${prefixCls}-justify`]: justify,
+          [`${prefixCls}-rtl`]: rtl,
         },
         className
       )}
       ref={tabsRef}
     >
-      <TabsContext.Provider value={tabHeaderProps}>
+      <TabsContext.Provider
+        value={{
+          ...tabHeaderProps,
+          getIdPrefix: (suffix: string | number) => {
+            return {
+              tab: idPrefix && `${idPrefix}-tab-${suffix}`,
+              tabpane: idPrefix && `${idPrefix}-panel-${suffix}`,
+            };
+          },
+        }}
+      >
         {tabPosition === 'bottom' && TabContentDom}
         {isFunction(renderTabHeader) ? (
           renderTabHeader(

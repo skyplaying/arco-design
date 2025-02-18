@@ -1,3 +1,35 @@
+## 2.63.1
+
+2024-07-02
+
+### 🐛 BugFix
+
+- Prevent phantom space in avatar image([#2692](https://github.com/arco-design/arco-design/pull/2692))
+
+## 2.45.1
+
+2023-03-01
+
+### 💎 Enhancement
+
+- Optimize `Avatar` child node type judgment logic([#1813](https://github.com/arco-design/arco-design/pull/1813))
+
+## 2.25.1
+
+2021-11-26
+
+### 🐛 BugFix
+
+- Fix the style problem that the spacing between avatars is not set when the `size` property is not set for the avatar group.([#220](https://github.com/arco-design/arco-design/pull/220))
+
+## 2.24.0
+
+2021-11-05
+
+### 🐛 BugFix
+
+- Fix the bug that the `Avatar` component still show all avatars when set `maxCount = 0`.([#89](https://github.com/arco-design/arco-design/pull/89))
+
 ## 2.15.3
 
 2021-05-21

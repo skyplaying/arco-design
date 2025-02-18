@@ -1,4 +1,5 @@
 import { CSSProperties, ReactNode } from 'react';
+import { TooltipProps } from '../Tooltip';
 
 /**
  * @title Typography
@@ -13,40 +14,45 @@ export interface OperationsProps extends Omit<React.HTMLAttributes<HTMLElement>,
   /**
    * @zh 开启复制功能
    * @en Whether to be copyable
+   * @version `onCopy` params `e` in `2.31.0`
    */
   copyable?:
     | boolean
     | {
         text?: string;
-        onCopy?: (text: string) => void;
+        onCopy?: (text: string, e) => void;
         icon?: ReactNode;
         tooltips?: [ReactNode, ReactNode];
+        tooltipProps?: TooltipProps;
       };
   /**
    * @zh 开启可编辑功能
    * @en If editable. Can control edit state when is object
+   * @version `onStart` params `e` in `2.31.0`
    */
   editable?:
     | boolean
     | {
         editing?: boolean;
-        onStart?: (text) => void;
+        tooltipProps?: TooltipProps;
+        onStart?: (text, e) => void;
         onChange?: (text) => void;
         onEnd?: (text) => void;
       };
   /**
-   * @zh 自动溢出省略（只支持字符串），具体参数配置看 [EllipsisConfig](#ellipsisconfig)
-   * @en Auto overflow omitted, see [EllipsisConfig](#ellipsisconfig)
+   * @zh 自动溢出省略（只支持字符串），具体参数配置看 [EllipsisConfig](#ellipsisconfig)。不推荐使用，建议 `Typography.Ellipsis` 替代
+   * @en Auto overflow omitted, see [EllipsisConfig](#ellipsisconfig)。Deprecated, `Typography.Ellipsis` is recommended instead
    */
   ellipsis?: boolean | EllipsisConfig;
   isEllipsis?: boolean;
   expanding?: boolean;
-  onClickExpand?: () => void;
+  onClickExpand?: (e) => void;
   setEditing?: (editing: boolean) => void;
   forceShowExpand?: boolean;
+  currentContext: Record<string, any>;
 }
 
-export interface CommonProps extends OperationsProps {
+export interface CommonProps extends Omit<OperationsProps, 'currentContext'> {
   style?: CSSProperties;
   className?: string | string[];
   children?: ReactNode;
@@ -121,11 +127,13 @@ export interface TypographyParagraphProps extends CommonProps {
 
 export interface EditContentProps {
   prefixCls?: string;
+  style?: CSSProperties;
+  className?: string | string[];
   children?: ReactNode;
   setEditing?: (editing: boolean) => void;
   editableConfig?: {
     editing?: boolean;
-    onStart?: (text) => void;
+    onStart?: (text, e) => void;
     onChange?: (text) => void;
     onEnd?: (text) => void;
   };
@@ -141,13 +149,19 @@ export type TypographyTextProps = CommonProps;
  */
 export type EllipsisConfig = {
   /**
+   * @zh 自动溢出省略（只支持字符串），在大量使用情况下建议开启提高性能。
+   * @en Automatic overflow omission (only strings are supported). In the case of simple single-line, css will be used by default to handle ellipsis to avoid complicated calculations.
+   * @version `2.36.0` 将默认值改为 `false` 并支持多行CSS省略。
+   */
+  cssEllipsis?: boolean;
+  /**
    * @zh 显示省略的行数
    * @en The number of omitted rows
    * @defaultValue 1
    */
   rows?: number;
   /**
-   * @zh 是否支持展开/折叠
+   * @zh 显示展开/折叠按钮
    * @en Whether to support expand
    */
   expandable?: boolean;
@@ -175,11 +189,83 @@ export type EllipsisConfig = {
   /**
    * @zh 在折叠/展开状态发生改变的时候触发，通常是点击折叠/展开按钮触发。
    * @en Callback when the expand state changes, usually triggered by clicking the button
+   * @version e in `2.27.0`
    */
-  onExpand?: (isExpand: boolean) => void;
+  onExpand?: (isExpand: boolean, e) => void;
   /**
    * @zh 配置省略时的弹出框
    * @en Show Tooltip when configure ellipsis
    */
   showTooltip?: boolean | { type?: 'tooltip' | 'popover'; props?: Record<string, any> };
+  /**
+   * @zh 是否展开
+   * @en whether to expand
+   * @version `2.33.0`
+   */
+  expanded?: boolean;
+  /**
+   * @zh 默认展开
+   * @en Default expanded state
+   * @version `2.33.0`
+   */
+  defaultExpanded?: boolean;
+  // https://github.com/arco-design/arco-design/issues/1185
+  // https://github.com/facebook/react/issues/17256
+  // React.Fragment will cause the page to crash in special scenarios
+  wrapper?: string | React.FC<any> | React.ComponentClass<any>;
 };
+
+/**
+ * @title Typography.Ellipsis
+ */
+export interface TypographyEllipsisProps {
+  style?: CSSProperties;
+  className?: string | string[];
+  /**
+   * @zh 显示省略的行数
+   * @en The number of omitted rows
+   * @defaultValue 1
+   */
+  rows?: number;
+  /**
+   * @zh 是否禁用省略功能
+   * @en Whether to disable the text ellipsis
+   */
+  disabled?: boolean;
+  /**
+   * @zh 是否显示弹出提示
+   * @en Whether to display pop-up prompts
+   */
+  showTooltip?: boolean | TooltipProps;
+  /**
+   * @zh 是否显示操控按钮。`2.61.0` 版本支持 `single` 属性
+   * @en Whether to show control button. `2.61.0` version supports `single` attribute
+   * @defaultValue true
+   */
+  expandable?: boolean | { single?: boolean };
+  /**
+   * @zh 自定义渲染操控按钮
+   * @en Custom rendering control buttons
+   */
+  expandRender?: (expanded: boolean) => ReactNode;
+  /**
+   * @zh 默认展开
+   * @en Expand by default
+   */
+  defaultExpanded?: boolean;
+  /**
+   * @zh 是否展开
+   * @en Whether to expand
+   */
+  expanded?: boolean;
+  /**
+   * @zh 点击展开、折叠时触发
+   * @en Triggered when clicked to expand or collapse
+   */
+  onExpand?: (isExpand: boolean, ev: Event) => void;
+  /**
+   * @zh 当省略状态发生改变时触发，首次省略时也会触发
+   * @en Triggered when the omission status changes, and also when omitted for the first time.
+   */
+  onEllipsis?: (isEllipsis: boolean) => void;
+}

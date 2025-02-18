@@ -1,3 +1,193 @@
+## 2.65.0
+
+2024-11-29
+
+### 🐛 问题修复
+
+- 升级 `react-focus-lock` 依赖版本，解决 iframe 焦点抢占问题([#2874](https://github.com/arco-design/arco-design/pull/2874))
+
+## 2.64.1
+
+2024-10-28
+
+### 🐛 问题修复
+
+- 依赖库 `scroll-into-view-if-needed` 版本号更新([#2848](https://github.com/arco-design/arco-design/pull/2848))
+
+## 2.63.2
+
+2024-08-08
+
+### 💎 功能优化
+
+- 兼容 react 19 findDOMNode 报错([#2755](https://github.com/arco-design/arco-design/pull/2755))
+- 升级依赖 `react-focus-lock` 版本，解决  WeakRef 不兼容问题([#2735](https://github.com/arco-design/arco-design/pull/2735))
+
+## 2.63.1
+
+2024-07-02
+
+### 💎 功能优化
+
+- 优化 `findDOMNode` 控制台 warning([#2727](https://github.com/arco-design/arco-design/pull/2727))
+
+## 2.63.0
+
+2024-06-11
+
+### 💎 功能优化
+
+- 优化 findDOMNode 逻辑([#2540](https://github.com/arco-design/arco-design/pull/2540))
+
+## 2.59.0
+
+2024-01-19
+
+### 🆕 功能升级
+
+- 新增数据色色彩序列([#2494](https://github.com/arco-design/arco-design/pull/2494))
+- 虚拟列表新增 `wrapperChild` 和 `onScroll` 属性。([#2483](https://github.com/arco-design/arco-design/pull/2483))
+
+## 2.57.0
+
+2023-12-08
+
+### 🆕 功能升级
+
+- 支持 `pt-br` 语言。([#2429](https://github.com/arco-design/arco-design/pull/2429))
+
+## 2.53.0
+
+2023-09-08
+
+### 🐛 问题修复
+
+- 修复内部组件 `VirtualList `  边界场景下控制台报错问题([#2216](https://github.com/arco-design/arco-design/pull/2216))
+
+## 2.48.2
+
+2023-05-26
+
+### 💎 功能优化
+
+- `Select` / `Cascader` / `TreeSelect` 内部 `<input />` 节点处于隐藏状态时，移除其 `value` 属性，避免用户复制操作出现多余文本。([#1993](https://github.com/arco-design/arco-design/pull/1993))
+
+## 2.48.0
+
+2023-05-12
+
+### 💎 功能优化
+
+- 优化 `ResizeObserver` 监听逻辑，避免某些场景下出现 `ResizeObserver loop limit exceeded` 报错([#1962](https://github.com/arco-design/arco-design/pull/1962))
+
+### 🆕 功能升级
+
+- 支持土耳其语([#1942](https://github.com/arco-design/arco-design/pull/1942))
+
+## 2.45.0
+
+2023-02-17
+
+### 🆕 功能升级
+
+- `Input` 、`Select`、 `DatePicker`、 `TimePicker`、`Cascader` 、`TreeSelect`、`AutoComplete ` 支持通过 `status` 属性设置 `warning` 状态([#1786](https://github.com/arco-design/arco-design/pull/1786))
+
+## 2.43.1
+
+2022-12-30
+
+### 💎 功能优化
+
+- 优化虚拟列表在列表项设置了 `margin` 值时滚动定位偏移的问题。([#1690](https://github.com/arco-design/arco-design/pull/1690))
+- 移除内部函数组件的 `defaultProps` 用法，避免在 React 18 严格模式下控制台 warning。([#1687](https://github.com/arco-design/arco-design/pull/1687))
+
+### 🐛 问题修复
+
+- 修复部分组件在 React 18 严格模式下，defaultValue 不生效的 bug。([#1689](https://github.com/arco-design/arco-design/pull/1689))
+
+## 2.41.2
+
+2022-11-11
+
+### 🆎 类型修正
+
+- 调整 `Modal` `Drawer` `Popconfirm` 参数 `okText` 和 `cancelText` 属性的 TS 定义为 `ReactNode`。([#1558](https://github.com/arco-design/arco-design/pull/1558))
+
+## 2.41.1
+
+2022-11-04
+
+### 🐛 问题修复
+
+- 更新 `IconLarkColor` 图标([#1541](https://github.com/arco-design/arco-design/pull/1541))
+
+## 2.39.3
+
+2022-09-02
+
+### 💎 功能优化
+
+- 优化 `Modal`, `Notification`, `Message` 组件在 React 18 下通过 `createRoot` 渲染节点。([#1367](https://github.com/arco-design/arco-design/pull/1367))
+
+## 2.39.2
+
+2022-08-26
+
+### 🐛 问题修复
+
+- 修复由于自动生成的 DOM `id` 导致的服务端渲染报错的问题。([#1334](https://github.com/arco-design/arco-design/pull/1334))
+- 修复按需加载引入 `Cascader` / `TreeSelect` 样式时，`Select` 组件被重复引入的问题([#1327](https://github.com/arco-design/arco-design/pull/1327))
+
+## 2.39.1
+
+2022-08-19
+
+### 💎 功能优化
+
+- 组件库对外暴露 `version` 字段。([#1303](https://github.com/arco-design/arco-design/pull/1303))
+
+## 2.35.0
+
+2022-06-10
+
+### 🐛 问题修复
+
+- 调整 `Popconfirm`，`Popover`， `Tooltip` 组件动画弹出效果，避免边界场景下过冲效果导致的页面抖动。([#986](https://github.com/arco-design/arco-design/pull/986))
+
+## 2.34.0
+
+2022-05-27
+
+### 🆕 功能升级
+
+- 新增阿拉伯语。([#932](https://github.com/arco-design/arco-design/pull/932))
+- 新增葡萄牙语。([#924](https://github.com/arco-design/arco-design/pull/924))
+- 新增俄语。([#922](https://github.com/arco-design/arco-design/pull/922))
+
+## 2.33.0
+
+2022-05-13
+
+### 🆕 功能升级
+
+- 国际化支持设置越南语([#824](https://github.com/arco-design/arco-design/pull/824))
+
+## 2.29.0
+
+2022-02-11
+
+### 🆕 功能升级
+
+- 升级 `b-validate` 版本以支持 `Form` 在 `validator` 中传入 `ReactNode`([#518](https://github.com/arco-design/arco-design/pull/518))
+
+## 2.28.0
+
+2022-01-07
+
+### 🆕 功能升级
+
+- 支持通过 `arco-vars-prefix` less 变量修改css变量前缀([#403](https://github.com/arco-design/arco-design/pull/403))
+
 ## 2.23.0
 
 2021-09-27

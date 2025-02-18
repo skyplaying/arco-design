@@ -1,5 +1,6 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import dayjs from 'dayjs';
+import { cleanup, fireEvent, render } from '../../../tests/util';
 import DatePicker from '..';
 import '../../../tests/mockDate';
 
@@ -12,184 +13,213 @@ describe('Panel show date', () => {
   it('DatePicker & WeekPicker', () => {
     function testPicker(week?: boolean) {
       const Picker = week ? WeekPicker : DatePicker;
-      const component = mount(<Picker />);
+      const component = render(<Picker />);
 
-      component.simulate('click');
+      fireEvent.click(component.container.firstChild!);
 
-      const labelYear = component.find('.arco-picker-header-label').at(0);
-      const labelMonth = component.find('.arco-picker-header-label').at(1);
+      const labelYear = component.find('.arco-picker-header-label').item(0);
+      const labelMonth = component.find('.arco-picker-header-label').item(1);
 
-      function checkPanelDate(date: string) {
-        const y = date.split('-')[0];
-        const m = date.split('-')[1];
-        expect(labelYear.text()).toBe(y);
-        expect(labelMonth.text()).toBe(m);
-      }
-
-      checkPanelDate('2020-04');
+      expect(labelYear.textContent).toBe('2020年');
+      expect(labelMonth.textContent).toBe('4月');
 
       // go prev month
-      component.find('IconLeft').simulate('click');
-      checkPanelDate('2020-03');
+      fireEvent.click(component.find('.arco-icon-left')[0]);
+      expect(labelYear.textContent).toBe('2020年');
+      expect(labelMonth.textContent).toBe('3月');
 
       // go prev year
-      component.find('IconDoubleLeft').simulate('click');
-      checkPanelDate('2019-03');
+      fireEvent.click(component.find('.arco-icon-double-left')[0]);
+      expect(labelYear.textContent).toBe('2019年');
+      expect(labelMonth.textContent).toBe('3月');
 
       // go next month
-      component.find('IconRight').simulate('click');
-      checkPanelDate('2019-04');
+      fireEvent.click(component.find('.arco-icon-right')[0]);
+      expect(labelYear.textContent).toBe('2019年');
+      expect(labelMonth.textContent).toBe('4月');
 
       // go next year
-      component.find('IconDoubleRight').simulate('click');
-      checkPanelDate('2020-04');
+      fireEvent.click(component.find('.arco-icon-double-right')[0]);
+      expect(labelYear.textContent).toBe('2020年');
+      expect(labelMonth.textContent).toBe('4月');
 
       // quick selection year
-      labelYear.simulate('click');
+      fireEvent.click(labelYear);
 
-      expect(component.find('.arco-picker-header-value').text()).toBe('2020 - 2030');
+      expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020 - 2030');
 
-      component.find('IconDoubleLeft').simulate('click');
-      expect(component.find('.arco-picker-header-value').text()).toBe('2010 - 2020');
-      component.find('IconDoubleRight').simulate('click');
-      expect(component.find('.arco-picker-header-value').text()).toBe('2020 - 2030');
+      fireEvent.click(component.find('.arco-icon-double-left')[0]);
+      expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2010 - 2020');
+      fireEvent.click(component.find('.arco-icon-double-right')[0]);
+      expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020 - 2030');
 
-      component
-        .find('.arco-picker-date')
-        .at(6) // 2025
-        .simulate('click');
+      fireEvent.click(component.find('.arco-picker-date').item(6)); // 2025
 
-      expect(component.find('.arco-picker-header-value').text()).toBe('2025');
+      expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2025年');
 
       // quick selection month
-      component.find('IconDoubleLeft').simulate('click');
-      expect(component.find('.arco-picker-header-value').text()).toBe('2024');
-      component.find('IconDoubleRight').simulate('click');
-      expect(component.find('.arco-picker-header-value').text()).toBe('2025');
+      fireEvent.click(component.find('.arco-icon-double-left')[0]);
+      expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2024年');
+      fireEvent.click(component.find('.arco-icon-double-right')[0]);
+      expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2025年');
 
-      component
-        .find('.arco-picker-date')
-        .at(0) // 2025-01
-        .simulate('click');
+      fireEvent.click(component.find('.arco-picker-date').item(0)); // 2025-01
 
-      expect(component.find('.arco-picker-header-value').text()).toBe('2025-01');
+      expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2025年1月');
 
-      component
-        .find('.arco-picker-date')
-        .at(6) // 2025-01-04
-        .simulate('click');
+      fireEvent.click(component.find('.arco-picker-date').item(6)); // 2025-01-05
 
-      expect(component.find('input').prop('value')).toBe(week ? '2025-1周' : '2025-01-04');
+      expect(component.find('.arco-picker-input input')[0].getAttribute('value')).toBe(
+        week ? '2025-1周' : '2025-01-05'
+      );
     }
 
     testPicker();
+    cleanup();
     testPicker(true);
   });
 
   it('MonthPicker', () => {
-    const component = mount(<MonthPicker defaultValue="2020-02" />);
+    const component = render(<MonthPicker defaultValue="2020-02" />);
 
-    component.simulate('click');
+    fireEvent.click(component.container.firstChild!);
 
-    const labelYear = component.find('.arco-picker-header-label');
+    const labelYear = component.find('.arco-picker-header-label')[0];
 
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020');
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020年');
 
     // go prev year
-    component.find('IconDoubleLeft').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2019');
+    fireEvent.click(component.find('.arco-icon-double-left')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2019年');
 
     // go next year
-    component.find('IconDoubleRight').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020');
+    fireEvent.click(component.find('.arco-icon-double-right')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020年');
 
     // quick selection year
-    labelYear.simulate('click');
+    fireEvent.click(labelYear);
 
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020 - 2030');
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020 - 2030');
 
-    component.find('IconDoubleLeft').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2010 - 2020');
-    component.find('IconDoubleRight').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020 - 2030');
+    fireEvent.click(component.find('.arco-icon-double-left')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2010 - 2020');
+    fireEvent.click(component.find('.arco-icon-double-right')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020 - 2030');
 
-    component
-      .find('.arco-picker-date')
-      .at(6) // 2025
-      .simulate('click');
+    fireEvent.click(component.find('.arco-picker-date').item(6)); // 2025
 
-    expect(component.find('.arco-picker-header-value').text()).toBe('2025');
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2025年');
 
-    component
-      .find('.arco-picker-date')
-      .at(0) // 2025-01
-      .simulate('click');
+    fireEvent.click(component.find('.arco-picker-date').item(0)); // 2025-01
 
-    expect(component.find('input').prop('value')).toBe('2025-01');
+    expect(component.find('.arco-picker-input input')[0].getAttribute('value')).toBe('2025-01');
   });
 
   it('YearPicker', () => {
-    const component = mount(<YearPicker defaultValue="2020" />);
+    const component = render(<YearPicker defaultValue="2020" />);
 
-    component.simulate('click');
+    fireEvent.click(component.container.firstChild!);
 
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020 - 2030');
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020 - 2030');
 
     // go prev 10 year
-    component.find('IconDoubleLeft').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2010 - 2020');
+    fireEvent.click(component.find('.arco-icon-double-left')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2010 - 2020');
 
     // go next 10 year
-    component.find('IconDoubleRight').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020 - 2030');
+    fireEvent.click(component.find('.arco-icon-double-right')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020 - 2030');
 
-    component
-      .find('.arco-picker-date')
-      .at(6) // 2025
-      .simulate('click');
+    fireEvent.click(component.find('.arco-picker-date').item(6)); // 2025
 
-    expect(component.find('input').prop('value')).toBe('2025');
+    expect(component.find('.arco-picker-input input')[0].getAttribute('value')).toBe('2025');
   });
 
   it('QuarterPicker', () => {
-    const component = mount(<QuarterPicker defaultValue="2020-Q3" />);
+    const component = render(<QuarterPicker defaultValue="2020-Q3" />);
 
-    component.simulate('click');
+    fireEvent.click(component.container.firstChild!);
 
-    const labelYear = component.find('.arco-picker-header-label');
+    const labelYear = component.find('.arco-picker-header-label')[0];
 
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020');
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020年');
 
     // go prev year
-    component.find('IconDoubleLeft').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2019');
+    fireEvent.click(component.find('.arco-icon-double-left')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2019年');
 
     // go next year
-    component.find('IconDoubleRight').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020');
+    fireEvent.click(component.find('.arco-icon-double-right')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020年');
 
     // quick selection year
-    labelYear.simulate('click');
+    fireEvent.click(labelYear);
 
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020 - 2030');
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020 - 2030');
 
-    component.find('IconDoubleLeft').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2010 - 2020');
-    component.find('IconDoubleRight').simulate('click');
-    expect(component.find('.arco-picker-header-value').text()).toBe('2020 - 2030');
+    fireEvent.click(component.find('.arco-icon-double-left')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2010 - 2020');
+    fireEvent.click(component.find('.arco-icon-double-right')[0]);
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2020 - 2030');
 
-    component
-      .find('.arco-picker-date')
-      .at(6) // 2025
-      .simulate('click');
+    fireEvent.click(component.find('.arco-picker-date').item(6)); // 2025
 
-    expect(component.find('.arco-picker-header-value').text()).toBe('2025');
+    expect(component.find('.arco-picker-header-value')[0].textContent).toBe('2025年');
 
-    component
-      .find('.arco-picker-date')
-      .at(0) // 2025-Q1
-      .simulate('click');
+    fireEvent.click(component.find('.arco-picker-date').item(0)); // 2025-Q1
 
-    expect(component.find('input').prop('value')).toBe('2025-Q1');
+    expect(component.find('.arco-picker-input input')[0].getAttribute('value')).toBe('2025-Q1');
+  });
+
+  it('disabledDate', () => {
+    const component = render(
+      <DatePicker disabledDate={(current) => current.isAfter(dayjs().endOf('day'))} />
+    );
+
+    fireEvent.click(component.container.firstChild!);
+
+    expect(
+      [].slice
+        .apply(component.find('.arco-picker-cell'))
+        .filter((n) => n.textContent === '10')[0]
+        .classList.contains('arco-picker-cell-disabled')
+    ).toBeFalsy();
+
+    expect(
+      [].slice
+        .apply(component.find('.arco-picker-cell'))
+        .filter((n) => n.textContent === '11')[0]
+        .classList.contains('arco-picker-cell-disabled')
+    ).toBeTruthy();
+
+    const labelYear = component.find('.arco-picker-header-label').item(0);
+
+    // quick selection year
+    fireEvent.click(labelYear);
+
+    expect(
+      [].slice
+        .apply(component.find('.arco-picker-cell'))
+        .filter((n) => n.textContent === '2020')[0]
+        .classList.contains('arco-picker-cell-disabled')
+    ).toBeFalsy();
+
+    expect(
+      [].slice
+        .apply(component.find('.arco-picker-cell'))
+        .filter((n) => n.textContent === '2021')[0]
+        .classList.contains('arco-picker-cell-disabled')
+    ).toBeTruthy();
+
+    // quick selection month
+    fireEvent.click(component.find('.arco-picker-date').item(1)); // 2020
+
+    expect(
+      component.find('.arco-picker-cell').item(3).classList.contains('arco-picker-cell-disabled')
+    ).toBeFalsy();
+
+    expect(
+      component.find('.arco-picker-cell').item(5).classList.contains('arco-picker-cell-disabled')
+    ).toBeTruthy();
   });
 });

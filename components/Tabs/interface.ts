@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode, ReactElement } from 'react';
 import TabHeader from './tab-header/index';
 
 /**
@@ -35,7 +35,7 @@ export interface TabsProps {
    */
   direction?: 'horizontal' | 'vertical';
   /**
-   * @zh 有三个尺寸供选择，分别为`small`, `default`, `large`
+   * @zh 有四个尺寸供选择，分别为`mini`, `small`, `default`, `large`
    * @en Size of tabs
    */
   size?: 'mini' | 'small' | 'default' | 'large';
@@ -45,6 +45,12 @@ export interface TabsProps {
    * @defaultValue line
    */
   type?: 'line' | 'card' | 'card-gutter' | 'text' | 'rounded' | 'capsule';
+  /**
+   * @zh 定制下划线尺寸
+   * @en custom the size of underline
+   * @version 2.54.0
+   */
+  inkBarSize?: { width?: CSSProperties['width']; height?: CSSProperties['height'] };
   /**
    * @zh 选项卡头部是否存在水平边距。仅对 `type`等于 `line`、`text`类型的选项卡生效
    * @en Whether there is a horizontal margin on the tab. It only effect when `type` is `line` or `text`
@@ -70,13 +76,26 @@ export interface TabsProps {
    */
   showAddButton?: boolean;
   /**
-   * @zh 图标配置
-   * @en Icon configuration
-   * @version 2.15.0
+   * @zh 标签页头部 编辑/滚动/下拉 图标配置。对于不想展示的图标可以将其设置为`null`
+   * @en Tab header edit/scroll/dropdown icon configuration. You can set it to `null` for icons you don't want to display
+   * @version 2.15.0, `prev`,`next`,`dropdown` in `2.47.0`
    */
   icons?: {
     add?: ReactNode;
     delete?: ReactNode;
+    prev?: ReactNode;
+    next?: ReactNode;
+    dropdown?: ReactNode;
+  };
+  /**
+   * @zh 是否在标签增减后，自动进行滚动调整(`editable`为`true`时生效）
+   * @en Whether to automatically scroll to the selected label after the label is dynamically increased or decreased (only effective when `editable` is `true`)
+   * @defaultValue { add: true, delete: true }
+   * @version 2.25.0
+   */
+  scrollAfterEdit?: {
+    delete?: boolean;
+    add?: boolean;
   };
   /**
    * @zh 显示在标签页右侧的附加
@@ -112,6 +131,13 @@ export interface TabsProps {
    */
   addButton?: ReactNode;
   /**
+   * @zh 被选中 tab 的滚动位置，默认 auto 即会将 activeTab 滚动到可见区域，但不会特意做位置调整
+   * @en The scroll position of the selected tab, the default auto will scroll the activeTab to the visible area, but will not adjust the position intentionally
+   * @version 2.25.0
+   * @defaultValue auto
+   */
+  scrollPosition?: 'start' | 'end' | 'center' | 'auto' | number;
+  /**
    * @zh `activeTab` 改变的回调
    * @en Callback when `activeTab` changed
    */
@@ -135,7 +161,7 @@ export interface TabsProps {
    * @zh 自定义选项卡头部
    * @en Custom Tab Header
    */
-  renderTabHeader?: (tabProps: TabsProps, DefaultTabHeader: typeof TabHeader) => React.ReactElement;
+  renderTabHeader?: (tabProps: TabsProps, DefaultTabHeader: typeof TabHeader) => ReactElement;
   /**
    * @zh 自定义单个选项卡头部
    * @en Customize tab header

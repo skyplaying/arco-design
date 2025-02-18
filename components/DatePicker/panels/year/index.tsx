@@ -8,6 +8,7 @@ import { ConfigContext } from '../../../ConfigProvider';
 import Header from '../header';
 import Body from '../body';
 import { newArray } from '../../../_util/constant';
+import PickerContext from '../../context';
 
 interface InnerYearPickerProps extends YearPickerProps {
   dateRender?: (currentDate: Dayjs) => ReactNode;
@@ -41,9 +42,11 @@ function YearPicker(props: InnerYearPickerProps) {
     ...rest
   } = props;
 
-  const { locale: globalLocale, getPrefixCls } = useContext(ConfigContext);
+  const { locale: globalLocale, getPrefixCls, rtl } = useContext(ConfigContext);
   const DATEPICKER_LOCALE = merge(globalLocale.DatePicker, locale);
   const CALENDAR_LOCALE = DATEPICKER_LOCALE.Calendar;
+
+  const { utcOffset, timezone } = useContext(PickerContext);
 
   const prefixCls = getPrefixCls('panel-year');
 
@@ -51,7 +54,7 @@ function YearPicker(props: InnerYearPickerProps) {
 
   const bodyProps = isRangePicker ? { rangeValues } : { value };
 
-  const showYear = pageShowDate ? pageShowDate.year() : getNow().year();
+  const showYear = pageShowDate ? pageShowDate.year() : getNow(utcOffset, timezone).year();
   const startYear = Math.floor(showYear / 10) * 10 - 1;
   const groupRow = newArray(3).map((_) => '');
   const rows = newArray(4)
@@ -60,7 +63,7 @@ function YearPicker(props: InnerYearPickerProps) {
       return arr.map((_, j) => {
         return {
           name: startYear + i * 3 + j,
-          time: dayjs(`${startYear + i * 3 + j}`, 'YYYY'),
+          time: dayjs(`${startYear + i * 3 + j}`, 'YYYY').endOf('year'),
           isPrev: i === 0 && j === 0,
           isNext: i === 3 && j === 2,
         };
@@ -95,15 +98,12 @@ function YearPicker(props: InnerYearPickerProps) {
         prefixCls={getPrefixCls('picker')}
         icons={icons}
         title={`${rows[0][1].name} - ${rows[3][2].name}`}
+        rtl={rtl}
         {...headerOperations}
       />
       {renderCalendar()}
     </div>
   );
 }
-
-YearPicker.defaultProps = {
-  pickerType: 'year',
-};
 
 export default YearPicker;

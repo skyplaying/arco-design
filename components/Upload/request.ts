@@ -14,12 +14,13 @@ function getBody(xhr: XMLHttpRequest) {
   }
 }
 
-const uploadRequest: UploadRequest = function(options: RequestOptions) {
+const uploadRequest: UploadRequest = function (options: RequestOptions) {
   const {
     onProgress = NOOP,
     onError = NOOP,
     onSuccess = NOOP,
     action,
+    method,
     headers = {},
     name: originName,
     file,
@@ -36,7 +37,7 @@ const uploadRequest: UploadRequest = function(options: RequestOptions) {
   const data = getValue(originData) as object;
   const xhr = new XMLHttpRequest();
   if (onProgress && xhr.upload) {
-    xhr.upload.onprogress = function(event: ProgressEvent) {
+    xhr.upload.onprogress = function (event: ProgressEvent) {
       let percent;
       if (event.total > 0) {
         percent = (event.loaded / event.total) * 100;
@@ -55,11 +56,12 @@ const uploadRequest: UploadRequest = function(options: RequestOptions) {
     onSuccess(getBody(xhr));
   };
   const formData = new FormData();
-  formData.append(name || 'file', file);
   if (data) {
     Object.keys(data).map((key) => formData.append(key, data[key]));
   }
-  xhr.open('post', action, true);
+  formData.append(name || 'file', file);
+
+  xhr.open(method, action, true);
   if (withCredentials && 'withCredentials' in xhr) {
     xhr.withCredentials = true;
   }

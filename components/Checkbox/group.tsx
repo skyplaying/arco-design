@@ -12,6 +12,15 @@ import { ConfigContext } from '../ConfigProvider';
 import useMergeValue from '../_util/hooks/useMergeValue';
 import { isArray, isObject } from '../_util/is';
 import { CheckboxGroupProps } from './interface';
+import { pickTriggerPropsFromRest } from '../_util/constant';
+
+const defaultContextValue = {
+  isCheckboxGroup: false,
+  checkboxGroupValue: [],
+  onGroupChange: () => {},
+  registerValue: () => {},
+  unRegisterValue: () => {},
+};
 
 export const CheckboxGroupContext = createContext<{
   disabled?: boolean;
@@ -20,13 +29,11 @@ export const CheckboxGroupContext = createContext<{
   checkboxGroupValue: ReactText[];
   registerValue: (value: ReactText) => void;
   unRegisterValue: (value: ReactText) => void;
-}>({
-  isCheckboxGroup: false,
-  checkboxGroupValue: [],
-  onGroupChange: () => {},
-  registerValue: () => {},
-  unRegisterValue: () => {},
-});
+}>(defaultContextValue);
+
+export const ClearCheckboxGroupContext = ({ children }: PropsWithChildren<{}>) => {
+  return <CheckboxGroupContext.Provider children={children} value={defaultContextValue} />;
+};
 
 function Group<T extends React.ReactText>(props: PropsWithChildren<CheckboxGroupProps<T>>) {
   const [value, setValue] = useMergeValue([], {
@@ -35,7 +42,7 @@ function Group<T extends React.ReactText>(props: PropsWithChildren<CheckboxGroup
   });
   const [allOptionValues, setAllOptionValues] = useState([]);
 
-  const { getPrefixCls } = useContext(ConfigContext);
+  const { getPrefixCls, rtl } = useContext(ConfigContext);
   const { disabled, options, style, className, error, children, direction = 'horizontal' } = props;
   const prefixCls = getPrefixCls('checkbox');
   const classNames = cs(
@@ -43,6 +50,7 @@ function Group<T extends React.ReactText>(props: PropsWithChildren<CheckboxGroup
     {
       [`${prefixCls}-group-is-error`]: error,
       [`${prefixCls}-group-direction-${direction}`]: direction,
+      [`${prefixCls}-group-rtl`]: rtl,
     },
     className
   );
@@ -68,7 +76,7 @@ function Group<T extends React.ReactText>(props: PropsWithChildren<CheckboxGroup
   );
 
   return (
-    <span className={classNames} style={style}>
+    <span className={classNames} style={style} {...pickTriggerPropsFromRest(props)}>
       <CheckboxGroupContext.Provider
         value={{
           isCheckboxGroup: true,
@@ -91,12 +99,14 @@ function Group<T extends React.ReactText>(props: PropsWithChildren<CheckboxGroup
           ? options.map((option) => {
               const label = isObject(option) ? option.label : option;
               const checkValue = isObject(option) ? option.value : option;
+              const icon = isObject(option) ? option.icon : undefined;
 
               return (
                 <Checkbox
                   disabled={disabled || (isObject(option) && option.disabled)}
                   key={checkValue}
                   value={checkValue}
+                  icon={icon}
                 >
                   {label}
                 </Checkbox>

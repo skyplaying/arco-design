@@ -1,13 +1,13 @@
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 
-export interface ProtalProps {
+export interface PortalProps {
   /** Portal 挂载的容器 */
   getContainer?: () => Element;
-  childrenComponent?: Element;
+  children?: ReactNode;
 }
 
-class Portal extends Component<ProtalProps> {
+class Portal extends Component<PortalProps> {
   container: Element | null | void = null;
 
   timer;
@@ -16,7 +16,7 @@ class Portal extends Component<ProtalProps> {
   //   super(props);
 
   //   const { getContainer } = this.props;
-  //   this.container = getContainer && getContainer();
+  //   this.container = getContainer?.()
   // }
 
   componentDidMount() {
@@ -36,7 +36,7 @@ class Portal extends Component<ProtalProps> {
 
   createContainer() {
     const { getContainer } = this.props;
-    this.container = getContainer && getContainer();
+    this.container = getContainer?.();
     this.forceUpdate();
   }
 

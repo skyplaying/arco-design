@@ -2,10 +2,10 @@
 import { Component } from 'react';
 
 function getId(noticeProps) {
-  if (noticeProps.id) {
-    return noticeProps.id;
+  if (noticeProps?.id) {
+    return noticeProps?.id;
   }
-  return `arco_notice_id_${Date.now()}`;
+  return `arco_notice_id_${Math.random().toFixed(10).slice(2)}`;
 }
 
 interface BaseNoticeState {
@@ -25,42 +25,41 @@ class BaseNotice extends Component<any, BaseNoticeState> {
   }
 
   add = (noticeProps) => {
+    const id: string = getId(noticeProps);
+
     const oldNotices = this.state.notices;
+
     // update notice
     if (noticeProps.id && ~oldNotices.findIndex((notice) => notice.id === noticeProps.id)) {
       this.update(noticeProps);
-      return noticeProps.id;
+    } else {
+      this.setState((prevState) => {
+        return {
+          notices: prevState.notices.concat({
+            ...noticeProps,
+            id,
+          }),
+          position: noticeProps.position,
+        };
+      });
     }
-    const id: string = getId(noticeProps);
-    const newNotices = oldNotices.concat({
-      ...noticeProps,
-      id,
-    });
-    this.setState({
-      notices: newNotices,
-      position: noticeProps.position,
-    });
+
     return id;
   };
 
   update = (newNotice) => {
-    const updatedNotices = this.state.notices.map((oldNotice) => {
-      if (newNotice.id === oldNotice.id) {
-        newNotice.update = true;
-        return newNotice;
-      }
-      return oldNotice;
-    });
+    const updatedNotices = this.state.notices.map((oldNotice) =>
+      newNotice.id === oldNotice.id ? newNotice : oldNotice
+    );
+
     this.setState(
       {
         notices: updatedNotices,
       },
       () => {
-        const notices = this.state.notices.map((oldNotice) => {
-          if (newNotice.id === oldNotice.id && oldNotice.update) {
-            delete oldNotice.update;
-          }
-          return oldNotice;
+        const notices = updatedNotices.map((notice) => {
+          if (newNotice.id === notice.id) delete notice.update;
+          return notice;
         });
         this.setState({ notices });
       }
@@ -68,9 +67,12 @@ class BaseNotice extends Component<any, BaseNoticeState> {
   };
 
   remove(id: string) {
-    const newNotices = this.state.notices.filter((notice) => notice.id !== id);
-    this.setState({
-      notices: newNotices,
+    this.setState((state) => {
+      const newNotices = state.notices.filter((notice) => notice.id !== id);
+
+      return {
+        notices: newNotices,
+      };
     });
   }
 

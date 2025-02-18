@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { isFunction, isObject } from '../_util/is';
 import IconCheck from '../../icon/react-icon/IconCheck';
 import IconExclamation from '../../icon/react-icon/IconExclamation';
 import Tooltip from '../Tooltip';
 import { ProgressProps } from './interface';
+import useId from '../_util/hooks/useId';
 
 const defaultStrokeWidth = {
   mini: 4,
@@ -18,8 +19,6 @@ const defaultWidth = {
   default: 64,
   large: 80,
 };
-
-let __ARCO_PROGRESS_SEED = 0;
 
 const CircleProgress = (
   props: ProgressProps & {
@@ -60,15 +59,18 @@ const CircleProgress = (
     [formatText, percent]
   );
 
-  const linearGradientId = useMemo(() => {
-    __ARCO_PROGRESS_SEED += 1;
-    return `${prefixCls}-linear-gradient-${__ARCO_PROGRESS_SEED}`;
-  }, []);
-
+  const linearGradientId = useId(`${prefixCls}-linear-gradient-`);
   const color = isLinearGradient ? `url(#${linearGradientId})` : (props.color as string);
 
   let dom = (
-    <div className={`${cls}-wrapper`} style={{ width, height: width }}>
+    <div
+      className={`${cls}-wrapper`}
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={percent}
+      style={{ width, height: width }}
+    >
       <svg viewBox={`0 0 ${width} ${width}`} className={`${svgCls}`}>
         {isLinearGradient && (
           <defs>

@@ -1,58 +1,74 @@
-import React, { useContext, useEffect } from 'react';
-import { CSSTransition } from 'react-transition-group';
+import React, { CSSProperties, useContext, ReactNode } from 'react';
 import cs from '../../_util/classNames';
 import useStateWithPromise from '../../_util/hooks/useStateWithPromise';
 import { MenuSubMenuProps } from '../interface';
 import IconDown from '../../../icon/react-icon/IconDown';
-import { processChildren, isChildrenSelected } from '../util';
+import { processChildren, isChildrenSelected, PROPS_NEED_TO_BE_PASSED_IN_SUBMENU } from '../util';
 import MenuContext from '../context';
 import MenuIndent from '../indent';
-import { useHotkeyHandler } from '../hotkey';
+import pick from '../../_util/pick';
+import omit from '../../_util/omit';
+import { Enter } from '../../_util/keycode';
+import useId from '../../_util/hooks/useId';
+import ArcoCSSTransition from '../../_util/CSSTransition';
+
+// Use visibility: hidden to avoid Menu.Item get focused by Tab key
+const CONTENT_HIDDEN_STYLE: CSSProperties = { height: 0, visibility: 'hidden' };
 
 const SubMenuInline = (props: MenuSubMenuProps & { forwardedRef }) => {
-  const { _key, children, style, className, title, level, forwardedRef, ...rest } = props;
+  const { _key, children, style, className, title, level, forwardedRef, selectable, ...rest } =
+    props;
   const {
+    id: menuId,
     prefixCls,
     levelIndent,
     openKeys = [],
     selectedKeys = [],
     icons,
     onClickSubMenu,
-    collectInlineMenuKeys,
+    onClickMenuItem,
   } = useContext(MenuContext);
 
   const baseClassName = `${prefixCls}-inline`;
   const isOpen = openKeys?.indexOf(_key) > -1;
-  const [height, setHeight] = useStateWithPromise(isOpen ? 'auto' : 0);
+  const isSelected =
+    (selectable && selectedKeys.indexOf(props._key as string) > -1) ||
+    isChildrenSelected(children, selectedKeys);
 
-  const subMenuClickHandler = () => onClickSubMenu(_key, level, 'inline');
-  const isActive = useHotkeyHandler(
-    _key,
-    (isActive, type) => isActive && type === 'enter' && subMenuClickHandler()
+  const [contentStyle, setContentStyle] = useStateWithPromise<CSSProperties>(
+    isOpen ? { height: 'auto' } : CONTENT_HIDDEN_STYLE
   );
 
-  useEffect(() => {
-    collectInlineMenuKeys(props._key);
-    return () => {
-      collectInlineMenuKeys(props._key, true);
-    };
-  }, []);
+  const subMenuClickHandler = (event) => {
+    onClickSubMenu(_key, level, 'inline');
+    selectable && onClickMenuItem(_key, event);
+  };
 
-  // 注意：此处 rest 中的属性会被 cloneElement 传递给 Menu.Item
-  // 当 SubMenuInline 增加了新的属性时，需要将其从 Menu.item 传递给 div 的属性中 omit
+  // Unique ID of this instance
+  const instanceId = useId(`${menuId}-submenu-inline-`);
+
+  // Should omit these properties in Menu.Item
   const childrenList = processChildren(children, {
-    ...rest,
+    ...pick(rest, PROPS_NEED_TO_BE_PASSED_IN_SUBMENU),
     level: level + 1,
-  });
+    selectable,
+  }) as ReactNode[];
 
-  // 根据level偏移
   const header = (
     <div
+      tabIndex={0}
+      aria-expanded={isOpen}
+      aria-controls={instanceId}
       className={cs(`${baseClassName}-header`, {
-        [`${prefixCls}-active`]: isActive,
-        [`${prefixCls}-selected`]: isChildrenSelected(children, selectedKeys),
+        [`${prefixCls}-selected`]: isSelected,
       })}
-      onClick={() => subMenuClickHandler()}
+      onClick={subMenuClickHandler}
+      onKeyDown={(event) => {
+        const keyCode = event.keyCode || event.which;
+        if (keyCode === Enter.code) {
+          subMenuClickHandler(event);
+        }
+      }}
     >
       <MenuIndent level={level} prefixCls={prefixCls} levelIndent={levelIndent} />
       <span>{title}</span>
@@ -63,35 +79,40 @@ const SubMenuInline = (props: MenuSubMenuProps & { forwardedRef }) => {
   );
 
   const content = (
-    <div className={cs(`${baseClassName}-content`)} style={{ height }}>
+    <div id={instanceId} className={cs(`${baseClassName}-content`)} style={contentStyle}>
       {childrenList}
     </div>
   );
 
   return (
-    <div ref={forwardedRef} className={cs(baseClassName, className)} style={style}>
+    <div
+      ref={forwardedRef}
+      className={cs(baseClassName, className)}
+      style={style}
+      {...omit(rest, ['key', 'popup', 'triggerProps'])}
+    >
       {header}
-      <CSSTransition
+      <ArcoCSSTransition
         in={isOpen}
         timeout={200}
         classNames={baseClassName}
         unmountOnExit={false}
-        onEnter={(element) => {
-          setHeight(0).then(() => {
-            setHeight(element.scrollHeight);
-          });
+        onEnter={async (element) => {
+          if (!element) return;
+          await setContentStyle(CONTENT_HIDDEN_STYLE);
+          await setContentStyle({ height: element.scrollHeight });
         }}
         onEntered={() => {
-          setHeight('auto');
+          setContentStyle({ height: 'auto' });
         }}
-        onExit={(element) => {
-          setHeight(element.scrollHeight).then(() => {
-            setHeight(0);
-          });
+        onExit={async (element) => {
+          if (!element) return;
+          await setContentStyle({ height: element.scrollHeight });
+          await setContentStyle(CONTENT_HIDDEN_STYLE);
         }}
       >
         {content}
-      </CSSTransition>
+      </ArcoCSSTransition>
     </div>
   );
 };

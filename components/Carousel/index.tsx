@@ -32,7 +32,7 @@ const defaultProps: CarouselProps = {
 };
 
 function Carousel(baseProps: CarouselProps, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<CarouselProps>(baseProps, defaultProps, componentConfig?.Carousel);
   const {
     style,
@@ -51,6 +51,7 @@ function Carousel(baseProps: CarouselProps, ref) {
     miniRender,
     arrowClassName,
     carousel,
+    icons,
     onChange,
     ...rest
   } = props;
@@ -76,8 +77,10 @@ function Carousel(baseProps: CarouselProps, ref) {
   const refSliderWrapper = useRef(null);
   const refAnimationTimer = useRef(null);
 
-  const [index, setIndex] = useState(0);
-  const [previousIndex, setPreviousIndex] = useState<number>(null);
+  const [index, setIndex] = useState(
+    typeof currentIndex === 'number' ? getValidIndex(currentIndex) : 0
+  );
+  const [previousIndex, setPreviousIndex] = useState<number>(index);
   const [isPause, setIsPause] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'positive' | 'negative'>(null);
@@ -119,6 +122,7 @@ function Carousel(baseProps: CarouselProps, ref) {
   useImperativeHandle(carousel, () => {
     return {
       dom: refDom.current,
+      getRootDOMNode: () => refDom.current,
       goto: ({ index, isNegative, isManual, resetAutoPlayInterval }) => {
         slideTo({
           targetIndex: getValidIndex(index),
@@ -175,28 +179,53 @@ function Carousel(baseProps: CarouselProps, ref) {
           return;
         }
 
-        const totalWidth = refSliderWrapper.current.clientWidth;
-        const sliderWidth = sliderElement.clientWidth;
-        const edge = (totalWidth - sliderWidth) / 2;
+        if (direction === 'horizontal') {
+          const totalWidth = refSliderWrapper.current.clientWidth;
+          const sliderWidth = sliderElement.clientWidth;
+          const edge = (totalWidth - sliderWidth) / 2;
 
-        // deltaZ is TranslateZ(-Zpx) of prev/next slider's style
-        // perspective / (perspective + deltaZ) = x / X
-        const deltaZ = 200;
-        const x = totalWidth / 2;
-        const X = sliderWidth;
-        // avoid getting a huge perspective value
-        const perspective = x + 50 >= X ? deltaZ * 4 : (deltaZ * x) / (X - x);
+          // deltaZ is TranslateZ(-Zpx) of prev/next slider's style
+          // perspective / (perspective + deltaZ) = x / X
+          const deltaZ = 200;
+          const x = totalWidth / 2;
+          const X = sliderWidth;
+          // avoid getting a huge perspective value
+          const perspective = x + 50 >= X ? deltaZ * 4 : (deltaZ * x) / (X - x);
 
-        setComputedStyle({
-          sliderWrapper: {
-            perspective,
-          },
-          indicatorWrapper: {
-            width: 'auto',
-            left: edge,
-            right: edge,
-          },
-        });
+          setComputedStyle({
+            sliderWrapper: {
+              perspective,
+            },
+            indicatorWrapper: {
+              width: 'auto',
+              left: edge,
+              right: edge,
+            },
+          });
+        } else {
+          const totalHeight = refSliderWrapper.current.clientHeight;
+          const sliderHeight = sliderElement.clientHeight;
+          const edge = (totalHeight - sliderHeight) / 2;
+
+          // deltaZ is TranslateZ(-Zpx) of prev/next slider's style
+          // perspective / (perspective + deltaZ) = x / X
+          const deltaZ = 200;
+          const y = totalHeight / 2;
+          const Y = sliderHeight;
+          // avoid getting a huge perspective value
+          const perspective = y + 50 >= Y ? deltaZ * 4 : (deltaZ * y) / (Y - y);
+
+          setComputedStyle({
+            sliderWrapper: {
+              perspective,
+            },
+            indicatorWrapper: {
+              height: 'auto',
+              top: edge,
+              bottom: edge,
+            },
+          });
+        }
       }
     } else {
       setComputedStyle({
@@ -210,6 +239,9 @@ function Carousel(baseProps: CarouselProps, ref) {
   const classNames = cs(
     prefixCls,
     `${prefixCls}-indicator-position-${indicatorPosition}`,
+    {
+      [`${prefixCls}-rtl`]: rtl,
+    },
     className
   );
   const eventHandlers = Object.assign(
@@ -222,8 +254,26 @@ function Carousel(baseProps: CarouselProps, ref) {
       : null
   );
 
+  let [slideToPrev, slideToNext] = [
+    () =>
+      slideTo({
+        targetIndex: prevIndex,
+        isNegative: true,
+        isManual: true,
+      }),
+
+    () =>
+      slideTo({
+        targetIndex: nextIndex,
+        isManual: true,
+      }),
+  ];
+  if (rtl) {
+    [slideToPrev, slideToNext] = [slideToNext, slideToPrev];
+  }
+
   return (
-    <ResizeObserver onResize={computeStyle}>
+    <ResizeObserver onResize={computeStyle} getTargetDOMNode={() => refDom.current}>
       <div
         ref={(_ref) => {
           ref = _ref;
@@ -258,6 +308,7 @@ function Carousel(baseProps: CarouselProps, ref) {
             } = child.props;
 
             return React.cloneElement(child, {
+              'aria-hidden': !isCurrent,
               style: Object.assign(
                 {
                   transitionTimingFunction: timingFunc,
@@ -319,19 +370,9 @@ function Carousel(baseProps: CarouselProps, ref) {
             className={arrowClassName}
             direction={direction}
             showArrow={showArrow}
-            prev={() =>
-              slideTo({
-                targetIndex: prevIndex,
-                isNegative: true,
-                isManual: true,
-              })
-            }
-            next={() =>
-              slideTo({
-                targetIndex: nextIndex,
-                isManual: true,
-              })
-            }
+            icons={icons}
+            prev={slideToPrev}
+            next={slideToNext}
           />
         )}
       </div>

@@ -1,6 +1,6 @@
 ---
 order: 2
-title: 
+title:
   zh-CN: 获取选项的文本
   en-US: LabelInValue
 ---
@@ -16,19 +16,25 @@ Use `labelInValue=true` to get label of the selected option
 ```js
 import { InputTag } from '@arco-design/web-react';
 
-ReactDOM.render(
-  <div>
+const App = () => {
+  return (
     <InputTag
       allowClear
       labelInValue
-      defaultValue={[{ label: 'a', value: '1' }]}
+      defaultValue={[
+        {
+          label: 'a',
+          value: '1',
+        },
+      ]}
       placeholder="Please input"
       style={{ maxWidth: 350 }}
       onChange={(v) => {
         console.log(v);
       }}
     />
-  </div>,
-  CONTAINER
-);
+  );
+};
+
+export default App;
 ```

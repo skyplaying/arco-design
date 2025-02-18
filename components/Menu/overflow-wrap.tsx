@@ -1,13 +1,17 @@
-import React, { useState, useRef, useContext, ReactElement, ReactNode, useEffect } from 'react';
-import ResizeObserver from 'resize-observer-polyfill';
+import React, { useState, useRef, useContext, ReactElement, ReactNode } from 'react';
 import SubMenu from './sub-menu';
 import { getStyle } from '../_util/style';
 import MenuContext from './context';
+import ResizeObserver from '../_util/resizeObserver';
+import type { MenuProps } from './interface';
+import cs from '../_util/classNames';
 
-const OVERFLOW_THRESHOLD = 10;
+const OVERFLOW_THRESHOLD = 5;
 
 function getNodeWidth(node) {
-  return node && +node.getBoundingClientRect().width.toFixed(2);
+  // getBoundingClientRect will get a result like 20.45
+  // Use Math.ceil to avoid menu item wrap in specific menu-width
+  return node && Math.ceil(+node.getBoundingClientRect().width);
 }
 
 function translatePxToNumber(str): number {
@@ -16,39 +20,39 @@ function translatePxToNumber(str): number {
 }
 
 interface OverflowWrapProps {
+  ellipsisText?: ReactNode;
   children: ReactNode;
+  onEllipsisChange?: MenuProps['onEllipsisChange'];
 }
 
 const OverflowWrap = (props: OverflowWrapProps) => {
-  const { children } = props;
+  const { children, ellipsisText = '···', onEllipsisChange } = props;
   const { prefixCls } = useContext(MenuContext);
 
   const refUl = useRef(null);
-  const refResizeObserver = useRef(null);
   const [lastVisibleIndex, setLastVisibleIndex] = useState(null);
 
   const overflowSubMenuClass = `${prefixCls}-overflow-sub-menu`;
   const overflowMenuItemClass = `${prefixCls}-overflow-hidden-menu-item`;
   const overflowSubMenuMirrorClass = `${prefixCls}-overflow-sub-menu-mirror`;
 
-  useEffect(() => {
-    const ulElement = refUl.current;
-
-    computeLastVisibleIndex();
-
-    refResizeObserver.current = new ResizeObserver((entries) => {
-      entries.forEach(computeLastVisibleIndex);
-    });
-    refResizeObserver.current.observe(ulElement);
-
-    return () => {
-      if (refResizeObserver.current) {
-        refResizeObserver.current.disconnect();
-      }
-    };
-  }, [children]);
+  const tryUpdateEllipsisStatus = (_lastVisibleIndex: number) => {
+    if (_lastVisibleIndex !== lastVisibleIndex) {
+      const childNodes = React.Children.toArray(children);
+      const noOverflow = _lastVisibleIndex === null;
+      onEllipsisChange?.({
+        lastVisibleIndex: noOverflow ? childNodes.length - 1 : _lastVisibleIndex,
+        overflowNodes: noOverflow ? [] : childNodes.slice(_lastVisibleIndex + 1),
+      });
+      setLastVisibleIndex(_lastVisibleIndex);
+    }
+  };
 
   function computeLastVisibleIndex() {
+    if (!refUl.current) {
+      return;
+    }
+
     const ulElement = refUl.current;
     const maxWidth = getNodeWidth(ulElement) - OVERFLOW_THRESHOLD;
     const childNodeList = [].slice.call(ulElement.children);
@@ -83,7 +87,7 @@ const OverflowWrap = (props: OverflowWrapProps) => {
 
       // 将要溢出的菜单项
       if (currentItemRight > maxWidth) {
-        setLastVisibleIndex(
+        tryUpdateEllipsisStatus(
           // 判断如果将最后一个菜单项换为 ... 是否会超出宽度
           menuItemIndex - (currentItemRight - nodeWidth + overflowSubMenuWidth <= maxWidth ? 1 : 2)
         );
@@ -95,16 +99,15 @@ const OverflowWrap = (props: OverflowWrapProps) => {
     }
 
     // 全部可见
-    setLastVisibleIndex(null);
+    tryUpdateEllipsisStatus(null);
   }
 
   const renderOverflowSubMenu = (children, isMirror = false) => {
     return (
       <SubMenu
-        title={<span>···</span>}
+        title={<span>{ellipsisText}</span>}
         key={`arco-menu-overflow-sub-menu${isMirror ? '-mirror' : ''}`}
         className={isMirror ? overflowSubMenuMirrorClass : overflowSubMenuClass}
-        {...props}
         children={children}
       />
     );
@@ -120,7 +123,7 @@ const OverflowWrap = (props: OverflowWrapProps) => {
       if (lastVisibleIndex !== null) {
         if (index > lastVisibleIndex) {
           item = React.cloneElement(child as ReactElement, {
-            className: overflowMenuItemClass,
+            className: cs(overflowMenuItemClass, (child as ReactElement)?.props?.className),
           });
         }
 
@@ -141,9 +144,11 @@ const OverflowWrap = (props: OverflowWrapProps) => {
   };
 
   return (
-    <div className={`${prefixCls}-overflow-wrap`} ref={refUl}>
-      {renderChildren()}
-    </div>
+    <ResizeObserver onResize={computeLastVisibleIndex} getTargetDOMNode={() => refUl.current}>
+      <div className={`${prefixCls}-overflow-wrap`} ref={refUl}>
+        {renderChildren()}
+      </div>
+    </ResizeObserver>
   );
 };
 

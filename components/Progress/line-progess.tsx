@@ -29,16 +29,17 @@ function LineProgress(props) {
   const {
     // textInside,
     type,
-    size,
     prefixCls,
     buffer,
     percent,
-    status,
     color,
     animation,
-    showText,
     bufferColor,
     formatText,
+    trailColor,
+    showText = true,
+    size = 'default',
+    status = 'normal',
   } = props;
 
   const strokeWidth = props.strokeWidth || defaultStrokeWidth[size];
@@ -64,7 +65,14 @@ function LineProgress(props) {
 
   return (
     <div className={`${cls}-wrapper`}>
-      <div className={`${cls}-outer`} style={{ height }}>
+      <div
+        className={`${cls}-outer`}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={percent}
+        style={{ height, backgroundColor: trailColor }}
+      >
         {buffer && !isFinish && (
           <div
             className={`${cls}-inner-buffer`}
@@ -88,11 +96,5 @@ function LineProgress(props) {
     </div>
   );
 }
-
-LineProgress.defaultProps = {
-  showText: true,
-  size: 'default',
-  status: 'normal',
-};
 
 export default LineProgress;

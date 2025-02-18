@@ -1,6 +1,13 @@
-import React, { useState, useContext, useRef, PropsWithChildren } from 'react';
-import useIsomorphicLayoutEffect from '../_util/hooks/useIsomorphicLayoutEffect';
+import React, {
+  useState,
+  useContext,
+  PropsWithChildren,
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+} from 'react';
 import { ConfigContext } from '../ConfigProvider';
+import ResizeObserverComponent from '../_util/resizeObserver';
 import {
   TypographyParagraphProps,
   TypographyTitleProps,
@@ -10,15 +17,16 @@ import {
 import Operations from './operations';
 import cs from '../_util/classNames';
 import EditContent from './edit-content';
-import { isObject } from '../_util/is';
-import useResizeObserver from '../_util/hooks/useResizeObserver';
-import { measure } from './utils';
+import { isObject, isUndefined } from '../_util/is';
 import Tooltip from '../Tooltip';
 import Popover from '../Popover';
-import { raf, caf } from '../_util/raf';
 import omit from '../_util/omit';
 import useUpdateEffect from '../_util/hooks/useUpdate';
 import mergedToString from '../_util/mergedToString';
+import useMergeValue from '../_util/hooks/useMergeValue';
+import useEllipsis, { MEASURE_STATUS } from './useEllipsis';
+import useCssEllipsis from './useCssEllipsis';
+import throttleByRaf from '../_util/throttleByRafV2';
 
 type BaseProps = PropsWithChildren<
   TypographyParagraphProps & TypographyTitleProps & TypographyTextProps
@@ -61,20 +69,7 @@ function getClassNameAndComponentName(props: BaseProps, prefixCls: string) {
   };
 }
 
-function wrap(content, component, props) {
-  let currentContent = content;
-
-  component.forEach((c) => {
-    const _props =
-      isObject(props.mark) && props.mark.color
-        ? { style: { backgroundColor: props.mark.color } }
-        : {};
-    currentContent = React.createElement(c, _props, currentContent);
-  });
-  return currentContent;
-}
-
-function Base(props: BaseProps) {
+function Base(props: BaseProps, ref) {
   const {
     componentType,
     style,
@@ -86,32 +81,71 @@ function Base(props: BaseProps) {
     blockquote,
     ...rest
   } = props;
-  const { getPrefixCls } = useContext(ConfigContext);
+  const configContext = useContext(ConfigContext);
+  const { getPrefixCls, rtl } = configContext;
   const prefixCls = getPrefixCls('typography');
 
-  const rafId = useRef();
-
+  const rootDOMRef = useRef();
   const { component, className: componentClassName } = getClassNameAndComponentName(
     props,
     prefixCls
   );
 
   const [editing, setEditing] = useState<boolean>(false);
-  const [isEllipsis, setEllipsis] = useState<boolean>(false);
-  const [expanding, setExpanding] = useState<boolean>(false);
-  const [ellipsisText, setEllipsisText] = useState<string>('');
-  const [measuring, setMeasuring] = useState(false);
-
-  const componentRef = useRef(null);
-
+  const [width, setWidth] = useState(0);
   const editableConfig = isObject(editable) ? editable : {};
   const mergedEditing = 'editing' in editableConfig ? editableConfig.editing : editing;
 
   const ellipsisConfig: EllipsisConfig = ellipsis
-    ? { rows: 1, ellipsisStr: '...', ...(isObject(ellipsis) ? ellipsis : {}) }
+    ? { rows: 1, ellipsisStr: '...', cssEllipsis: false, ...(isObject(ellipsis) ? ellipsis : {}) }
     : {};
 
-  function renderOperations(forceShowExpand?: boolean) {
+  const EllipsisWrapperTag = ellipsisConfig.wrapper || React.Fragment;
+  const [expanding, setExpanding] = useMergeValue<boolean>(false, {
+    defaultValue: ellipsisConfig.defaultExpanded,
+    value: ellipsisConfig.expanded,
+  });
+
+  const { simpleEllipsis, ellipsisStyle } = useCssEllipsis(ellipsisConfig);
+  const renderMeasureContent = (node, isEllipsis) => {
+    const ellipsisStr = !isUndefined(ellipsisConfig.ellipsisStr)
+      ? ellipsisConfig.ellipsisStr
+      : '...';
+    const suffix = !isUndefined(ellipsisConfig.suffix) && ellipsisConfig.suffix;
+    return (
+      <EllipsisWrapperTag>
+        {node}
+        {isEllipsis && !expanding && !simpleEllipsis ? ellipsisStr : ''}
+        {suffix}
+        {renderOperations(isEllipsis)}
+      </EllipsisWrapperTag>
+    );
+  };
+
+  const { ellipsisNode, isEllipsis, measureStatus } = useEllipsis({
+    ...ellipsisConfig,
+    children,
+    expanding,
+    width,
+    renderMeasureContent,
+    simpleEllipsis: simpleEllipsis || expanding,
+  });
+
+  const handleResize = throttleByRaf((entry) => {
+    const { contentRect } = entry?.[0];
+    if (contentRect) {
+      const currentWidth = component.includes('code') ? contentRect.width - 18 : contentRect.width;
+      const resizeStatus = [MEASURE_STATUS.NO_NEED_ELLIPSIS, MEASURE_STATUS.MEASURE_END];
+      // 在 table 中，使用了 cssEllipsis 因为 white-space: "nowrap"，宽度会突然变很大
+      // 导致再次触发 resize 计算，进入循环。
+      // diffTime 应对短时间内多次触发
+      if (resizeStatus.includes(measureStatus)) {
+        setWidth(currentWidth);
+      }
+    }
+  });
+
+  function renderOperations(isEllipsis?: boolean) {
     return (
       <>
         <Operations
@@ -120,93 +154,49 @@ function Base(props: BaseProps) {
           onClickExpand={onClickExpand}
           expanding={expanding}
           isEllipsis={isEllipsis}
-          forceShowExpand={forceShowExpand}
+          // 如果是镜像dom的话，渲染在最外层，无法从context中拿到最新config
+          currentContext={configContext}
         />
       </>
     );
   }
 
-  function onClickExpand() {
+  function onClickExpand(e) {
     setExpanding(!expanding);
-    ellipsisConfig.onExpand && ellipsisConfig.onExpand(!expanding);
+    props.onClickExpand && props.onClickExpand(e);
+    ellipsisConfig.onExpand && ellipsisConfig.onExpand(!expanding, e);
   }
-
-  const resizeOnNextFrame = () => {
-    caf(rafId.current);
-    rafId.current = raf(() => {
-      calcEllipsis();
-    });
-  };
-
-  const { cor, dor, currentOr } = useResizeObserver(resizeOnNextFrame);
-
-  useIsomorphicLayoutEffect(() => {
-    if (!currentOr) {
-      resizeOnNextFrame();
-    }
-  }, [currentOr]);
 
   useUpdateEffect(() => {
     ellipsisConfig.onEllipsis && ellipsisConfig.onEllipsis(isEllipsis);
   }, [isEllipsis]);
 
-  useIsomorphicLayoutEffect(() => {
-    if (componentRef.current) {
-      cor(componentRef.current);
-    }
-    return () => {
-      dor();
-      caf(rafId.current);
-    };
-  }, [
-    children,
-    expanding,
-    isEllipsis,
-    editing,
-    ellipsisConfig.suffix,
-    ellipsisConfig.ellipsisStr,
-    ellipsisConfig.expandable,
-    ellipsisConfig.expandNodes,
-    ellipsisConfig.rows,
-  ]);
+  useImperativeHandle(ref, () => rootDOMRef.current);
 
-  function calcEllipsis() {
-    const currentEllipsis = isEllipsis;
-    if (editing) {
-      return;
-    }
-    if (ellipsisConfig.rows) {
-      // In ellipsis mode, if the user manually expands, there is no need to calculate ellipsis and ellipsisText;
-      if (expanding) {
-        return;
-      }
-      setMeasuring(true);
-      const { ellipsis, text } = measure(
-        componentRef.current,
-        ellipsisConfig,
-        renderOperations(!!ellipsisConfig.expandable),
-        children
-      );
-      setMeasuring(false);
-      if (ellipsis && text) {
-        setEllipsisText(text);
-      }
-      if (ellipsis !== currentEllipsis) {
-        setEllipsis(ellipsis);
-      }
-    } else {
-      const isEllipsis = !!ellipsisConfig.rows;
-      if (isEllipsis !== currentEllipsis) {
-        setEllipsis(isEllipsis);
-      }
-    }
+  function wrap(content, component, props, innerProps = {}) {
+    let currentContent = content;
+    component.forEach((c, _index) => {
+      const _innerProps = _index === 0 ? innerProps : {};
+      const _props =
+        isObject(props.mark) && props.mark.color
+          ? { style: { backgroundColor: props.mark.color }, ..._innerProps }
+          : { ..._innerProps };
+      currentContent = React.createElement(c, { ..._props }, currentContent);
+    });
+    return currentContent;
+  }
+
+  let TextComponent;
+  if (componentType === 'Paragraph') {
+    TextComponent = blockquote ? 'blockquote' : 'div';
+  } else if (componentType === 'Title') {
+    TextComponent = `h${heading}`;
+  } else if (componentType === 'Text') {
+    TextComponent = ellipsis ? 'div' : 'span';
   }
 
   function renderContent() {
     const fullText = mergedToString(React.Children.toArray(children));
-    const ellipsisStr =
-      ellipsisConfig.ellipsisStr !== undefined ? ellipsisConfig.ellipsisStr : '...';
-    const suffix = ellipsisConfig.suffix !== undefined && ellipsisConfig.suffix;
     const showTooltip = ellipsisConfig.showTooltip;
     const tooltipType = isObject(ellipsisConfig.showTooltip)
       ? ellipsisConfig.showTooltip.type === 'popover'
@@ -221,69 +211,80 @@ function Base(props: BaseProps) {
     const titleProps = isEllipsis && !showTooltip && !expanding ? { title: fullText } : {};
 
     const baseProps = {
-      ref: componentRef,
       style,
       ...titleProps,
     };
 
-    function renderInnerContent() {
-      const text = isEllipsis && !expanding ? ellipsisText : children;
-      const innerText = component.length ? wrap(text, component, props) : text;
+    const addTooltip = isEllipsis && showTooltip && !expanding;
+
+    const node = (
+      <ResizeObserverComponent
+        onResize={handleResize}
+        getTargetDOMNode={() => {
+          return rootDOMRef.current;
+        }}
+      >
+        <TextComponent
+          ref={rootDOMRef}
+          className={cs(prefixCls, componentClassName, { [`${prefixCls}-rtl`]: rtl }, className)}
+          {...baseProps}
+          {...omit(rest, [
+            'spacing',
+            'type',
+            'close',
+            'bold',
+            'disabled',
+            'mark',
+            'underline',
+            'delete',
+            'code',
+            'copyable',
+            'isEllipsis',
+            'expanding',
+            'onClickExpand',
+            'setEditing',
+            'forceShowExpand',
+          ])}
+        >
+          {/* MEASURE_STATUS.INIT stage is to judge whether the current space is enough */}
+          {/* So this stage has to render everything */}
+          {simpleEllipsis && measureStatus !== MEASURE_STATUS.INIT && !expanding && isEllipsis
+            ? wrap(
+                // CSS folding style, need to wrap the text separately.
+                renderMeasureContent(<span style={ellipsisStyle}>{children}</span>, isEllipsis),
+                component.length ? component : ['span'],
+                props,
+                // The simple-ellipsis class ensures that the ReactNode after the text is displayed correctly (no line breaks)
+                // Need to act on the immediate parent node of the text
+                { className: `${prefixCls}-simple-ellipsis` }
+              )
+            : wrap(ellipsisNode, component, props)}
+        </TextComponent>
+      </ResizeObserverComponent>
+    );
+
+    if (addTooltip) {
       return (
-        <>
-          {isEllipsis && showTooltip && !expanding ? (
-            <TooltipComponent content={fullText} {...tooltipProps}>
-              {innerText}
-            </TooltipComponent>
-          ) : (
-            innerText
-          )}
-          {measuring || (isEllipsis && !expanding) ? ellipsisStr : null}
-          {suffix}
-          {renderOperations(measuring ? !!ellipsisConfig.expandable : undefined)}
-        </>
+        <TooltipComponent content={fullText} {...tooltipProps}>
+          <span>{node}</span>
+        </TooltipComponent>
       );
     }
 
-    let TextComponent;
-    if (componentType === 'Paragraph') {
-      TextComponent = blockquote ? 'blockquote' : 'div';
-    } else if (componentType === 'Title') {
-      TextComponent = `h${heading}`;
-    } else if (componentType === 'Text') {
-      TextComponent = ellipsis ? 'div' : 'span';
-    }
-
-    return (
-      <TextComponent
-        className={cs(prefixCls, componentClassName, className)}
-        {...baseProps}
-        {...omit(rest, [
-          'spacing',
-          'type',
-          'close',
-          'bold',
-          'disabled',
-          'mark',
-          'underline',
-          'delete',
-          'code',
-          'copyable',
-          'isEllipsis',
-          'expanding',
-          'onClickExpand',
-          'setEditing',
-          'forceShowExpand',
-        ])}
-      >
-        {renderInnerContent()}
-      </TextComponent>
-    );
+    return node;
   }
 
   return mergedEditing ? (
     <EditContent
+      ref={ref}
       {...props}
+      className={cs(
+        prefixCls,
+        componentClassName,
+        { [`${prefixCls}-rtl`]: rtl },
+        `${prefixCls}-${TextComponent}`,
+        className
+      )}
       prefixCls={prefixCls}
       setEditing={setEditing}
       editableConfig={editableConfig}
@@ -293,4 +294,4 @@ function Base(props: BaseProps) {
   );
 }
 
-export default Base;
+export default forwardRef(Base);

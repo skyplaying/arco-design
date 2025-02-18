@@ -1,3 +1,43 @@
+## 2.49.2
+
+2023-06-16
+
+### 🐛 BugFix
+
+- Fix the problem that `prefix` passed in is not rendered when `value` of `Statistic` is not a number.([#2037](https://github.com/arco-design/arco-design/pull/2037))
+
+## 2.47.0
+
+2023-04-14
+
+### 🆕 Feature
+
+- The `Statistic` component adds `styleDecimal` property to set the style of the decimal part.([#1900](https://github.com/arco-design/arco-design/pull/1900))
+
+## 2.40.0
+
+2022-09-16
+
+### 💅 Style
+
+- Fix the bug that the corresponding dom node still renders when `Statistic` does not pass `prefix` / `suffix`([#1388](https://github.com/arco-design/arco-design/pull/1388))
+
+## 2.36.0
+
+2022-06-24
+
+### 🆕 Feature
+
+- `Statistic` component adds `renderFormat` parameter to support custom rendering.([#1044](https://github.com/arco-design/arco-design/pull/1044))
+
+## 2.29.0
+
+2022-02-11
+
+### 🐛 BugFix
+
+- Fix `Statistic` component `precision=0` does not take effect([#531](https://github.com/arco-design/arco-design/pull/531))
+
 ## 2.23.0
 
 2021-09-27

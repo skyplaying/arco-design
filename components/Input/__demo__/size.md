@@ -7,31 +7,30 @@ title:
 
 ## zh-CN
 
-输入框定义了四种默认尺寸（`mini`,`small`, `default`, `large`），分别为24px，28px，32px，36px。
+输入框定义了四种默认尺寸（`mini`,`small`, `default`, `large`），分别为 24px，28px，32px，36px。
 
 ## en-US
 
 Input defines four sizes (`mini`, `small`, `default`, `large`), which are 24px, 28px, 32px, and 36px.
 
 ```js
+import React from 'react';
 import { Input, Radio, Select, Slider, Typography } from '@arco-design/web-react';
 import { IconClockCircle, IconSearch, IconInfoCircle } from '@arco-design/web-react/icon';
 
 const RadioGroup = Radio.Group;
 const InputSearch = Input.Search;
 
-class Demo extends React.Component {
+class App extends React.Component {
   state = {
     size: 'default',
     height: 0,
   };
-
   handleHeightChange = (height) => {
     this.setState({
       height,
     });
   };
-
   handleChange = (size) => {
     this.setState({
       height: undefined,
@@ -41,7 +40,10 @@ class Demo extends React.Component {
 
   render() {
     const { size, height } = this.state;
-    const props = { size };
+    const props = {
+      size,
+    };
+
     if (height) {
       props.height = height;
     }
@@ -76,67 +78,67 @@ class Demo extends React.Component {
         <div>
           <Input
             {...props}
-            style={{ width: 350, marginRight: 24, marginBottom: 24 }}
+            style={{ width: 350, margin: 12 }}
             prefix={<IconClockCircle />}
-            placeholder="Please enter something"
+            placeholder="Enter something"
           />
           <Input
             {...props}
-            style={{ width: 350, marginBottom: 24 }}
+             style={{ width: 350, margin: 12 }}
             suffix={<IconInfoCircle />}
-            placeholder="Please enter something"
+            placeholder="Enter something"
           />
         </div>
         <div>
           <Input
             {...props}
-            style={{ width: 350, marginRight: 24, marginBottom: 24 }}
+            style={{ width: 350, margin: 12 }}
             addAfter="KG"
-            placeholder="Please enter something"
+            placeholder="Enter something"
           />
           <Input
             {...props}
-            style={{ width: 350, marginBottom: 24 }}
+            style={{ width: 350, margin: 12 }}
             addBefore="+86"
-            placeholder="Please enter something"
+            placeholder="Enter phone number"
           />
         </div>
         <div>
           <Input
             {...props}
-            style={{ width: 350, marginBottom: 24, marginRight: 24 }}
+            style={{ width: 350, margin: 12 }}
             addBefore="+86"
             addAfter={<IconSearch />}
             prefix={<IconClockCircle />}
             suffix={<IconInfoCircle />}
             allowClear
-            placeholder="Please enter something"
+            placeholder="Enter phone number"
           />
           <InputSearch
             {...props}
-            placeholder="Please enter something"
-            style={{ width: 350, marginBottom: 24 }}
+            placeholder="Enter something"
+            style={{ width: 350, margin: 12 }}
             searchButton={true}
           />
         </div>
         <div>
           <Input
             {...props}
-            style={{ width: 350, marginBottom: 24, marginRight: 24 }}
+            style={{ width: 350, margin: 12 }}
             addBefore={
-              <Select size={size} placeholder="Please select" style={{ width: 100 }}>
+              <Select size={size} placeholder="Select protocol" style={{ width: 100 }}>
                 <Select.Option value="http://">http://</Select.Option>
                 <Select.Option value="https://">https://</Select.Option>
               </Select>
             }
             allowClear={true}
-            placeholder="Please enter something"
+            placeholder="Enter something"
           />
           <Input
             {...props}
-            style={{ width: 350, marginBottom: 24, }}
+            style={{ width: 350, margin: 12 }}
             allowClear={true}
-            placeholder="Please enter something"
+            placeholder="Enter something"
           />
         </div>
       </div>
@@ -144,5 +146,5 @@ class Demo extends React.Component {
   }
 }
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```

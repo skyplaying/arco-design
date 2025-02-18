@@ -1,3 +1,20 @@
+## 2.25.0
+
+2021-11-19
+
+### 🐛 问题修复
+
+- `Progress` 修复 `trailColor` 属性在环形进度条和步骤进度条不生效的 bug。([#175](https://github.com/arco-design/arco-design/pull/175))
+- 修复 `Progress` 组件步骤显示计算错误的 bug。([#170](https://github.com/arco-design/arco-design/pull/170))
+
+## 2.24.0
+
+2021-11-05
+
+### 🆕 功能升级
+
+- 添加trailColor改变Progress剩余颜色([#107](https://github.com/arco-design/arco-design/pull/107))
+
 ## 2.16.0
 
 2021-05-28

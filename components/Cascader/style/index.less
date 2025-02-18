@@ -1,9 +1,11 @@
 @import './token.less';
-@import '../../Select/style/index.less';
+@import '../../Select/style/mixin.less';
 
 @cascader-prefix-cls: ~'@{prefix}-cascader';
+@cascader-prefix-cls-rtl: ~'@{cascader-prefix-cls}-rtl';
 
 .select-view(@cascader-prefix-cls);
+.select-view-rtl(@cascader-prefix-cls, @cascader-prefix-cls-rtl);
 
 .@{cascader-prefix-cls} {
   &-popup {
@@ -11,14 +13,14 @@
     box-sizing: border-box;
     border: 1px solid @select-popup-color-border;
     border-radius: @select-popup-border-radius;
-    background-color: var(--color-bg-popup);
+    background-color: var(~'@{arco-cssvars-prefix}-color-bg-popup');
     box-shadow: @select-popup-box-shadow;
     overflow: hidden;
   }
 
   &-popup-trigger-hover {
     .@{cascader-prefix-cls}-list-item {
-      transition: fontWeight 0s;
+      transition: font-weight 0s;
     }
   }
 
@@ -37,8 +39,12 @@
     position: relative;
     vertical-align: top;
     display: inline-block;
-    background-color: var(--color-bg-popup);
+    background-color: var(~'@{arco-cssvars-prefix}-color-bg-popup');
     height: 100%;
+
+    &-virtual {
+      width: @cascader-size-item-width;
+    }
 
     &:not(:last-of-type) {
       border-right: 1px solid @select-popup-color-border;
@@ -122,6 +128,11 @@
       color: @cascader-color-item-text_hover;
       background-color: @cascader-color-item-bg_hover;
 
+      .@{prefix}-checkbox input {
+        // 避免选中checkbox时，select-view 的焦点被抢占
+        display: none;
+      }
+
       .@{prefix}-checkbox:not(.@{prefix}-checkbox-disabled):not(.@{prefix}-checkbox-checked):hover
         .@{prefix}-checkbox-icon-hover::before {
         background-color: @cascader-color-checkbox-bg_hover;
@@ -133,7 +144,7 @@
       &-disabled,
       &-disabled:hover {
         cursor: not-allowed;
-        background-color: @color-transparent;
+        background-color: @cascader-color-item-bg_disabled;
         color: @cascader-color-item-text_disabled;
 
         .@{prefix}-icon-right {
@@ -141,7 +152,7 @@
         }
 
         .@{prefix}-icon-check {
-          color: var(--color-primary-light-3);
+          color: var(~'@{arco-cssvars-prefix}-color-primary-light-3');
         }
       }
     }
@@ -204,3 +215,5 @@
 .cascaderSlide-appear-active {
   transition: margin @transition-duration-3 @transition-timing-function-standard;
 }
+
+@import './rtl.less';

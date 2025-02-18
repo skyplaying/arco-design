@@ -34,6 +34,21 @@ export interface TreeSelectProps extends SelectViewCommonProps {
     | { label: ReactNode; value: string; disabled?: boolean }
     | { label: ReactNode; value: string; disabled?: boolean }[];
   /**
+   * @zh
+   * 定制回显内容。返回值将会显示在下拉框内。若 `value` 对应的 `Option` 不存在，则第一个参数是 null
+   * @en
+   * Customize the content that will be displayed in the Select.
+   * If the `Option` corresponding to `value` does not exist, the first parameter will be `null`
+   * @version 2.46.0
+   */
+  renderFormat?: (option: NodeProps | null, value: string | LabelValue) => ReactNode;
+  /**
+   * @zh 输入框搜索文本的受控值
+   * @en To set input search value
+   * @version 2.39.0
+   */
+  inputValue?: string;
+  /**
    * @zh 指定 key，title，isLeaf，disabled，children 对应的字段
    * @en Custom field name for key, title, isLeaf, disabled and children
    * @defaultValue DefaultFieldNames
@@ -61,8 +76,8 @@ export interface TreeSelectProps extends SelectViewCommonProps {
    */
   treeCheckable?: boolean;
   /**
-   * @zh 父子节点是否关联
-   * @en Whether the parent and child nodes are related
+   * @zh 树选项是否严格选中。设置为`true`时候，表示严格选中，不与父节点关联；设置为`false`时候，表示非严格选中，与父节点关联变化
+   * @en Whether the tree option strictly selected. When set to 'true', it means strictly selected and not associated with the parent node; When set to 'false', it means that it is not strictly selected and is associated with changes in the parent node
    */
   treeCheckStrictly?: boolean;
   /**
@@ -84,8 +99,9 @@ export interface TreeSelectProps extends SelectViewCommonProps {
   /**
    * @zh 自定义上方显示元素
    * @en Customize the trigger element
+   * @version `() => ReactNode` in 2.31.0
    */
-  triggerElement?: ReactNode;
+  triggerElement?: ReactNode | ((params: { value: any }) => ReactNode);
   /**
    * @zh 是否显示边框
    * @en Whether show border
@@ -117,8 +133,16 @@ export interface TreeSelectProps extends SelectViewCommonProps {
   /**
    * @zh 选中值改变的回调
    * @en Callback when the selection changed
+   * @version `extra` in `2.29.0`
    */
-  onChange?: (value: any) => void;
+  onChange?: (
+    value: any,
+    extra: {
+      trigger?: NodeProps;
+      checked?: boolean;
+      selected?: boolean;
+    }
+  ) => void;
   /**
    * @zh 弹出框挂载的父节点
    * @en The parent node of the popup
@@ -148,6 +172,12 @@ export interface TreeSelectProps extends SelectViewCommonProps {
    */
   onSearch?: (inputValue: string) => void;
   /**
+   * @zh 输入框搜索文本改变的回调。
+   * @en Callback when the search value of input is changed.
+   * @version 2.39.0
+   */
+  onInputValueChange?: (value: string, reason: InputValueChangeReason) => void;
+  /**
    * @zh 点击清除时触发，参数是当前下拉框的展开状态。
    * @en Callback when clicked clear, the parameter is the visible state of current dropdown
    */
@@ -169,3 +199,6 @@ export const DefaultFieldNames = {
   checkable: 'checkable',
   isLeaf: 'isLeaf',
 };
+
+// 造成输入框值改变的原因：用户输入、选中选项、选项下拉框收起
+export type InputValueChangeReason = 'manual' | 'optionChecked' | 'optionListHide';

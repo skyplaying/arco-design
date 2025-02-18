@@ -1,9 +1,16 @@
 import React, { ReactElement } from 'react';
 import get from 'lodash/get';
 import Option from './option';
-import { OptionInfo, OptionProps, OptionsType, SelectProps } from './interface';
+import {
+  SelectInnerStateValue,
+  OptionInfo,
+  OptionProps,
+  OptionsType,
+  SelectProps,
+} from './interface';
 import { isArray, isString, isNumber, isObject } from '../_util/is';
 import getHighlightText from '../_util/getHighlightText';
+import fillNBSP from '../_util/fillNBSP';
 
 export type OptionInfoMap = Map<OptionProps['value'], OptionInfo>;
 
@@ -16,7 +23,7 @@ function isEmptyValue(value, isMultiple: boolean) {
   return isMultiple ? !isArray(value) || !value.length : value === undefined;
 }
 
-function getValidValue(value, isMultiple: boolean, labelInValue: boolean): SelectProps['value'] {
+function getValidValue(value, isMultiple: boolean, labelInValue: boolean): SelectInnerStateValue {
   // Compatible when labelInValue is set, value is passed in the object
   if (labelInValue) {
     if (isMultiple) {
@@ -38,11 +45,11 @@ function getValidValue(value, isMultiple: boolean, labelInValue: boolean): Selec
 }
 
 function isSelectOption(child): boolean {
-  return get(child, 'props.isSelectOption');
+  return get(child, 'props.isSelectOption') || get(child, 'type.__ARCO_SELECT_OPTION__');
 }
 
 function isSelectOptGroup(child): boolean {
-  return get(child, 'props.isSelectOptGroup');
+  return get(child, 'props.isSelectOptGroup') || get(child, 'type.__ARCO_SELECT_OPTGROUP__');
 }
 
 function flatChildren(
@@ -54,8 +61,8 @@ function flatChildren(
     prefixCls,
   }: {
     inputValue: string;
-    userCreatedOptions?: string[];
-    userCreatingOption?: string;
+    userCreatedOptions?: SelectProps['options'];
+    userCreatingOption?: SelectProps['options'][number];
     prefixCls: string;
   },
   // 递归过程中需要持续传递的数据
@@ -83,7 +90,10 @@ function flatChildren(
 
   const getChildValue = (child: ReactElement) => {
     const propValue = get(child, 'props.value');
-    return propValue === undefined ? child.props.children.toString() : propValue;
+    const propChildren = get(child, 'props.children');
+    return propValue === undefined && propChildren !== null && propChildren !== undefined
+      ? propChildren.toString()
+      : propValue;
   };
 
   const getChildKey = ({ label, value }, key?, isGroupTitle?) => {
@@ -105,14 +115,19 @@ function flatChildren(
     if (filterOption === true) {
       isValidOption =
         optionValue !== undefined &&
-        String(optionValue)
-          .toLowerCase()
-          .indexOf(inputValue.toLowerCase()) !== -1;
+        String(optionValue).toLowerCase().indexOf(inputValue.toLowerCase()) !== -1;
     } else if (typeof filterOption === 'function') {
       isValidOption = !inputValue || filterOption(inputValue, child);
     }
 
-    if (!optionInfoMap.get(optionValue)) {
+    const existOption = optionInfoMap.get(optionValue);
+    const needOverwriteUserCreatedOption =
+      existOption?._origin === 'userCreatedOptions' ||
+      existOption?._origin === 'userCreatingOption';
+
+    // we don't allow two options with same value
+    // however option created by user-inputting can be replaced by option from option property or children
+    if (!existOption || needOverwriteUserCreatedOption) {
       if (!('_key' in child.props)) {
         child = React.cloneElement(child, {
           _key: getChildKey(child.props, child.key),
@@ -130,13 +145,23 @@ function flatChildren(
       };
 
       optionInfoMap.set(optionValue, option);
-      optionValueList.push(optionValue);
 
-      if (isValidOption) {
-        childrenList.push(child);
+      if (needOverwriteUserCreatedOption) {
+        const indexToUpdate = childrenList.findIndex((c) => c?.props?.value === optionValue);
+        if (indexToUpdate > -1) {
+          isValidOption
+            ? (childrenList[indexToUpdate] = child)
+            : childrenList.splice(indexToUpdate, 1);
+        }
+      } else {
+        optionValueList.push(optionValue);
 
-        if (!option.disabled) {
-          optionIndexListForArrowKey.push(index);
+        if (isValidOption) {
+          childrenList.push(child);
+
+          if (!option.disabled) {
+            optionIndexListForArrowKey.push(index);
+          }
         }
       }
     }
@@ -149,13 +174,13 @@ function flatChildren(
   const extendChildren = (arr, origin: OptionInfo['_origin']) => {
     if (origin && isArray(arr) && arr.length) {
       (arr as OptionsType).forEach((option) => {
-        option =
-          isString(option) || isNumber(option)
-            ? {
-                label: option,
-                value: option,
-              }
-            : option;
+        if (isString(option) || isNumber(option)) {
+          option = {
+            label: option,
+            value: option,
+          };
+        }
+
         const child = (
           <Option
             _key={getChildKey(option)}
@@ -163,7 +188,7 @@ function flatChildren(
             disabled={option.disabled === true}
             extra={option.extra}
           >
-            {option.label}
+            {fillNBSP(option.label)}
           </Option>
         );
         handleOption(child, origin);

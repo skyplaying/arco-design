@@ -46,7 +46,7 @@
   border: @notification-border-width @notification-border-style @notification-normal-color-border;
   margin-bottom: @notification-margin-bottom;
   background-color: @notification-normal-color-bg;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 15%);
   overflow: hidden;
   box-sizing: border-box;
   opacity: 1;
@@ -216,4 +216,25 @@
   opacity: 0;
   height: 0;
   transition: all @transition-duration-3 @transition-timing-function-standard;
+}
+
+.@{notification-prefix-cls}-wrapper-rtl {
+  direction: rtl;
+}
+
+.@{notification-prefix-cls}-rtl {
+  direction: rtl;
+  .@{notification-prefix-cls}-left {
+    padding-right: 0;
+    padding-left: @notification-icon-margin-right;
+  }
+
+  .@{notification-prefix-cls}-btn-wrapper {
+    text-align: left;
+  }
+
+  .@{notification-prefix-cls}-close-btn {
+    right: initial;
+    left: @notification-close-icon-right;
+  }
 }

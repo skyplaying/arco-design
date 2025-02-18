@@ -1,20 +1,30 @@
 import React, { ReactInstance } from 'react';
-import ReactDOM from 'react-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { TransitionGroup } from 'react-transition-group';
+import { createPortal } from 'react-dom';
+import { render as ReactDOMRender } from '../_util/react-dom';
 import BaseNotification from '../_class/notification';
 import Notice from '../_class/notice';
 import cs from '../_util/classNames';
-import { isNumber } from '../_util/is';
-import { NotificationProps } from './interface';
+import { isNumber, isUndefined } from '../_util/is';
+import { NotificationProps, NotificationHookReturnType } from './interface';
+import useNotification from './useNotification';
+import ArcoCSSTransition from '../_util/CSSTransition';
 
 const notificationTypes = ['info', 'success', 'error', 'warning', 'normal'];
-let notificationInstance: object = {};
 
-type ConfigProps = {
+let notificationInstance: {
+  [key in NotificationProps['position']]?: {
+    instance?: Notification;
+    pending?: Promise<null>;
+  };
+} = {};
+
+export type ConfigProps = {
   maxCount?: number;
   prefixCls?: string;
   getContainer?: () => HTMLElement;
   duration?: number;
+  rtl?: boolean;
 };
 
 // global config
@@ -22,8 +32,11 @@ let maxCount;
 let prefixCls;
 let duration;
 let container;
+let rtl;
 
 class Notification extends BaseNotification {
+  static useNotification: (config?: ConfigProps) => [NotificationHookReturnType, JSX.Element];
+
   static success: (config: NotificationProps) => ReactInstance;
 
   static info: (config: NotificationProps) => ReactInstance;
@@ -35,7 +48,7 @@ class Notification extends BaseNotification {
   static normal: (config: NotificationProps) => ReactInstance;
 
   static config = (options: ConfigProps = {}): void => {
-    if (options.maxCount) {
+    if (isNumber(options.maxCount)) {
       maxCount = options.maxCount;
     }
     if (options.prefixCls) {
@@ -44,61 +57,98 @@ class Notification extends BaseNotification {
     if (isNumber(options.duration)) {
       duration = options.duration;
     }
+    if (typeof options.rtl === 'boolean') {
+      rtl = options.rtl;
+    }
     if (options.getContainer && options.getContainer() !== container) {
       container = options.getContainer();
-      Object.keys(notificationInstance).forEach((notice) => notificationInstance[notice].clear());
+      Object.values(notificationInstance).forEach(({ instance: notice }) => notice?.clear());
       notificationInstance = {};
     }
   };
 
   static clear: () => void = () => {
-    Object.keys(notificationInstance).forEach((ins) => {
-      notificationInstance[ins].clear();
+    Object.values(notificationInstance).forEach(({ instance }) => {
+      instance?.clear();
     });
   };
 
   static remove: (id: string) => void = (id: string) => {
-    Object.keys(notificationInstance).forEach((ins) => {
-      notificationInstance[ins].remove(id);
+    Object.values(notificationInstance).forEach(({ instance }) => {
+      instance?.remove(id);
     });
   };
 
   static addInstance: (config: NotificationProps) => ReactInstance = (
     noticeProps: NotificationProps
   ) => {
-    const { position = 'topRight' } = noticeProps;
+    let position = noticeProps.position;
+    if (isUndefined(noticeProps.position)) {
+      position = rtl ? 'topLeft' : 'topRight';
+    }
     const _noticeProps = {
       duration,
       ...noticeProps,
     };
-    if (notificationInstance[position]) {
-      const notices = notificationInstance[position].state.notices;
-      if (notices.length >= maxCount) {
-        const updated = notices[0];
-        notices.shift();
-        notificationInstance[position].add({
+    const { instance, pending } = notificationInstance[position] || {};
+    if (instance || pending) {
+      const add = () => {
+        const { instance } = notificationInstance[position] || {};
+        const notices = instance.state.notices;
+        const updated = notices.find((notice) => notice.id === noticeProps.id);
+        const _mergerProps = {
           ..._noticeProps,
-          id: updated.id,
+          update: updated,
+        };
+        if (notices.length >= maxCount) {
+          if (updated) {
+            instance.add({
+              ..._mergerProps,
+              id: updated.id,
+            });
+          } else {
+            notices.shift();
+            instance.add(_mergerProps);
+          }
+        } else {
+          instance.add({ ..._mergerProps });
+        }
+        return instance;
+      };
+
+      if (instance) {
+        add();
+      } else if (pending?.then) {
+        pending.then(() => {
+          add();
+          notificationInstance[position].pending = null;
         });
-      } else {
-        notificationInstance[position].add(_noticeProps);
       }
-      return notificationInstance[position];
+      return instance;
     }
     const div = document.createElement('div');
-    let instance = null;
+
     (container || document.body).appendChild(div);
-    ReactDOM.render(
-      <Notification
-        ref={(ref) => {
-          notificationInstance[position] = ref;
-          notificationInstance[position].add(_noticeProps);
-          instance = notificationInstance[position];
-          return instance;
-        }}
-      />,
-      div
-    );
+    notificationInstance[position] = {};
+    notificationInstance[position].pending = new Promise((resolve) => {
+      ReactDOMRender(
+        <Notification
+          ref={(instance) => {
+            if (!notificationInstance[position]) {
+              // getContainer 变化时，会重置 notificationInstance
+              // pending 中的逻辑执行晚于重置逻辑时，这里需判空
+              notificationInstance[position] = {};
+            }
+            notificationInstance[position].instance = instance;
+            instance.add(_noticeProps);
+            resolve(null);
+            return instance;
+          }}
+        />,
+        div
+      );
+    });
+    return notificationInstance[position].instance;
   };
 
   remove = (id: string) => {
@@ -114,8 +164,17 @@ class Notification extends BaseNotification {
   };
 
   render() {
-    const { notices, position = 'topRight' } = this.state;
-    const prefixClsNotification = prefixCls ? `${prefixCls}-notification` : 'arco-notification';
+    const { notices } = this.state;
+    const { prefixCls: _prefixCls, rtl: _rtl, getContainer } = this.props;
+    let position = this.state.position;
+    const mergedRtl = !isUndefined(_rtl) ? _rtl : rtl;
+    if (isUndefined(position)) {
+      position = mergedRtl ? 'topLeft' : 'topRight';
+    }
+    const mergedPrefixCls = _prefixCls || prefixCls;
+    const prefixClsNotification = mergedPrefixCls
+      ? `${mergedPrefixCls}-notification`
+      : 'arco-notification';
     let transitionClass: string;
     if (position === 'topLeft' || position === 'bottomLeft') {
       transitionClass = 'slideNoticeLeft';
@@ -124,14 +183,17 @@ class Notification extends BaseNotification {
     }
     const classNames = cs(
       `${prefixClsNotification}-wrapper`,
-      `${prefixClsNotification}-wrapper-${position}`
+      `${prefixClsNotification}-wrapper-${position}`,
+      { [`${prefixClsNotification}-wrapper-rtl`]: rtl }
     );
 
-    return (
+    const container = getContainer?.();
+
+    const dom = (
       <div className={classNames}>
         <TransitionGroup component={null}>
           {notices.map((notice) => (
-            <CSSTransition
+            <ArcoCSSTransition
               key={notice.id}
               timeout={{
                 enter: 400,
@@ -139,12 +201,15 @@ class Notification extends BaseNotification {
               }}
               classNames={transitionClass}
               onExit={(e) => {
+                if (!e) return;
                 e.style.height = `${e.scrollHeight}px`;
               }}
               onExiting={(e) => {
+                if (!e) return;
                 e.style.height = 0;
               }}
               onExited={(e) => {
+                if (!e) return;
                 e.style.height = 0;
                 notice.onClose && notice.onClose();
               }}
@@ -153,13 +218,18 @@ class Notification extends BaseNotification {
                 {...notice}
                 onClose={this.remove}
                 prefixCls={prefixClsNotification}
+                iconPrefix={mergedPrefixCls}
+                classPrefixCls={mergedPrefixCls}
                 noticeType="notification"
+                rtl={mergedRtl}
               />
-            </CSSTransition>
+            </ArcoCSSTransition>
           ))}
         </TransitionGroup>
       </div>
     );
+
+    return container ? createPortal(dom, container) : dom;
   }
 }
 
@@ -171,6 +241,8 @@ notificationTypes.forEach((type) => {
     });
   };
 });
+
+Notification.useNotification = useNotification;
 
 export default Notification;
 

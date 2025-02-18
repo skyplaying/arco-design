@@ -18,22 +18,17 @@ import { useState } from 'react';
 import { List, Avatar } from '@arco-design/web-react';
 import { IconEdit, IconDelete, IconDown, IconLoading } from '@arco-design/web-react/icon';
 
-function Demo() {
+function App() {
   const dataSource = new Array(4).fill({
     title: 'Beijing Bytedance Technology Co., Ltd.',
     description: 'Beijing ByteDance Technology Co., Ltd. is an enterprise located in China.',
   });
-
   const [loading, setLoading] = useState(false);
 
   const render = (actions, item, index) => (
     <List.Item key={index} actions={actions}>
       <List.Item.Meta
-        avatar={
-          <Avatar shape="square">
-            A
-          </Avatar>
-        }
+        avatar={<Avatar shape="square">A</Avatar>}
         title={item.title}
         description={item.description}
       />
@@ -49,19 +44,26 @@ function Demo() {
         cursor: 'pointer',
       }}
       onClick={() => setLoading(!loading)}
+      onKeyDown={e => {
+        const keyCode = e.keyCode || e.which;
+        if (keyCode === 13) { // enter
+          setLoading(!loading)
+        }
+      }}
     >
       {loading ? (
         <span style={{ color: 'var(--color-text-3)' }}>
-          <IconLoading style={{ marginRight: 8, color: 'rgb(var(--arcoblue-6))' }} /> loading...
+          <IconLoading style={{ marginRight: 8, color: 'rgb(var(--arcoblue-6))' }} />
+          loading...
         </span>
       ) : (
-        <span className="list-demo-actions-button" >
-          More <IconDown style={{ marginLeft: 8 }} />
+        <span className="list-demo-actions-button" tabIndex={0} >
+          More
+          <IconDown style={{ marginLeft: 8 }} />
         </span>
       )}
     </div>
   );
-
   return (
     <>
       <List
@@ -91,7 +93,7 @@ function Demo() {
   );
 }
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```
 
 ```css
@@ -109,6 +111,10 @@ ReactDOM.render(<Demo />, CONTAINER);
   background-color: var(--color-fill-3);
 }
 
+.list-demo-actions-button[tabindex]:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary-light-3);
+}
+
 .list-demo-actions-button {
   position: relative;
   padding: 0 4px;
@@ -122,7 +128,7 @@ ReactDOM.render(<Demo />, CONTAINER);
   background-color: var(--color-fill-3);
 }
 
-.list-demo-actions  .arco-list-item-action li:not(:last-child) .list-demo-actions-button::after {
+.list-demo-actions .arco-list-item-action li:not(:last-child) .list-demo-actions-button::after {
   content: '';
   position: absolute;
   top: 3px;

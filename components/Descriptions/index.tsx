@@ -17,7 +17,7 @@ const defaultProps: DescriptionsProps = {
 };
 
 function Descriptions(baseProps: DescriptionsProps) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<DescriptionsProps>(
     baseProps,
     defaultProps,
@@ -193,6 +193,8 @@ function Descriptions(baseProps: DescriptionsProps) {
       [`${prefixCls}-border`]: border,
       [`${prefixCls}-layout-${layout}`]: layout,
       [`${prefixCls}-size-${size}`]: size,
+      [`${prefixCls}-table-layout-fixed`]: tableLayout === 'fixed',
+      [`${prefixCls}-rtl`]: rtl,
     },
     className
   );
@@ -201,12 +203,7 @@ function Descriptions(baseProps: DescriptionsProps) {
     <div className={classNames} style={style}>
       {title && <div className={`${prefixCls}-title`}>{title}</div>}
       <div className={`${prefixCls}-body`}>
-        <table
-          className={`${prefixCls}-table`}
-          cellPadding={0}
-          cellSpacing={0}
-          style={{ tableLayout }}
-        >
+        <table className={`${prefixCls}-table`} cellPadding={0} cellSpacing={0}>
           <tbody>{renderData.map((d, i) => renderItems(d, i))}</tbody>
         </table>
       </div>

@@ -1,8 +1,9 @@
-@import '../../Select/style/index.less';
+@import '../../Select/style/mixin.less';
 @import './token.less';
 
 @tree-prefix-cls: ~'@{prefix}-tree';
 @tree-select-prefix-cls: ~'@{prefix}-tree-select';
+@tree-select-prefix-cls-rtl: ~'@{prefix}-tree-select-rtl';
 
 .select-view(@tree-select-prefix-cls);
 
@@ -11,7 +12,7 @@
     box-sizing: border-box;
     border: 1px solid @select-popup-color-border;
     border-radius: @select-popup-border-radius;
-    background-color: var(--color-bg-popup);
+    background-color: var(~'@{arco-cssvars-prefix}-color-bg-popup');
     box-shadow: @select-popup-box-shadow;
     padding: @tree-select-padding-popup-vertical 0;
     padding-left: @tree-select-padding-popup-left;
@@ -28,3 +29,14 @@
     font-weight: @font-weight-500;
   }
 }
+
+.@{tree-select-prefix-cls}-rtl {
+  direction: rtl;
+
+  &-popup {
+    padding-left: @tree-select-padding-popup-right;
+    padding-right: @tree-select-padding-popup-left;
+  }
+}
+
+.select-view-rtl(@tree-select-prefix-cls,@tree-select-prefix-cls-rtl);

@@ -14,12 +14,14 @@ import {
   DisabledTimeProps,
 } from '../../interface';
 import { ConfigContext } from '../../../ConfigProvider';
-import { getNow, getDayjsValue } from '../../../_util/dayjs';
+import { getNow, getDayjsValue, methods } from '../../../_util/dayjs';
 import { TimePickerProps } from '../../../TimePicker/interface';
 import { isObject } from '../../../_util/is';
+import { getFormatByIndex } from '../../util';
+import PickerContext from '../../context';
 
 interface InnerRangePickerProps extends RangePickerProps {
-  disabledDate?: (current?: Dayjs) => boolean;
+  disabledDate?: (current: Dayjs) => boolean;
   dateRender?: (currentDate: Dayjs) => ReactNode;
   icons?: IconsType;
   locale?: Record<string, any>;
@@ -33,7 +35,7 @@ interface InnerRangePickerProps extends RangePickerProps {
   onSuperNext?: () => void;
   localeName?: string;
   onTimePickerSelect?: (index: number, timeString: string, time: Dayjs) => void;
-  setRangePageShowDates?: (dates: Dayjs[], mode: ModeType, index: number) => void;
+  setRangePageShowDates?: (dates: Dayjs[], index: number) => void;
   disabledTimePickerIndex?: number;
   timeValues?: Dayjs[];
   isTimePanel?: boolean;
@@ -54,7 +56,6 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
   const {
     mode = 'date',
     showTime,
-    dayStartOfWeek = 0,
     disabledDate,
     disabledTime,
     format,
@@ -89,8 +90,10 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
 
   const prefixCls = getPrefixCls('picker-range');
 
-  const startShowDate = pageShowDates[0] || getNow();
-  const endShowDate = pageShowDates[1] || getNow();
+  const { utcOffset, timezone } = useContext(PickerContext);
+
+  const startShowDate = pageShowDates[0] || getNow(utcOffset, timezone);
+  const endShowDate = pageShowDates[1] || getNow(utcOffset, timezone);
 
   const value = getDayjsValue(propsValue, format) as Dayjs[];
 
@@ -99,7 +102,6 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
     rangeValues: value,
     onMouseEnterCell,
     onMouseLeaveCell,
-    format,
     locale,
     disabledDate,
     onSelect: onSelectPanel,
@@ -113,11 +115,13 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
     pageShowDate: startShowDate,
     panelMode: panelModes[0],
     setPanelMode: (m) => setPanelModes([m, panelModes[1]]),
+    format: getFormatByIndex(format, 0),
   };
   const endPickerProps = {
     pageShowDate: endShowDate,
     panelMode: panelModes[1],
     setPanelMode: (m) => setPanelModes([panelModes[0], m]),
+    format: getFormatByIndex(format, 1),
   };
 
   function renderDate() {
@@ -132,7 +136,6 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
 
     const pickerProps = {
       ...basePickerProps,
-      dayStartOfWeek,
       localeName,
       popupVisible,
       timepickerProps,
@@ -145,13 +148,13 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
       return (
         <>
           <WeekPickerPanel
-            setPageShowDate={(d) => setRangePageShowDates([d, d], 'week', 0)}
+            setPageShowDate={(d) => setRangePageShowDates([d, d], 0)}
             {...startOperations}
             {...pickerProps}
             {...startPickerProps}
           />
           <WeekPickerPanel
-            setPageShowDate={(d) => setRangePageShowDates([d, d], 'week', 1)}
+            setPageShowDate={(d) => setRangePageShowDates([methods.subtract(d, 1, 'month'), d], 1)}
             {...endOperations}
             {...pickerProps}
             {...endPickerProps}
@@ -194,7 +197,7 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
             onSelectTime(0, timeString, time);
           }}
           index={0}
-          setPageShowDate={(d) => setRangePageShowDates([d, d], 'date', 0)}
+          setPageShowDate={(d) => setRangePageShowDates([d, d], 0)}
           timeValue={timeValues[0]}
           {...startPickerProps}
         />
@@ -207,7 +210,7 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
             onSelectTime(1, timeString, time);
           }}
           index={1}
-          setPageShowDate={(d) => setRangePageShowDates([d, d], 'date', 1)}
+          setPageShowDate={(d) => setRangePageShowDates([methods.subtract(d, 1, 'month'), d], 1)}
           timeValue={timeValues[1]}
           {...endPickerProps}
         />
@@ -228,13 +231,13 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
     return (
       <>
         <MonthPickerPanel
-          setPageShowDate={(d) => setRangePageShowDates([d, d], 'month', 0)}
+          setPageShowDate={(d) => setRangePageShowDates([d, d], 0)}
           {...startOperations}
           {...pickerProps}
           {...startPickerProps}
         />
         <MonthPickerPanel
-          setPageShowDate={(d) => setRangePageShowDates([d, d], 'month', 1)}
+          setPageShowDate={(d) => setRangePageShowDates([methods.subtract(d, 1, 'year'), d], 1)}
           {...endOperations}
           {...pickerProps}
           {...endPickerProps}
@@ -274,13 +277,13 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
     return (
       <>
         <QuarterPickerPanel
-          setPageShowDate={(d) => setRangePageShowDates([d, d], 'quarter', 0)}
+          setPageShowDate={(d) => setRangePageShowDates([d, d], 0)}
           {...startOperations}
           {...pickerProps}
           {...startPickerProps}
         />
         <QuarterPickerPanel
-          setPageShowDate={(d) => setRangePageShowDates([d, d], 'quarter', 1)}
+          setPageShowDate={(d) => setRangePageShowDates([methods.subtract(d, 1, 'year'), d], 1)}
           {...endOperations}
           {...pickerProps}
           {...endPickerProps}
@@ -300,10 +303,5 @@ function RangePicker(props: InnerRangePickerProps & PrivateCType) {
     </div>
   );
 }
-
-RangePicker.defaultProps = {
-  dayStartOfWeek: 0,
-  pickerType: 'range',
-};
 
 export default RangePicker;

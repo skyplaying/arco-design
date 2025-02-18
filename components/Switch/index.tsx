@@ -1,5 +1,5 @@
 import React, { useState, useContext, forwardRef, ReactElement } from 'react';
-import { SwitchTransition, CSSTransition } from 'react-transition-group';
+import { SwitchTransition } from 'react-transition-group';
 import cs from '../_util/classNames';
 import { isArray, isObject } from '../_util/is';
 import omit from '../_util/omit';
@@ -7,6 +7,7 @@ import { ConfigContext } from '../ConfigProvider';
 import IconLoading from '../../icon/react-icon/IconLoading';
 import { SwitchProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import ArcoCSSTransition from '../_util/CSSTransition';
 
 export interface SwitchState {
   checked: boolean;
@@ -17,7 +18,7 @@ const defaultProps: SwitchProps = {
 };
 
 function Switch(baseProps: SwitchProps, ref) {
-  const { getPrefixCls, size: ctxSize, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, size: ctxSize, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<SwitchProps>(baseProps, defaultProps, componentConfig?.Switch);
   const {
     className,
@@ -46,6 +47,7 @@ function Switch(baseProps: SwitchProps, ref) {
     if (loading) {
       return;
     }
+    props.onClick && props.onClick(event);
     if (!('checked' in props)) {
       setChecked(!mergedChecked);
     }
@@ -59,6 +61,7 @@ function Switch(baseProps: SwitchProps, ref) {
       [`${prefixCls}-type-${type}`]: type,
       [`${prefixCls}-checked`]: mergedChecked,
       [`${prefixCls}-loading`]: loading,
+      [`${prefixCls}-rtl`]: rtl,
     },
     className
   );
@@ -81,6 +84,9 @@ function Switch(baseProps: SwitchProps, ref) {
   return (
     <button
       ref={ref}
+      role="switch"
+      aria-checked={!!mergedChecked}
+      tabIndex={loading ? -1 : undefined}
       {...extraProps}
       style={style}
       className={classNames}
@@ -91,7 +97,7 @@ function Switch(baseProps: SwitchProps, ref) {
       <div className={`${prefixCls}-dot`}>
         {!loading && (checkedIcon || uncheckedIcon) && (
           <SwitchTransition>
-            <CSSTransition
+            <ArcoCSSTransition
               key={mergedChecked ? 'checked' : 'unchecked'}
               classNames="fadeIn"
               timeout={200}
@@ -99,7 +105,7 @@ function Switch(baseProps: SwitchProps, ref) {
               <span className={`${prefixCls}-dot-icon`}>
                 {mergedChecked ? checkedIcon : uncheckedIcon}
               </span>
-            </CSSTransition>
+            </ArcoCSSTransition>
           </SwitchTransition>
         )}
 
@@ -115,12 +121,12 @@ function Switch(baseProps: SwitchProps, ref) {
             {checkedElement && mergedChecked && checkedElement}
             {unCheckedElement && !mergedChecked && unCheckedElement}
           </div>
-          <CSSTransition in={mergedChecked} classNames="switchSlideText" timeout={200}>
+          <ArcoCSSTransition in={mergedChecked} classNames="switchSlideText" timeout={200}>
             <div className={`${prefixCls}-text`}>
               {checkedElement && mergedChecked && checkedElement}
               {unCheckedElement && !mergedChecked && unCheckedElement}
             </div>
-          </CSSTransition>
+          </ArcoCSSTransition>
         </>
       )}
     </button>

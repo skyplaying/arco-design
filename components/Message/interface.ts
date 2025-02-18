@@ -1,4 +1,5 @@
 import { ReactNode, CSSProperties } from 'react';
+import { MessageType } from '.';
 
 /**
  * @title Message
@@ -11,6 +12,16 @@ export interface MessageProps {
    * @en ClassNames of react-transition-group of the message pop-up animation, see `classNames`
    */
   transitionClassNames?: string;
+  /**
+   * @zh 动画持续时间，见 react-transition-group 的 `timeout`
+   * @en timeout of `react-transition-group` of the message pop-up animation, see `timeout`
+   * @defaultValue {enter: 100, exit: 300}
+   * @version 2.43.0
+   */
+  transitionTimeout?: {
+    enter?: number;
+    exit?: number;
+  };
   /**
    * @zh 消息内容
    * @en Message content
@@ -51,7 +62,24 @@ export interface MessageProps {
   /**
    * @zh 是否显示关闭按钮
    * @en Whether to show the close button
+   * @defaultValue true
    */
   closable?: boolean;
+  /**
+   * @zh 自定义右上角关闭按钮
+   * @en Custom the close button on top-right of the drawer dialog
+   * @version 2.50.0
+   */
+  closeIcon?: ReactNode;
   type?: string;
 }
+
+type messageHookFunction = (config: MessageProps | string) => MessageType;
+
+export type MessageHookReturnType = {
+  info?: messageHookFunction;
+  success?: messageHookFunction;
+  warning?: messageHookFunction;
+  error?: messageHookFunction;
+  normal?: messageHookFunction;
+};

@@ -1,9 +1,9 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode, HTMLAttributes } from 'react';
 
 /**
  * @title Tag
  */
-export interface TagProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className' | 'ref'> {
+export interface TagProps extends Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'ref'> {
   style?: CSSProperties;
   className?: string | string[];
   /**
@@ -11,6 +11,12 @@ export interface TagProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'cl
    * @en The background color of Tag
    */
   color?: string;
+  /**
+   * @zh 是否显示边框
+   * @en Whether the tag is bordered
+   * @version 2.26.0
+   */
+  bordered?: Boolean;
   /**
    * @zh 标签尺寸
    * @en The size of Tag
@@ -63,4 +69,5 @@ export interface TagProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'cl
    */
   onCheck?: (checked: boolean) => void;
   fill?: boolean; // 防止 1.0 用法报错，无实际作用
+  __closeIconProps?: HTMLAttributes<any>;
 }

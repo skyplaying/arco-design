@@ -1,5 +1,5 @@
 ---
-order: 5
+order: 8
 title:
   zh-CN: 动态增减表单项
   en-US: List
@@ -7,123 +7,150 @@ title:
 
 ## zh-CN
 
-通过`Form.List`管理数组类型的表单结构。
+
+通过`Form.List`管理数组类型的表单结构。设置校验规则时 `Form.List` 会渲染出额外的 `DOM` 节点用来展示校验信息，如果不需要可以传入 `noStyle=false`，并通过 `Form.useFormState` 自定义校验信息的展示。
 
 ## en-US
 
-Provides array management for fields.
+Manage the form structure of array type through `Form.List`. When setting validation rules, `Form.List` will render an additional `DOM` node to display the validation information. If you don’t need it, you can pass in `noStyle=false` and customize the validation information through `Form.useFormState` display.
 
 ```js
-
 import { useRef, useState } from 'react';
-import { Form, Input, Button, Grid } from '@arco-design/web-react';
-import { IconArrowRise, IconArrowFall } from '@arco-design/web-react/icon';
+import { Form, Input, Button, Grid, Space } from '@arco-design/web-react';
+import { IconArrowRise, IconArrowFall, IconDelete } from '@arco-design/web-react/icon';
 
-function Demo () {
-  const formRef = useRef();
+function App() {
+  const [form] = Form.useForm();
+  const postsState = Form.useFormState('posts', form) || {};
+
+  console.log(postsState, '____');
 
   return (
-  <div>
-    <Button
-      type="primary"
-      style={{ marginBottom: 20, marginRight: 20 }}
-      onClick={() => {
-        const posts = formRef.current.getFieldValue('posts') || [];
-        formRef.current.setFieldValue('posts', posts.concat('new'))
-      }}>
-      setFieldValue
-    </Button>
-    <Button
-      style={{ marginBottom: 20 }}
-      onClick={() => {
-        formRef.current.setFields({
-          'posts[0]': {
-            error: {
-              message: 'error'
-            }
-          }
-        })
-      }}>
-      Set `Post-0` to error state
-    </Button>
-
-    <Form
-      ref={formRef}
-      style={{ width: 600 }}
-      initialValues={{
-        users: ['Username'],
-      }}
-      onSubmit={(v) => {
-        console.log(v);
-      }}
-      onValuesChange={(_, v) => {
-        console.log(_, v);
-      }}
-    >
-      <Form.Item label="Username" field="username" style={{width: 330}}>
-        <Input />
-      </Form.Item>
-      <Form.List field="posts">
-        {(fields, { add, remove, move }) => {
-          return (
-            <div>
-              {fields.map((item, index) => {
-                return (
-                  <Grid.Row key={item.key} >
-                    <Form.Item
-                      field={item.field}
-                      label={'Post-' + index}
-                      style={{width: 370}}
-                      rules={[{ required: true }]}
-                    >
-                      <Input />
-                    </Form.Item>
-
-                    <Button status="danger" style={{ margin: '0 20px' }} onClick={() => remove(index)}>
-                      Delete
-                    </Button>
-                    <Button status={index > 0 ? 'danger' : 'success'} onClick={() => move(index, index > 0 ?  index - 1 : index + 1)}>
-                      {index > 0 ? <IconArrowRise/> : <IconArrowFall />}
-                    </Button>
-                  </Grid.Row>
-                );
-              })}
-              <Grid.Row justify="space-between">
-                <Button
-                  onClick={() => {
-                    add();
-                  }}
-                >
-                  Add user
-                </Button>
-                <Button
-                  onClick={() => {
-                    add('new 2', 1);
-                  }}
-                >
-                  Add user to the second slot
-                </Button>
-                <div>
-                  <Button
-                    onClick={() => {
-                      formRef.current.resetFields();
-                    }}
-                  >
-                    Reset
-                  </Button>
-                  <Button type="primary" htmlType="submit" style={{ marginLeft: 20 }}>
-                    Submit
-                  </Button>
-                </div>
-              </Grid.Row>
-            </div>
-          );
+    <div>
+      <Form
+        form={form}
+        style={{ width: 600 }}
+        autoComplete="off"
+        initialValues={{
+          users: ['Username'],
+          posts: ['post1'],
         }}
-      </Form.List>
-    </Form>
-  </div>
-  )
+        onSubmit={(v) => {
+          console.log(v);
+        }}
+        onValuesChange={(_, v) => {
+          console.log(_, v);
+        }}
+      >
+        <Form.Item label="Username" field="username" style={{ width: 370 }}>
+          <Input />
+        </Form.Item>
+        <Form.Item>
+          <Form.List
+            rules={[
+              {
+                validator(v, cb) {
+                  if (v?.length < 2) {
+                    return cb('必须超过两条');
+                  }
+                  return cb();
+                },
+              },
+            ]}
+            field="posts"
+          >
+            {(fields, { add, remove, move }) => {
+              return (
+                <div>
+                  {fields.map((item, index) => {
+                    return (
+                      <Grid.Row key={item.key}>
+                        <Form.Item
+                          field={item.field}
+                          label={'Post-' + index}
+                          style={{
+                            width: 370,
+                          }}
+                          rules={[
+                            {
+                              required: true,
+                            },
+                          ]}
+                        >
+                          <Input />
+                        </Form.Item>
+
+                        <Button
+                          icon={<IconDelete />}
+                          shape="circle"
+                          status="danger"
+                          style={{
+                            margin: '0 20px',
+                          }}
+                          onClick={() => remove(index)}
+                        ></Button>
+                        <Button
+                          shape="circle"
+                          onClick={() => move(index, index > 0 ? index - 1 : index + 1)}
+                        >
+                          {index > 0 ? <IconArrowRise /> : <IconArrowFall />}
+                        </Button>
+                      </Grid.Row>
+                    );
+                  })}
+                  <Space size={20}>
+                    <Button
+                      onClick={() => {
+                        add();
+                      }}
+                    >
+                      Add post
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        add('new 2', 1);
+                      }}
+                    >
+                      Add post to the second slot
+                    </Button>
+                  </Space>
+                </div>
+              );
+            }}
+          </Form.List>
+        </Form.Item>
+        <Form.Item style={{ marginTop: 20 }}>
+          <Space size={20}>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+            <Button
+              onClick={() => {
+                form.resetFields()
+              }}
+            >
+              Reset
+            </Button>
+            <Button
+              status="danger"
+              onClick={() => {
+                form.setFields({
+                  'posts[0]': {
+                    error: {
+                      message: 'error',
+                    },
+                  },
+                });
+              }}
+            >
+              Set `Post-0` to error state
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </div>
+  );
 }
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```

@@ -1,11 +1,13 @@
-import React, { ReactNode, ReactElement, useState, useEffect, useContext, forwardRef } from 'react';
+import React, { ReactNode, ReactElement, useEffect, useContext, forwardRef } from 'react';
 import PageItem, { StepType, JumpPager, StepPager } from './page-item';
+import useMergeValue from '../_util/hooks/useMergeValue';
 import PageOption from './page-options';
 import PageJumper from './page-jumper';
 import cs from '../_util/classNames';
 import { ConfigContext } from '../ConfigProvider';
 import { PaginationProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import { pickDataAttributes } from '../_util/pick';
 
 export interface PaginationState {
   current: number;
@@ -17,8 +19,22 @@ export interface PaginationState {
 const _defaultCurrent = 1;
 const _defaultPageSize = 10;
 
-function getAllPages(pageSize, total) {
+function getAllPages(pageSize = _defaultPageSize, total) {
   return Math.ceil(total / pageSize);
+}
+
+function getBufferSize(bufferSize, allPages) {
+  const min = 0;
+  const max = Math.floor(allPages / 2) - 1;
+  const newBufferSize = Math.max(bufferSize, min);
+  return Math.min(newBufferSize, max);
+}
+
+function getAdjustPageSize(sizeOptions?: number[]) {
+  if (sizeOptions && sizeOptions.length) {
+    return sizeOptions[0];
+  }
+  return _defaultPageSize;
 }
 
 const defaultProps: PaginationProps = {
@@ -28,7 +44,7 @@ const defaultProps: PaginationProps = {
 };
 
 function Pagination(baseProps: PaginationProps, ref) {
-  const { getPrefixCls, size: ctxSize, locale, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, size: ctxSize, locale, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<PaginationProps>(
     baseProps,
     defaultProps,
@@ -38,16 +54,25 @@ function Pagination(baseProps: PaginationProps, ref) {
     total: propTotal,
     pageSize: propPageSize,
     current: propCurrent,
-    bufferSize,
     showMore: propShowMore,
+    sizeOptions: propSizeOptions,
     pageSizeChangeResetCurrent,
     defaultCurrent,
     defaultPageSize,
   } = props;
-  const [current, setCurrent] = useState(propCurrent || defaultCurrent || _defaultCurrent);
-  const [pageSize, setPageSize] = useState(propPageSize || defaultPageSize || _defaultPageSize);
-  const [total, setTotal] = useState(propTotal);
-  const [showMore, setShowMore] = useState(!!propShowMore);
+
+  const [current, setCurrent] = useMergeValue(_defaultCurrent, {
+    defaultValue: defaultCurrent,
+    value: propCurrent,
+  });
+
+  const [pageSize, setPageSize] = useMergeValue(getAdjustPageSize(propSizeOptions), {
+    defaultValue: defaultPageSize,
+    value: propPageSize,
+  });
+
+  const total = propTotal;
+  const showMore = !!propShowMore;
 
   if (propCurrent && !props.onChange) {
     console.warn(
@@ -56,27 +81,31 @@ function Pagination(baseProps: PaginationProps, ref) {
     );
   }
 
+  function getAdjustedCurrent(newPageSize, newTotal) {
+    const newAllPages = getAllPages(newPageSize, newTotal);
+    const newCurrent = current > newAllPages ? newAllPages : current;
+    return newCurrent;
+  }
+
   useEffect(() => {
-    if ('total' in props && propTotal !== total) {
-      setTotal(propTotal);
-    }
-
-    if (!!propShowMore !== showMore) {
-      setShowMore(!!propShowMore);
-    }
-    if (propCurrent && propCurrent !== current) {
-      setCurrent(propCurrent);
-    }
-
-    if (propPageSize && propPageSize !== pageSize) {
-      setPageSize(propPageSize);
-      const currentAllPages = getAllPages(propPageSize, propTotal);
-      const nextCurrent = current > currentAllPages ? currentAllPages : current;
-      if (nextCurrent !== current) {
-        setCurrent(nextCurrent);
+    // adjust pageSize after sizeOption changes
+    const needAdjust = propSizeOptions && !propSizeOptions.includes(pageSize);
+    // trigged when currentPageSize not in the options;
+    if (needAdjust) {
+      const adjustPageSize = getAdjustPageSize(propSizeOptions);
+      if (!('pageSize' in props)) {
+        setPageSize(adjustPageSize);
       }
     }
-  }, [propPageSize, propTotal, propShowMore, propCurrent]);
+  }, [propSizeOptions]);
+
+  useEffect(() => {
+    // adjust currentPage after total and pageSize changes
+    const newCurrent = getAdjustedCurrent(pageSize, total);
+    if (newCurrent !== current && !('current' in props)) {
+      setCurrent(newCurrent);
+    }
+  }, [total, current, pageSize]);
 
   const onChange = (pageNumber = current, size = pageSize) => {
     const { onChange } = props;
@@ -141,6 +170,7 @@ function Pagination(baseProps: PaginationProps, ref) {
     {
       [`${prefixCls}-simple`]: simple,
       [`${prefixCls}-disabled`]: disabled,
+      [`${prefixCls}-rtl`]: rtl,
     },
     className
   );
@@ -148,6 +178,8 @@ function Pagination(baseProps: PaginationProps, ref) {
   let renderPager: ReactElement;
   const pageList: ReactElement[] = [];
   const allPages = getAllPages(pageSize, total);
+
+  const bufferSize = getBufferSize(props.bufferSize, allPages);
 
   if (hideOnSinglePage && allPages <= 1) {
     return null;
@@ -179,7 +211,7 @@ function Pagination(baseProps: PaginationProps, ref) {
             totalPages={allPages}
             current={current}
             onPageChange={onPageNumberChange}
-            simple
+            simple={{ showJumper: typeof showJumper === 'boolean' ? showJumper : true }}
             size={innerSize}
           />
         </li>
@@ -187,8 +219,14 @@ function Pagination(baseProps: PaginationProps, ref) {
       </ul>
     );
   } else {
-    // only show page number when total number is smaller than 5 + bufferSize * 2;
-    if (allPages < 6 + bufferSize * 2) {
+    // fold = ... >= 2pages;
+    const beginFoldPage = 1 + 2 + bufferSize;
+    const endFoldPage = allPages - 2 - bufferSize;
+    if (
+      // beginPage(1 page) + bufferSize * 2 + endPage(1 page) + ...(2 pages)
+      allPages <= 4 + bufferSize * 2 ||
+      (current === beginFoldPage && current === endFoldPage)
+    ) {
       for (let i = 1; i <= allPages; i++) {
         pageList.push(<PageItem {...pagerProps} key={i} pageNum={i} />);
       }
@@ -197,17 +235,21 @@ function Pagination(baseProps: PaginationProps, ref) {
       let right = allPages;
       let hasJumpPre = true;
       let hasJumpNext = true;
-      if (current <= 2 * bufferSize) {
+
+      // fold front and back
+      if (current > beginFoldPage && current < endFoldPage) {
+        right = current + bufferSize;
+        left = current - bufferSize;
+        // fold back
+      } else if (current <= beginFoldPage) {
         hasJumpPre = false;
         left = 1;
-        right = Math.max(2 * bufferSize + 1, 2 + current);
-      } else if (allPages - current <= 3) {
+        right = Math.max(beginFoldPage, bufferSize + current);
+        // fold begin
+      } else if (current >= endFoldPage) {
         hasJumpNext = false;
         right = allPages;
-        left = Math.min(allPages - 2 * bufferSize, current - 2);
-      } else {
-        right = current + 2;
-        left = current - 2;
+        left = Math.min(endFoldPage, current - bufferSize);
       }
 
       for (let i = left; i <= right; i++) {
@@ -270,7 +312,7 @@ function Pagination(baseProps: PaginationProps, ref) {
   if (typeof showTotal === 'boolean' && showTotal) {
     totalElement = (
       <div className={`${prefixCls}-total-text`}>
-        {locale.Pagination.total.replace('{0}', total)}
+        {locale.Pagination.total?.replace('{0}', total)}
       </div>
     );
   }
@@ -283,7 +325,7 @@ function Pagination(baseProps: PaginationProps, ref) {
   }
 
   return (
-    <div className={classNames} style={style} ref={ref}>
+    <div {...pickDataAttributes(props)} className={classNames} style={style} ref={ref}>
       {totalElement}
       {renderPager}
       <PageOption

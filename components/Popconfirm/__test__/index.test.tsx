@@ -1,8 +1,7 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { fireEvent, render, sleep, $ } from '../../../tests/util';
 import mountTest from '../../../tests/mountTest';
 import Popconfirm from '..';
-import { sleep, $ } from '../../../tests/util';
 
 mountTest(Popconfirm);
 
@@ -12,42 +11,39 @@ describe('Popconfirm', () => {
   });
 
   it('render correctly', () => {
-    const component = mount(
-      <Popconfirm title="Are you Ok?">
+    const component = render(
+      <Popconfirm title="Are you OK?">
         <span>Edit</span>
       </Popconfirm>
     );
 
-    const triggerEle = component.find('span');
+    const triggerEle = component.find('span')[0];
 
     expect(component.find('.arco-popconfirm').length).toBe(0);
 
-    triggerEle.simulate('click');
+    fireEvent.click(triggerEle);
 
     expect(component.find('.arco-popconfirm').length).toBe(1);
-    expect(component.find('.arco-popconfirm-title-text').text()).toBe('Are you Ok?');
+    expect(component.find('.arco-popconfirm-title-text')[0].innerHTML).toBe('Are you OK?');
   });
 
   it('onOk and onCancel correctly', async () => {
     const onOk = jest.fn();
     const onCancel = jest.fn();
-    const component = mount(
-      <Popconfirm title="Are you Ok?" onOk={onOk} onCancel={onCancel}>
+    const component = render(
+      <Popconfirm title="Are you OK?" onOk={onOk} onCancel={onCancel}>
         <span>Edit</span>
       </Popconfirm>
     );
 
-    const triggerEle = component.find('span');
+    const triggerEle = component.find('span')[0];
 
-    triggerEle.simulate('click');
+    fireEvent.click(triggerEle);
 
     expect($('.arco-popconfirm').length).toBe(1);
 
     // onCancel
-    component
-      .find('Button')
-      .at(0)
-      .simulate('click');
+    fireEvent.click(component.find('button').item(0));
 
     expect(onCancel).toBeCalled();
 
@@ -55,15 +51,12 @@ describe('Popconfirm', () => {
 
     expect($('.arco-popconfirm').length).toBe(0);
 
-    triggerEle.simulate('click');
+    fireEvent.click(triggerEle);
 
     expect($('.arco-popconfirm').length).toBe(1);
 
     // onOk
-    component
-      .find('Button')
-      .at(1)
-      .simulate('click');
+    fireEvent.click(component.find('button').item(1));
 
     expect(onOk).toBeCalled();
 
@@ -78,20 +71,17 @@ describe('Popconfirm', () => {
       await sleep(300);
       onOk();
     };
-    const component = mount(
-      <Popconfirm title="Are you Ok?" onOk={asyncOnOk}>
+    const component = render(
+      <Popconfirm title="Are you OK?" onOk={asyncOnOk}>
         <span>Edit</span>
       </Popconfirm>
     );
 
-    const triggerEle = component.find('span');
+    const triggerEle = component.find('span')[0];
 
-    triggerEle.simulate('click');
+    fireEvent.click(triggerEle);
 
-    component
-      .find('Button')
-      .at(1)
-      .simulate('click');
+    fireEvent.click(component.find('Button').item(1));
 
     expect($('.arco-popconfirm').length).toBe(1);
     expect(onOk).not.toBeCalled();

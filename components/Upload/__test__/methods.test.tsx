@@ -1,11 +1,10 @@
 import React from 'react';
-import { mount } from 'enzyme';
 import { useFakeXMLHttpRequest } from 'sinon';
 import { act } from 'react-test-renderer';
-import { UploadProps, UploadItem, STATUS, UploadInstance } from '../interface';
+import { UploadItem, STATUS, UploadInstance } from '../interface';
 import mountTest from '../../../tests/mountTest';
 import Upload from '..';
-import { sleep } from '../../../tests/util';
+import { sleep, render, fireEvent } from '../../../tests/util';
 
 mountTest(Upload);
 
@@ -15,27 +14,27 @@ function getFile(name = 'file1') {
   });
 }
 
-describe('Upload Methods', function() {
-  let requests = [];
+describe('Upload Methods', function () {
+  let requests: any[] = [];
   let xhr;
-  beforeEach(function() {
+  beforeEach(function () {
     requests = [];
     xhr = useFakeXMLHttpRequest();
-    xhr.onCreate = function(xhr) {
+    xhr.onCreate = function (xhr) {
       requests.push(xhr);
     };
   });
 
-  afterEach(function() {
+  afterEach(function () {
     xhr.restore();
   });
 
-  it('submit method', async function() {
+  it('submit method', async function () {
     let fileList: UploadItem[] = [];
-    let uploadRef: UploadInstance;
-    const wrapper = mount<UploadProps>(
+    let uploadRef: UploadInstance = null as any;
+    const wrapper = render(
       <Upload
-        ref={(node) => (uploadRef = node)}
+        ref={(node: UploadInstance) => (uploadRef = node)}
         action="/sss"
         autoUpload={false}
         onChange={(files) => {
@@ -47,7 +46,7 @@ describe('Upload Methods', function() {
     expect(input).toHaveLength(1);
 
     await act(() => {
-      input.simulate('change', {
+      fireEvent.change(input.item(0), {
         target: {
           files: [getFile('file1'), getFile('file2')],
         },
@@ -73,12 +72,12 @@ describe('Upload Methods', function() {
     expect(fileList[1].status).toBe(STATUS.success);
   });
 
-  it('submit all ', async function() {
+  it('submit all ', async function () {
     let fileList: UploadItem[] = [];
-    let uploadRef: UploadInstance;
-    const wrapper = mount<UploadProps>(
+    let uploadRef: UploadInstance = null as any;
+    const wrapper = render(
       <Upload
-        ref={(node) => (uploadRef = node)}
+        ref={(node: UploadInstance) => (uploadRef = node)}
         action="/sss"
         autoUpload={false}
         onChange={(files) => {
@@ -89,7 +88,7 @@ describe('Upload Methods', function() {
     const input = wrapper.find('input');
 
     await act(() => {
-      input.simulate('change', {
+      fireEvent.change(input.item(0), {
         target: {
           files: [getFile('file1'), getFile('file2')],
         },

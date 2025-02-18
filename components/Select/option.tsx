@@ -9,23 +9,28 @@ function Option(props: OptionProps, ref) {
     style,
     className,
     wrapperClassName,
-    children,
     disabled,
     prefixCls,
-    isMultipleMode,
+    rtl,
     value: propValue,
-    valueActive,
-    valueSelect,
-    onMouseEnter,
-    onMouseLeave,
-    onClickOption,
+    children: propChildren,
+    _isMultipleMode,
+    _isUserCreatedOption,
+    _isUserCreatingOption,
+    _valueActive,
+    _valueSelect,
+    _onMouseEnter,
+    _onMouseLeave,
+    _onClick,
     ...rest
   } = props;
 
-  const value = 'value' in props ? propValue : children.toString();
-  const isChecked = isMultipleMode
-    ? (valueSelect as any[]).indexOf(value) !== -1
-    : valueSelect === value;
+  const value = 'value' in props ? propValue : `${propChildren}`;
+  const childNode = 'children' in props ? propChildren : `${propValue}`;
+
+  const isChecked = _isMultipleMode
+    ? (_valueSelect as any[]).indexOf(value) !== -1
+    : _valueSelect === value;
 
   const optionLabelProps = {
     style,
@@ -34,24 +39,42 @@ function Option(props: OptionProps, ref) {
       {
         [`${prefixCls}-option-selected`]: isChecked,
         [`${prefixCls}-option-disabled`]: disabled,
-        [`${prefixCls}-option-hover`]: value === valueActive,
-        [`${prefixCls}-option-empty`]: !children,
+        [`${prefixCls}-option-hover`]: value === _valueActive,
+        [`${prefixCls}-option-empty`]:
+          (!childNode && childNode !== 0) ||
+          (typeof childNode === 'string' && /^\s*$/.test(childNode)),
+        [`${prefixCls}-option-rtl`]: rtl,
       },
       className
     ),
-    onMouseEnter: () => onMouseEnter && onMouseEnter(value),
-    onMouseLeave: () => onMouseLeave && onMouseLeave(),
+    onMouseEnter: (event) => {
+      _onMouseEnter && _onMouseEnter(value);
+      rest.onMouseEnter && rest.onMouseEnter(event);
+    },
+    onMouseLeave: (event) => {
+      _onMouseLeave?.();
+      rest.onMouseLeave && rest.onMouseLeave(event);
+    },
     onClick: (event) => {
-      onClickOption && onClickOption(value, disabled);
+      _onClick && _onClick(value, disabled);
       rest.onClick && rest.onClick(event);
     },
     ...omit(rest, ['_key', 'extra', 'isSelectOption', 'onClick', 'onMouseEnter', 'onMouseLeave']),
   };
 
-  if (isMultipleMode) {
+  const wrapperProps = {
+    ref,
+    role: 'option',
+    'aria-selected': isChecked,
+  };
+  // Mark the option that created/creating by user self
+  _isUserCreatedOption && Object.assign(wrapperProps, { 'data-user-created': true });
+  _isUserCreatingOption && Object.assign(wrapperProps, { 'data-user-creating': true });
+
+  if (_isMultipleMode) {
     return (
       <li
-        ref={ref}
+        {...wrapperProps}
         className={cs(
           `${prefixCls}-option-wrapper`,
           {
@@ -62,24 +85,30 @@ function Option(props: OptionProps, ref) {
         )}
       >
         <Checkbox
+          aria-hidden="true"
           className={`${prefixCls}-checkbox`}
           checked={isChecked}
           disabled={disabled}
           onChange={optionLabelProps.onClick}
         />
-        <span {...optionLabelProps}>{children}</span>
+        <span {...optionLabelProps}>{childNode}</span>
       </li>
     );
   }
 
-  return <li {...optionLabelProps}>{children}</li>;
+  return (
+    <li {...wrapperProps} {...optionLabelProps}>
+      {childNode}
+    </li>
+  );
 }
 
-const OptionComponent = React.forwardRef<unknown, OptionProps>(Option);
+const ForwordRefOption = React.forwardRef<unknown, OptionProps>(Option);
 
-OptionComponent.defaultProps = {
-  // private use
-  isSelectOption: true,
+const OptionComponent = ForwordRefOption as typeof ForwordRefOption & {
+  __ARCO_SELECT_OPTION__?: boolean;
 };
+
+OptionComponent.__ARCO_SELECT_OPTION__ = true;
 
 export default OptionComponent;

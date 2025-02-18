@@ -5,6 +5,7 @@ const Palette = lazyLoad(() => import('./pages/palette'));
 const Version = lazyLoad(() => import('./pages/changelog/v2'));
 const Icon = lazyLoad(() => import('./pages/icon'));
 const OverView = lazyLoad(() => import('./pages/overview'));
+const Token = lazyLoad(() => import('./pages/token'));
 
 export default function getRoutes(lang = 'zh', t) {
   const suffix = lang === 'zh-CN' ? '.zh-CN' : '.en-US';
@@ -31,6 +32,11 @@ export default function getRoutes(lang = 'zh', t) {
           component: Palette,
         },
         {
+          name: t['routes.token'],
+          path: 'docs/token',
+          component: Token,
+        },
+        {
           name: t['routes.i18n'],
           path: 'docs/i18n',
           component: lazyLoad(() => import(`../docs/i18n${suffix}.md`)),
@@ -55,6 +61,11 @@ export default function getRoutes(lang = 'zh', t) {
           path: 'docs/migrate_to_v2',
           component: lazyLoad(() => import(`../docs/migrate_to_v2${suffix}.md`)),
           hide: true,
+        },
+        {
+          name: t['routes.vchart'],
+          path: 'docs/vchart',
+          component: lazyLoad(() => import(`./pages/vchart`)),
         },
         {
           name: t['routes.overview'],
@@ -241,6 +252,12 @@ export default function getRoutes(lang = 'zh', t) {
               component: lazyLoad(() => import(`../../components/Checkbox/README${suffix}.md`)),
             },
             {
+              name: t['routes.color-picker'],
+              path: 'components/color-picker',
+              component: lazyLoad(() => import(`../../components/ColorPicker/README${suffix}.md`)),
+              new: true,
+            },
+            {
               name: t['routes.date-picker'],
               path: 'components/date-picker',
               component: lazyLoad(() => import(`../../components/DatePicker/README${suffix}.md`)),
@@ -264,6 +281,14 @@ export default function getRoutes(lang = 'zh', t) {
               name: t['routes.input-number'],
               path: 'components/input-number',
               component: lazyLoad(() => import(`../../components/InputNumber/README${suffix}.md`)),
+            },
+            {
+              name: t['routes.verification-code'],
+              path: 'components/verification-code',
+              component: lazyLoad(() =>
+                import(`../../components/VerificationCode/README${suffix}.md`)
+              ),
+              new: true,
             },
             {
               name: t['routes.mentions'],
@@ -371,6 +396,12 @@ export default function getRoutes(lang = 'zh', t) {
               path: 'components/skeleton',
               component: lazyLoad(() => import(`../../components/Skeleton/README${suffix}.md`)),
             },
+            {
+              name: t['routes.watermark'],
+              path: 'components/watermark',
+              component: lazyLoad(() => import(`../../components/Watermark/README${suffix}.md`)),
+              new: true,
+            },
           ],
         },
         {
@@ -446,6 +477,28 @@ export default function getRoutes(lang = 'zh', t) {
               component: lazyLoad(() => import(`../../components/Trigger/README${suffix}.md`)),
             },
           ],
+        },
+      ],
+    },
+    {
+      name: t['routes.hooks'],
+      key: 'hooks',
+      module: 'react',
+      hide: true,
+      children: [
+        {
+          name: 'useVerificationCode',
+          path: 'hooks/useVerificationCode',
+          component: lazyLoad(() =>
+            import(`../../components/_hooks/useVerificationCode/README${suffix}.md`)
+          ),
+        },
+        {
+          name: 'useWatermark',
+          path: 'hooks/useWatermark',
+          component: lazyLoad(() =>
+            import(`../../components/_hooks/useWatermark/README${suffix}.md`)
+          ),
         },
       ],
     },
@@ -717,6 +770,11 @@ export default function getRoutes(lang = 'zh', t) {
           path: 'designlab/use-theme-package',
           component: lazyLoad(() => import(`../docs/designlab/use-theme-package${suffix}.md`)),
         },
+        {
+          name: t['routes.use-config-provider'],
+          path: 'designlab/use-config-provider',
+          component: lazyLoad(() => import(`../docs/designlab/use-config-provider${suffix}.md`)),
+        },
       ],
     },
     {
@@ -730,34 +788,14 @@ export default function getRoutes(lang = 'zh', t) {
           component: lazyLoad(() => import(`../docs/pro/start${suffix}.md`)),
         },
         {
-          name: t['routes.npm-scripts'],
-          path: 'pro/npm-scripts',
-          component: lazyLoad(() => import(`../docs/pro/npm-scripts${suffix}.md`)),
-        },
-        {
-          name: t['routes.webpack-configuration'],
-          path: 'pro/webpack-configuration',
-          component: lazyLoad(() => import(`../docs/pro/webpack-configuration${suffix}.md`)),
-        },
-        {
           name: t['routes.directory'],
           path: 'pro/directory',
           component: lazyLoad(() => import(`../docs/pro/directory${suffix}.md`)),
         },
         {
-          name: t['routes._layout'],
-          path: 'pro/layout',
-          component: lazyLoad(() => import(`../docs/pro/layout${suffix}.md`)),
-        },
-        {
           name: t['routes.routes-and-menu'],
           path: 'pro/routes-and-menu',
           component: lazyLoad(() => import(`../docs/pro/routes-and-menu${suffix}.md`)),
-        },
-        {
-          name: t['routes.state-management'],
-          path: 'pro/state-management',
-          component: lazyLoad(() => import(`../docs/pro/state-management${suffix}.md`)),
         },
         {
           name: t['routes.i18n'],
@@ -770,9 +808,9 @@ export default function getRoutes(lang = 'zh', t) {
           component: lazyLoad(() => import(`../docs/pro/mock${suffix}.md`)),
         },
         {
-          name: t['routes.build'],
-          path: 'pro/build',
-          component: lazyLoad(() => import(`../docs/pro/build${suffix}.md`)),
+          name: t['routes.permission'],
+          path: 'pro/permission',
+          component: lazyLoad(() => import(`../docs/pro/permission${suffix}.md`)),
         },
       ],
     },
@@ -782,103 +820,193 @@ export default function getRoutes(lang = 'zh', t) {
       module: 'docs',
       children: [
         {
-          name: t['routes.material.start'],
-          key: 'material.start',
-          items: [
+          name: '2.x',
+          key: 'material.2.x',
+          module: 'docs',
+          children: [
             {
-              name: t['routes.material.guide'],
-              path: 'material/guide',
-              component: lazyLoad(() => import(`../docs/material/start.guide${suffix}.md`)),
+              name: t['routes.material.2.x.change'],
+              path: '2.x/material/change',
+              component: lazyLoad(() => import(`../docs/material/2.x/change${suffix}.md`)),
             },
             {
-              name: t['routes.material.qa'],
-              path: 'material/qa',
-              component: lazyLoad(() => import(`../docs/material/start.qa${suffix}.md`)),
-            },
-          ],
-        },
-        {
-          name: t['routes.material.create-project'],
-          key: 'material.create-project',
-          items: [
-            {
-              name: t['routes.material.project-template'],
-              path: 'material/project-template',
-              component: lazyLoad(() => import(`../docs/material/init.template${suffix}.md`)),
+              name: t['routes.material.2.x.start'],
+              path: '2.x/material/start',
+              component: lazyLoad(() => import(`../docs/material/2.x/quick-start${suffix}.md`)),
             },
             {
-              name: t['routes.material.project-config'],
-              path: 'material/project-config',
-              component: lazyLoad(() => import(`../docs/material/init.config${suffix}.md`)),
-            },
-          ],
-        },
-        {
-          name: t['routes.material.develop'],
-          key: 'material.develop',
-          items: [
-            {
-              name: t['routes.material.build'],
-              path: 'material/build',
-              component: lazyLoad(() => import(`../docs/material/develop.build${suffix}.md`)),
+              name: t['routes.material.2.x.workspace'],
+              path: '2.x/material/workspace',
+              component: lazyLoad(() => import(`../docs/material/2.x/workspace${suffix}.md`)),
             },
             {
-              name: t['routes.material.test'],
-              path: 'material/test',
-              component: lazyLoad(() => import(`../docs/material/develop.test${suffix}.md`)),
+              name: t['routes.material.2.x.env'],
+              path: '2.x/material/env',
+              component: lazyLoad(() => import(`../docs/material/2.x/env${suffix}.md`)),
             },
             {
-              name: t['routes.material.docgen'],
-              path: 'material/docgen',
-              component: lazyLoad(() => import(`../docs/material/develop.docgen${suffix}.md`)),
+              name: t['routes.material.2.x.team'],
+              path: '2.x/material/team',
+              component: lazyLoad(() => import(`../docs/material/2.x/team${suffix}.md`)),
             },
             {
-              name: t['routes.material.publish'],
-              path: 'material/publish',
-              component: lazyLoad(() => import(`../docs/material/develop.publish${suffix}.md`)),
+              name: t['routes.material.2.x.migration'],
+              path: '2.x/material/migration',
+              component: lazyLoad(() => import(`../docs/material/2.x/migration${suffix}.md`)),
             },
           ],
         },
         {
-          name: t['routes.material.advanced'],
-          key: 'material.advanced',
-          items: [
+          name: '1.x',
+          key: 'material.1.x',
+          module: 'docs',
+          children: [
             {
-              name: t['routes.material.team-site'],
-              path: 'material/team-site',
-              component: lazyLoad(() => import(`../docs/material/advanced.team-site${suffix}.md`)),
+              name: t['routes.material.start'],
+              key: 'material.start',
+              items: [
+                {
+                  name: t['routes.material.guide'],
+                  path: 'material/guide',
+                  component: lazyLoad(() => import(`../docs/material/1.x/start.guide${suffix}.md`)),
+                },
+                {
+                  name: t['routes.material.qa'],
+                  path: 'material/qa',
+                  component: lazyLoad(() => import(`../docs/material/1.x/start.qa${suffix}.md`)),
+                },
+                {
+                  name: t['routes.material.spec'],
+                  path: 'material/spec',
+                  component: lazyLoad(() => import(`../docs/material/1.x/start.spec${suffix}.md`)),
+                },
+              ],
             },
             {
-              name: t['routes.material.command'],
-              path: 'material/command',
-              component: lazyLoad(() => import(`../docs/material/advanced.command.zn-CN.md`)),
+              name: t['routes.material.create-project'],
+              key: 'material.create-project',
+              items: [
+                {
+                  name: t['routes.material.project-template'],
+                  path: 'material/project-template',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/init.template${suffix}.md`)
+                  ),
+                },
+                {
+                  name: t['routes.material.project-config'],
+                  path: 'material/project-config',
+                  component: lazyLoad(() => import(`../docs/material/1.x/init.config${suffix}.md`)),
+                },
+              ],
             },
             {
-              name: t['routes.material.develop-template'],
-              path: 'material/develop-template',
-              component: lazyLoad(() =>
-                import(`../docs/material/advanced.template-develop${suffix}.md`)
-              ),
+              name: t['routes.material.develop'],
+              key: 'material.develop',
+              items: [
+                {
+                  name: t['routes.material.build'],
+                  path: 'material/build',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/develop.build${suffix}.md`)
+                  ),
+                },
+                {
+                  name: t['routes.material.test'],
+                  path: 'material/test',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/develop.test${suffix}.md`)
+                  ),
+                },
+                {
+                  name: t['routes.material.docgen'],
+                  path: 'material/docgen',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/develop.docgen${suffix}.md`)
+                  ),
+                },
+                {
+                  name: t['routes.material.publish'],
+                  path: 'material/publish',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/develop.publish${suffix}.md`)
+                  ),
+                },
+              ],
             },
-          ],
-        },
-        {
-          name: t['routes.material.api'],
-          key: 'matieral.api',
-          items: [
             {
-              name: t['routes.material.api-material'],
-              path: 'material/api-material',
-              component: lazyLoad(() => import(`../docs/material/api.material${suffix}.md`)),
+              name: t['routes.material.advanced'],
+              key: 'material.advanced',
+              items: [
+                {
+                  name: t['routes.material.team-site'],
+                  path: 'material/team-site',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/advanced.team-site${suffix}.md`)
+                  ),
+                },
+                {
+                  name: t['routes.material.command'],
+                  path: 'material/command',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/advanced.command${suffix}.md`)
+                  ),
+                },
+                {
+                  name: t['routes.material.develop-template'],
+                  path: 'material/develop-template',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/advanced.template-develop${suffix}.md`)
+                  ),
+                },
+              ],
             },
             {
-              name: t['routes.material.api-group'],
-              path: 'material/api-group',
-              component: lazyLoad(() => import(`../docs/material/api.group${suffix}.md`)),
+              name: t['routes.material.api'],
+              key: 'matieral.api',
+              items: [
+                {
+                  name: t['routes.material.api-material'],
+                  path: 'material/api-material',
+                  component: lazyLoad(() =>
+                    import(`../docs/material/1.x/api.material${suffix}.md`)
+                  ),
+                },
+                {
+                  name: t['routes.material.api-group'],
+                  path: 'material/api-group',
+                  component: lazyLoad(() => import(`../docs/material/1.x/api.group${suffix}.md`)),
+                },
+              ],
             },
           ],
         },
       ],
     },
   ];
+}
+
+export function getFlattenRoutes(routes) {
+  let flattenRoutes = [];
+
+  Object.keys(routes).forEach((routeKey) => {
+    const level1 = routes[routeKey];
+    Object.keys(level1.children).forEach((level2Key) => {
+      const level2 = level1.children[level2Key];
+      if (level2.items) {
+        flattenRoutes = flattenRoutes.concat(
+          level2.items.map((l2) => {
+            l2.parentKey = level1.key;
+            l2.module = level1.module;
+            return l2;
+          })
+        );
+      } else {
+        level2.parentKey = level1.key;
+        level2.module = level1.module;
+        flattenRoutes = flattenRoutes.concat(level2.children ? getFlattenRoutes([level2]) : level2);
+      }
+    });
+  });
+  return flattenRoutes;
 }

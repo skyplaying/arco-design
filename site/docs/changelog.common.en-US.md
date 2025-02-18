@@ -1,3 +1,193 @@
+## 2.65.0
+
+2024-11-29
+
+### 🐛 BugFix
+
+- Upgrade `react-focus-lock` dependency version to solve the iframe focus grabbing problem([#2874](https://github.com/arco-design/arco-design/pull/2874))
+
+## 2.64.1
+
+2024-10-28
+
+### 🐛 BugFix
+
+- Dependency library `scroll-into-view-if-needed` version number updated([#2848](https://github.com/arco-design/arco-design/pull/2848))
+
+## 2.63.2
+
+2024-08-08
+
+### 💎 Enhancement
+
+- Compatible with react 19 findDOMNode error([#2755](https://github.com/arco-design/arco-design/pull/2755))
+- Upgrade the dependency `react-focus-lock` version to solve the WeakRef incompatibility issue([#2735](https://github.com/arco-design/arco-design/pull/2735))
+
+## 2.63.1
+
+2024-07-02
+
+### 💎 Enhancement
+
+- Optimize `findDOMNode` console warning([#2727](https://github.com/arco-design/arco-design/pull/2727))
+
+## 2.63.0
+
+2024-06-11
+
+### 💎 Enhancement
+
+- 优化 findDOMNode 逻辑([#2540](https://github.com/arco-design/arco-design/pull/2540))
+
+## 2.59.0
+
+2024-01-19
+
+### 🆕 Feature
+
+- 新增数据色色彩序列([#2494](https://github.com/arco-design/arco-design/pull/2494))
+- VirtualList add new `wrapperChild` and `onScroll` properties.([#2483](https://github.com/arco-design/arco-design/pull/2483))
+
+## 2.57.0
+
+2023-12-08
+
+### 🆕 Feature
+
+- Support `pt-br` locale([#2429](https://github.com/arco-design/arco-design/pull/2429))
+
+## 2.53.0
+
+2023-09-08
+
+### 🐛 BugFix
+
+- Fixed the problem of console error reporting in boundary scenarios of internal component `VirtualList`([#2216](https://github.com/arco-design/arco-design/pull/2216))
+
+## 2.48.2
+
+2023-05-26
+
+### 💎 Enhancement
+
+- When `Select` / `Cascader` / `TreeSelect` internal `<input />` node is hidden, remove its `value` attribute to avoid redundant text in the user’s copy operation([#1993](https://github.com/arco-design/arco-design/pull/1993))
+
+## 2.48.0
+
+2023-05-12
+
+### 💎 Enhancement
+
+- Optimize `ResizeObserver` monitoring logic to avoid `ResizeObserver loop limit exceeded` error reporting in some scenarios([#1962](https://github.com/arco-design/arco-design/pull/1962))
+
+### 🆕 Feature
+
+- Add Turkish language([#1942](https://github.com/arco-design/arco-design/pull/1942))
+
+## 2.45.0
+
+2023-02-17
+
+### 🆕 Feature
+
+- `Input`, `Select`, `DatePicker`, `TimePicker`, `Cascader`, `TreeSelect`, `AutoComplete` support setting `warning` status through `status` property([#1786](https://github.com/arco-design/arco-design/pull/1786))
+
+## 2.43.1
+
+2022-12-30
+
+### 💎 Enhancement
+
+- Optimize the virtual list scroll position offset problem when the list item has a `margin` value set.([#1690](https://github.com/arco-design/arco-design/pull/1690))
+- Remove `defaultProps` usage of inner function components to avoid console warning in React 18 strict mode.([#1687](https://github.com/arco-design/arco-design/pull/1687))
+
+### 🐛 BugFix
+
+- Fix the bug that defaultValue does not take effect in React 18 strict mode for some components.([#1689](https://github.com/arco-design/arco-design/pull/1689))
+
+## 2.41.2
+
+2022-11-11
+
+### 🆎 TypeScript
+
+- Adjust the TS definition of `Modal` `Drawer` `Popconfirm` parameters `okText` and `cancelText` properties to `ReactNode`.([#1558](https://github.com/arco-design/arco-design/pull/1558))
+
+## 2.41.1
+
+2022-11-04
+
+### 🐛 BugFix
+
+- Update `IconLarkColor` icon([#1541](https://github.com/arco-design/arco-design/pull/1541))
+
+## 2.39.3
+
+2022-09-02
+
+### 💎 Enhancement
+
+- Optimized `Modal`, `Notification`, `Message` components to render nodes via `createRoot` in React 18.([#1367](https://github.com/arco-design/arco-design/pull/1367))
+
+## 2.39.2
+
+2022-08-26
+
+### 🐛 BugFix
+
+- Fix server-side rendering error due to auto-generated DOM `id`.([#1334](https://github.com/arco-design/arco-design/pull/1334))
+- Fixed the problem that the `Select` component was repeatedly introduced when the `Cascader` / `TreeSelect` style was introduced by on-demand loading([#1327](https://github.com/arco-design/arco-design/pull/1327))
+
+## 2.39.1
+
+2022-08-19
+
+### 💎 Enhancement
+
+- Export prop `version`.([#1303](https://github.com/arco-design/arco-design/pull/1303))
+
+## 2.35.0
+
+2022-06-10
+
+### 🐛 BugFix
+
+- Adjust `Popconfirm`, `Popover`, `Tooltip` component animation pop-up effect to avoid page jitter caused by overshoot effect in border scenes.([#986](https://github.com/arco-design/arco-design/pull/986))
+
+## 2.34.0
+
+2022-05-27
+
+### 🆕 Feature
+
+- Added Arabic.([#932](https://github.com/arco-design/arco-design/pull/932))
+- Added Portuguese.([#924](https://github.com/arco-design/arco-design/pull/924))
+- Added Russian.([#922](https://github.com/arco-design/arco-design/pull/922))
+
+## 2.33.0
+
+2022-05-13
+
+### 🆕 Feature
+
+- Internationalization support set Vietnamese.([#824](https://github.com/arco-design/arco-design/pull/824))
+
+## 2.29.0
+
+2022-02-11
+
+### 🆕 Feature
+
+- Upgrade `b-validate` version to support `Form` passing `ReactNode` in `validator`([#518](https://github.com/arco-design/arco-design/pull/518))
+
+## 2.28.0
+
+2022-01-07
+
+### 🆕 Feature
+
+- Support to modify css variable prefix through `arco-vars-prefix` less variable([#403](https://github.com/arco-design/arco-design/pull/403))
+
 ## 2.23.0
 
 2021-09-27

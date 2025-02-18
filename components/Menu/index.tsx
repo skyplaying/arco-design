@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, forwardRef, useRef, useMemo } from 'react';
+import React, { useEffect, useContext, ReactNode, forwardRef, useRef, useMemo } from 'react';
 import cs from '../_util/classNames';
 import Item from './item';
 import ItemGroup from './item-group';
@@ -14,18 +14,21 @@ import IconMenuFold from '../../icon/react-icon/IconMenuFold';
 import IconMenuUnfold from '../../icon/react-icon/IconMenuUnfold';
 import useForceUpdate from '../_util/hooks/useForceUpdate';
 import MenuContext from './context';
-import { useHotkeyListener } from './hotkey';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import useKeyboardEvent from '../_util/hooks/useKeyboardEvent';
+import useId from '../_util/hooks/useId';
+import { isObject } from '../_util/is';
 
 const DEFAULT_THEME: MenuProps['theme'] = 'light';
 
 const defaultProps: MenuProps = {
   mode: 'vertical',
   selectable: true,
+  ellipsis: true,
 };
 
 function Menu(baseProps: MenuProps, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<MenuProps>(baseProps, defaultProps, componentConfig?.Menu);
   const {
     style,
@@ -41,6 +44,7 @@ function Menu(baseProps: MenuProps, ref) {
     selectable,
     triggerProps,
     tooltipProps,
+    ellipsis,
     accordion,
     autoOpen,
     autoScrollIntoView,
@@ -53,6 +57,7 @@ function Menu(baseProps: MenuProps, ref) {
     onClickSubMenu,
     onClickMenuItem,
     onCollapseChange,
+    onEllipsisChange,
     ...rest
   } = props;
 
@@ -75,57 +80,71 @@ function Menu(baseProps: MenuProps, ref) {
   const mergedCollapse = siderCollapsed || collapse || inDropdown || mode === 'popButton';
   const theme = propTheme || menuContext.theme || DEFAULT_THEME;
 
-  const refInlineMenuKeys = useRef<string[]>([]);
+  const refSubMenuKeys = useRef<string[]>([]);
   const refPrevSubMenuKeys = useRef<string[]>([]);
   const forceUpdate = useForceUpdate();
+  const getKeyboardEvents = useKeyboardEvent();
 
   const menuInfoMap = useMemo(() => {
     return generateInfoMap(children);
   }, [children]);
 
-  const { hotkeyInfo, listener: hotkeyListener, clear: clearHotkeyInfo } = useHotkeyListener({
-    openKeys,
-    selectedKeys,
-    menuInfoMap,
-    needPause: () => mergedCollapse,
-  });
+  // Unique ID of this instance
+  const _instanceId = useId(`${prefixCls}-`);
+  const instanceId = rest.id || _instanceId;
 
   // autoOpen 时，初次渲染展开所有的子菜单
   useEffect(() => {
     // 从 openKeys 中过滤已经不存在的 subMenuKey
-    let validOpenKeys = openKeys.filter((key) => refInlineMenuKeys.current.indexOf(key) !== -1);
+    let validOpenKeys = openKeys.filter((key) => refSubMenuKeys.current.indexOf(key) !== -1);
     if (autoOpen) {
-      const keysAdded = refInlineMenuKeys.current.filter(
+      const keysAdded = refSubMenuKeys.current.filter(
         (key) => refPrevSubMenuKeys.current.indexOf(key) === -1
       );
       validOpenKeys = openKeys.concat(keysAdded);
     }
     setOpenKeys(accordion ? validOpenKeys.slice(0, 1) : validOpenKeys);
-    refPrevSubMenuKeys.current = refInlineMenuKeys.current.slice();
-  }, [refInlineMenuKeys.current.toString()]);
+    refPrevSubMenuKeys.current = refSubMenuKeys.current.slice();
+  }, [refSubMenuKeys.current.toString()]);
+
+  const mergedHasCollapseButton =
+    mode !== 'horizontal' && mode !== 'popButton' && !inDropdown && hasCollapseButton;
 
   const renderChildren = () => {
-    const childrenList = processChildren(children, { level: 1 });
-    const mergedHasCollapseButton =
-      mode !== 'horizontal' && mode !== 'popButton' && !inDropdown && hasCollapseButton;
+    const childrenList = processChildren(children, { level: 1 }) as ReactNode[];
     const collapseIcon = collapse
       ? (icons && icons.collapseActive) || <IconMenuUnfold />
       : (icons && icons.collapseDefault) || <IconMenuFold />;
+    const collapseButtonClickHandler = () => {
+      const newCollapse = !collapse;
+      setCollapse(newCollapse);
+      onCollapseChange && onCollapseChange(newCollapse);
+    };
 
     return (
       <>
         <div className={`${prefixCls}-inner`}>
-          {mode === 'horizontal' ? <OverflowWrap>{childrenList}</OverflowWrap> : childrenList}
+          {mode === 'horizontal' && ellipsis !== false ? (
+            <OverflowWrap
+              ellipsisText={isObject(ellipsis) ? ellipsis.text : '···'}
+              onEllipsisChange={onEllipsisChange}
+            >
+              {childrenList}
+            </OverflowWrap>
+          ) : (
+            childrenList
+          )}
         </div>
 
         {mergedHasCollapseButton && (
           <div
+            tabIndex={0}
+            role="button"
+            aria-controls={instanceId}
+            aria-expanded={!collapse}
             className={`${prefixCls}-collapse-button`}
-            onClick={() => {
-              const newCollapse = !collapse;
-              setCollapse(newCollapse);
-              onCollapseChange && onCollapseChange(newCollapse);
-            }}
+            onClick={collapseButtonClickHandler}
+            {...getKeyboardEvents({ onPressEnter: collapseButtonClickHandler })}
           >
             {collapseIcon}
           </div>
@@ -135,13 +154,14 @@ function Menu(baseProps: MenuProps, ref) {
   };
 
   const usedStyle = { ...style };
-  if (mergedCollapse) {
+  if (mergedCollapse && !inDropdown) {
     delete usedStyle.width;
   }
 
   return (
     <div
-      tabIndex={1}
+      id={mergedHasCollapseButton ? instanceId : undefined}
+      role="menu"
       {...omit(rest, ['isMenu'])}
       ref={ref}
       style={usedStyle}
@@ -154,10 +174,10 @@ function Menu(baseProps: MenuProps, ref) {
           // 缩起状态自动变成 pop 模式
           [`${prefixCls}-pop`]: mode === 'pop' || mergedCollapse,
           [`${prefixCls}-pop-button`]: mode === 'popButton',
+          [`${prefixCls}-rtl`]: rtl,
         },
         className
       )}
-      onKeyDown={hotkeyListener}
     >
       <MenuContext.Provider
         value={{
@@ -174,14 +194,13 @@ function Menu(baseProps: MenuProps, ref) {
           autoScrollIntoView,
           scrollConfig,
           // pass props directly
+          id: instanceId,
           prefixCls,
-          hotkeyInfo: 'hotkeyInfo' in menuContext ? menuContext.hotkeyInfo : hotkeyInfo,
-          clearHotkeyInfo,
           collectInlineMenuKeys: (key, unmount) => {
             if (unmount) {
-              refInlineMenuKeys.current = refInlineMenuKeys.current.filter((x) => x !== key);
+              refSubMenuKeys.current = refSubMenuKeys.current.filter((x) => x !== key);
             } else {
-              refInlineMenuKeys.current.push(key);
+              refSubMenuKeys.current.push(key);
             }
             forceUpdate();
           },
@@ -223,6 +242,7 @@ const MenuComponent = ForwardRefMenu as typeof ForwardRefMenu & {
   Item: typeof Item;
   ItemGroup: typeof ItemGroup;
   SubMenu: typeof SubMenu;
+  __ARCO_MENU__: boolean;
 };
 
 MenuComponent.displayName = 'Menu';
@@ -230,11 +250,7 @@ MenuComponent.displayName = 'Menu';
 MenuComponent.Item = Item;
 MenuComponent.SubMenu = SubMenu;
 MenuComponent.ItemGroup = ItemGroup;
-
-// private use
-MenuComponent.defaultProps = {
-  isMenu: true,
-};
+MenuComponent.__ARCO_MENU__ = true;
 
 export default MenuComponent;
 

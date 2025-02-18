@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useEffect } from 'react';
+import React, { useContext, useCallback, useRef, useEffect, ReactNode, ReactElement } from 'react';
 import Group, { CheckboxGroupContext } from './group';
 import cs from '../_util/classNames';
 import { ConfigContext } from '../ConfigProvider';
@@ -9,9 +9,12 @@ import Hover from '../_class/icon-hover';
 import IconCheck from './icon-check';
 import { CheckboxProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import { isFunction, isNullOrUndefined } from '../_util/is';
 
 function Checkbox<T extends React.ReactText>(baseProps: CheckboxProps<T>, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<CheckboxProps>(baseProps, {}, componentConfig?.Checkbox);
 
   const context = useContext(CheckboxGroupContext);
@@ -38,6 +41,7 @@ function Checkbox<T extends React.ReactText>(baseProps: CheckboxProps<T>, ref) {
       [`${prefixCls}-disabled`]: !!disabled,
       [`${prefixCls}-indeterminate`]: !!indeterminate,
       [`${prefixCls}-checked`]: checked,
+      [`${prefixCls}-rtl`]: rtl,
       error,
     },
     className
@@ -64,27 +68,63 @@ function Checkbox<T extends React.ReactText>(baseProps: CheckboxProps<T>, ref) {
     [onGroupChange, context.isCheckboxGroup, props.onChange, props.value]
   );
 
+  const onLabelClick = React.useCallback(
+    (e) => {
+      if (isFunction(props.children)) {
+        // 避免children中含有表单元素造成label无法触发input的onchange的情况
+        e.preventDefault();
+        inputRef.current && inputRef.current.click();
+      }
+      rest.onClick && rest.onClick(e);
+    },
+    [props.children, rest.onClick]
+  );
+
+  let icon: ReactNode = <IconCheck className={`${prefixCls}-mask-icon`} />;
+  if (mergeProps.icon) {
+    if (React.isValidElement(mergeProps.icon)) {
+      icon = React.cloneElement(mergeProps.icon as ReactElement, {
+        className: `${prefixCls}-mask-icon`,
+      });
+    } else {
+      icon = mergeProps.icon;
+    }
+  }
+
   return (
-    <label ref={ref} {...omit(rest, ['onChange'])} className={classNames} style={style}>
+    <label
+      ref={ref}
+      aria-disabled={disabled}
+      {...omit(rest, ['onChange'])}
+      onClick={onLabelClick}
+      className={classNames}
+      style={style}
+    >
       <input
         value={value}
         disabled={!!disabled}
+        ref={inputRef}
         checked={!!checked}
         onChange={onChange}
         // To avoid triggering onChange twice in Select if it's used in Select option.
         onClick={(e) => e.stopPropagation()}
         type="checkbox"
       />
-      <Hover
-        prefix={prefixCls}
-        className={`${prefixCls}-mask-wrapper`}
-        disabled={checked || disabled || indeterminate}
-      >
-        <div className={`${prefixCls}-mask`}>
-          <IconCheck className={`${prefixCls}-mask-icon`} />
-        </div>
-      </Hover>
-      {children && <span className={`${prefixCls}-text`}>{children}</span>}
+
+      {isFunction(children) ? (
+        children({ checked, indeterminate })
+      ) : (
+        <>
+          <Hover
+            prefix={prefixCls}
+            className={`${prefixCls}-mask-wrapper`}
+            disabled={checked || disabled || indeterminate}
+          >
+            <div className={`${prefixCls}-mask`}>{icon}</div>
+          </Hover>
+          {!isNullOrUndefined(children) && <span className={`${prefixCls}-text`}>{children}</span>}
+        </>
+      )}
     </label>
   );
 }

@@ -1,9 +1,11 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { act } from 'react-test-renderer';
+import { fireEvent, render } from '../../../tests/util';
 import mountTest from '../../../tests/mountTest';
 import componentConfigTest from '../../../tests/componentConfigTest';
 import Breadcrumb from '..';
 import { DropdownProps } from '../../Dropdown';
+import Button from '../../Button';
 
 const BreadcrumbItem = Breadcrumb.Item;
 
@@ -12,23 +14,18 @@ componentConfigTest(Breadcrumb, 'Breadcrumb');
 
 describe('Breadcrumb', () => {
   it('breadcrumb separator correctly', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Breadcrumb separator="=>">
         <BreadcrumbItem>Home</BreadcrumbItem>
         <BreadcrumbItem>Article</BreadcrumbItem>
         <BreadcrumbItem>Technology</BreadcrumbItem>
       </Breadcrumb>
     );
-    expect(
-      wrapper
-        .find('.arco-breadcrumb-item-separator')
-        .at(0)
-        .text()
-    ).toBe('=>');
+    expect(wrapper.find('.arco-breadcrumb-item-separator').item(0).innerHTML).toBe('=&gt;');
   });
 
   it('breadcrumb render empty children correctly', () => {
-    const wrapper = mount(<Breadcrumb />);
+    const wrapper = render(<Breadcrumb />);
     expect(wrapper.find('.arco-breadcrumb')).toHaveLength(1);
     expect(wrapper.find('.arco-breadcrumb-item')).toHaveLength(0);
   });
@@ -36,7 +33,7 @@ describe('Breadcrumb', () => {
   it('supprt droplist correctly', () => {
     const arr = new Array(3).fill(1);
     const dropdownProps: DropdownProps = { trigger: 'click', position: 'bl' };
-    const wrapper = mount(
+    const wrapper = render(
       <Breadcrumb>
         {arr.map((_, index) => {
           if (index === 1) {
@@ -54,12 +51,10 @@ describe('Breadcrumb', () => {
         })}
       </Breadcrumb>
     );
-    expect(wrapper.find('IconDown')).toHaveLength(1);
-
-    const DropdownElemProps = wrapper.find('Dropdown').props();
-    Object.keys(dropdownProps).forEach((key) => {
-      expect(DropdownElemProps[key]).toEqual(dropdownProps[key]);
-    });
+    expect(wrapper.find('.arco-breadcrumb-item-with-dropdown')).toHaveLength(1);
+    fireEvent.click(wrapper.getAllByRole('listitem')[1]);
+    expect(wrapper.find('.arco-dropdown')).toHaveLength(1);
+    expect(wrapper.find('.arco-dropdown')[0].className).toContain('arco-trigger-position-bl');
   });
 
   it('support routes correctly', () => {
@@ -80,21 +75,13 @@ describe('Breadcrumb', () => {
       };
     });
 
-    const wrapper = mount(<Breadcrumb routes={routes} />);
-    expect(wrapper.find('Dropdown')).toHaveLength(3);
-    expect(
-      wrapper
-        .find('.arco-breadcrumb-item a')
-        .at(2)
-        .text()
-    ).toEqual(`name-2`);
+    const wrapper = render(<Breadcrumb routes={routes} />);
+    expect(wrapper.find('.arco-breadcrumb-item-with-dropdown')).toHaveLength(3);
+    expect(wrapper.find('.arco-breadcrumb-item a').item(2).innerHTML).toEqual(`name-2`);
 
-    expect(
-      wrapper
-        .find('.arco-breadcrumb-item a')
-        .at(2)
-        .prop('href')
-    ).toEqual('#/0/1/2');
+    expect(wrapper.find<HTMLAnchorElement>('.arco-breadcrumb-item a').item(2).hash).toEqual(
+      '#/0/1/2'
+    );
   });
 
   it('support itemrender correctly', () => {
@@ -116,7 +103,7 @@ describe('Breadcrumb', () => {
       };
     });
 
-    mount(<Breadcrumb routes={routes} itemRender={mockItemRender} />);
+    render(<Breadcrumb routes={routes} itemRender={mockItemRender} />);
     const allLength = 5 + 3 * 3;
     expect(mockItemRender).toHaveBeenCalledTimes(allLength);
   });
@@ -128,19 +115,46 @@ describe('Breadcrumb', () => {
     }));
 
     let maxCount = 3;
-    const wrapper = mount(<Breadcrumb maxCount={maxCount} routes={routes} />);
+    const wrapper = render(<Breadcrumb maxCount={maxCount} routes={routes} />);
     expect(wrapper.find('.arco-breadcrumb-item')).toHaveLength(3);
     expect(wrapper.find('.arco-breadcrumb-item-ellipses')).toHaveLength(1);
 
     maxCount = 5;
     const delta = routes.length - maxCount;
-    wrapper.setProps({ maxCount });
+    wrapper.rerender(<Breadcrumb maxCount={maxCount} routes={routes} />);
     expect(wrapper.find('.arco-breadcrumb-item')).toHaveLength(5);
     expect(
-      wrapper
-        .find('.arco-breadcrumb-item')
-        .at(3)
-        .text()
+      (wrapper.find('.arco-breadcrumb-item').item(3).firstChild! as HTMLAnchorElement).innerHTML
     ).toEqual(`name-${delta + 3}`);
+  });
+
+  it('support href correctly', () => {
+    const wrapper = render(
+      <Breadcrumb separator="=>">
+        <BreadcrumbItem href="https://arco.design">Home</BreadcrumbItem>
+        <BreadcrumbItem>Article</BreadcrumbItem>
+        <BreadcrumbItem>Technology</BreadcrumbItem>
+      </Breadcrumb>
+    );
+    expect(wrapper.find("a[href='https://arco.design']")).toHaveLength(1);
+  });
+
+  it('support custom Tag correctly', () => {
+    const mockClick = jest.fn();
+    const wrapper = render(
+      <Breadcrumb separator="=>">
+        <BreadcrumbItem onClick={mockClick} tagName={Button}>
+          Home
+        </BreadcrumbItem>
+        <BreadcrumbItem>Article</BreadcrumbItem>
+        <BreadcrumbItem>Technology</BreadcrumbItem>
+      </Breadcrumb>
+    );
+
+    expect(wrapper.find('.arco-btn')).toHaveLength(1);
+    act(() => {
+      fireEvent.click(wrapper.find('.arco-btn')[0]);
+    });
+    expect(mockClick).toHaveBeenCalledTimes(1);
   });
 });

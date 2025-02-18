@@ -4,6 +4,7 @@ exports[`renders ConfigProvider/demo/basic.md correctly 1`] = `
 Array [
   <div
     class="arco-radio-group arco-radio-group-type-button arco-radio-size-default arco-radio-mode-fill"
+    role="radiogroup"
     style="margin-bottom:40px"
   >
     <label
@@ -105,6 +106,76 @@ Array [
         th-TH
       </span>
     </label>
+    <label
+      class="arco-radio-button"
+    >
+      <input
+        name="locale"
+        type="radio"
+        value="fr-FR"
+      />
+      <span
+        class="arco-radio-button-inner"
+      >
+        fr-FR
+      </span>
+    </label>
+    <label
+      class="arco-radio-button"
+    >
+      <input
+        name="locale"
+        type="radio"
+        value="es-ES"
+      />
+      <span
+        class="arco-radio-button-inner"
+      >
+        es-ES
+      </span>
+    </label>
+    <label
+      class="arco-radio-button"
+    >
+      <input
+        name="locale"
+        type="radio"
+        value="de-DE"
+      />
+      <span
+        class="arco-radio-button-inner"
+      >
+        de-DE
+      </span>
+    </label>
+    <label
+      class="arco-radio-button"
+    >
+      <input
+        name="locale"
+        type="radio"
+        value="it-IT"
+      />
+      <span
+        class="arco-radio-button-inner"
+      >
+        it-IT
+      </span>
+    </label>
+    <label
+      class="arco-radio-button"
+    >
+      <input
+        name="locale"
+        type="radio"
+        value="vi-VN"
+      />
+      <span
+        class="arco-radio-button-inner"
+      >
+        vi-VN
+      </span>
+    </label>
   </div>,
   <br />,
   <div
@@ -120,16 +191,18 @@ Array [
       class="arco-pagination-list"
     >
       <li
+        aria-label="上一页"
         class="arco-pagination-item arco-pagination-item-prev arco-pagination-item-disabled"
+        tabindex="-1"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-left"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M32 8.4 16.444 23.956 32 39.513"
@@ -137,46 +210,53 @@ Array [
         </svg>
       </li>
       <li
+        aria-current="true"
+        aria-label="第 1 页"
         class="arco-pagination-item arco-pagination-item-active"
-        data-active="true"
+        tabindex="0"
       >
         1
       </li>
       <li
+        aria-label="第 2 页"
         class="arco-pagination-item"
-        data-active="false"
+        tabindex="0"
       >
         2
       </li>
       <li
+        aria-label="第 3 页"
         class="arco-pagination-item"
-        data-active="false"
+        tabindex="0"
       >
         3
       </li>
       <li
+        aria-label="第 4 页"
         class="arco-pagination-item"
-        data-active="false"
+        tabindex="0"
       >
         4
       </li>
       <li
+        aria-label="第 5 页"
         class="arco-pagination-item"
-        data-active="false"
+        tabindex="0"
       >
         5
       </li>
       <li
+        aria-label="向后 5 页"
         class="arco-pagination-item arco-pagination-item-jumper"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-more"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M38 25v-2h2v2h-2ZM23 25v-2h2v2h-2ZM8 25v-2h2v2H8Z"
@@ -189,22 +269,25 @@ Array [
         </svg>
       </li>
       <li
+        aria-label="第 20 页"
         class="arco-pagination-item"
-        data-active="false"
+        tabindex="0"
       >
         20
       </li>
       <li
+        aria-label="下一页"
         class="arco-pagination-item arco-pagination-item-next"
+        tabindex="0"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-right"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="m16 39.513 15.556-15.557L16 8.4"
@@ -213,41 +296,53 @@ Array [
       </li>
     </ul>
     <div
+      aria-label="页码"
       class="arco-pagination-option"
     >
       <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
         class="arco-select arco-select-single arco-select-size-default"
+        role="combobox"
         tabindex="0"
       >
         <div
           class="arco-select-view"
           title="10 条/页"
         >
-          <input
-            class="arco-select-view-input arco-select-hidden"
-            style="width:100%;pointer-events:none"
-            tabindex="-1"
-            value="10 条/页"
-          />
           <span
-            class="arco-select-view-value"
+            class="arco-select-view-selector"
           >
-            10 条/页
+            <input
+              aria-hidden="true"
+              autocomplete="off"
+              class="arco-select-view-input arco-select-hidden"
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-select-view-value"
+            >
+              10 条/页
+            </span>
           </span>
           <div
+            aria-hidden="true"
             class="arco-select-suffix"
           >
             <div
               class="arco-select-arrow-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-down"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -291,13 +386,13 @@ Array [
         class="arco-picker-suffix-icon"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-calendar"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M7 22h34M14 5v8m20-8v8M8 41h32a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v30a1 1 0 0 0 1 1Z"
@@ -338,13 +433,13 @@ Array [
         class="arco-picker-suffix-icon"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-clock-circle"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M24 14v10h9.5m8.5 0c0 9.941-8.059 18-18 18S6 33.941 6 24 14.059 6 24 6s18 8.059 18 18Z"
@@ -437,6 +532,7 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
       >
         <div
           class="arco-radio-group arco-radio-group-type-button arco-radio-size-default arco-radio-mode-outline"
+          role="radiogroup"
         >
           <label
             class="arco-radio-button arco-radio-checked"
@@ -498,6 +594,7 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
       >
         <div
           class="arco-radio-group arco-radio-group-type-button arco-radio-size-default arco-radio-mode-outline"
+          role="radiogroup"
         >
           <label
             class="arco-radio-button arco-radio-checked"
@@ -560,16 +657,23 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
               class="arco-picker-suffix-icon"
             >
               <svg
-                class="arco-icon arco-icon-calendar"
+                aria-hidden="true"
+                class="arco-icon arco-icon-calendar-clock"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
-                  d="M7 22h34M14 5v8m20-8v8M8 41h32a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v30a1 1 0 0 0 1 1Z"
+                  d="M7 22h34V10a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v30a1 1 0 0 0 1 1h18M34 5v8M14 5v8"
+                />
+                <path
+                  clip-rule="evenodd"
+                  d="M36 44a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm1.5-9.75V29h-3v8.25H42v-3h-4.5Z"
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  stroke="none"
                 />
               </svg>
             </span>
@@ -610,13 +714,13 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
               class="arco-picker-suffix-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-calendar"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M7 22h34M14 5v8m20-8v8M8 41h32a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v30a1 1 0 0 0 1 1Z"
@@ -652,13 +756,13 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
                 class="arco-input-number-step-button"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-minus"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M5 24h38"
@@ -670,7 +774,11 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
               class="arco-input-inner-wrapper arco-input-inner-wrapper-default"
             >
               <input
+                aria-valuemax="Infinity"
+                aria-valuemin="-Infinity"
+                aria-valuenow="2"
                 class="arco-input arco-input-size-default"
+                role="spinbutton"
                 value="2"
               />
               <span
@@ -684,13 +792,13 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
                 class="arco-input-number-step-button"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-plus"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M5 24h38M24 5v38"
@@ -717,13 +825,13 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
                 class="arco-input-number-step-button"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-minus"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M5 24h38"
@@ -735,7 +843,11 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
               class="arco-input-inner-wrapper arco-input-inner-wrapper-default"
             >
               <input
+                aria-valuemax="Infinity"
+                aria-valuemin="-Infinity"
+                aria-valuenow="3"
                 class="arco-input arco-input-size-default"
+                role="spinbutton"
                 value="3"
               />
               <span
@@ -749,13 +861,13 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
                 class="arco-input-number-step-button"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-plus"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M5 24h38M24 5v38"
@@ -782,7 +894,11 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
         <div
           class="arco-tag arco-tag-arcoblue arco-tag-checked arco-tag-size-large"
         >
-          ArcoDesign
+          <span
+            class="arco-tag-content"
+          >
+            ArcoDesign
+          </span>
         </div>
       </div>
       <div
@@ -792,7 +908,11 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
         <div
           class="arco-tag arco-tag-arcoblue arco-tag-checked arco-tag-size-large"
         >
-          Design System
+          <span
+            class="arco-tag-content"
+          >
+            Design System
+          </span>
         </div>
       </div>
       <div
@@ -802,7 +922,11 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
         <div
           class="arco-tag arco-tag-arcoblue arco-tag-checked arco-tag-size-large"
         >
-          Component
+          <span
+            class="arco-tag-content"
+          >
+            Component
+          </span>
         </div>
       </div>
       <div
@@ -811,7 +935,11 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
         <div
           class="arco-tag arco-tag-arcoblue arco-tag-checked arco-tag-size-large"
         >
-          Design Lab
+          <span
+            class="arco-tag-content"
+          >
+            Design Lab
+          </span>
         </div>
       </div>
     </div>
@@ -922,53 +1050,189 @@ exports[`renders ConfigProvider/demo/component-config.md correctly 1`] = `
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders ConfigProvider/demo/local-setting.md correctly 1`] = `
+<div
+  class="arco-space arco-space-vertical"
+>
+  <div
+    class="arco-space-item"
+    style="margin-bottom:20px"
+  >
+    <h6
+      class="arco-typography arco-typography-rtl"
+    >
+       局部 RTL 视图
+    </h6>
+    <div
+      class="demo-holder-wrapper"
+    />
+    <div
+      class="arco-space arco-space-horizontal arco-space-align-center arco-space-rtl"
+    >
+      <div
+        class="arco-space-item"
+        style="margin-left:8px"
+      >
+        <button
+          class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-btn-rtl"
+          type="button"
+        >
+          <span>
+            Open Message
+          </span>
+        </button>
+      </div>
+      <div
+        class="arco-space-item"
+      >
+        <button
+          class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-btn-rtl"
+          type="button"
+        >
+          <span>
+            Open Notification
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="arco-space-item"
+  >
+    <div>
+      <h6
+        class="arco-typography"
+      >
+         正常视图 
+      </h6>
+      <div
+        class="arco-space arco-space-horizontal arco-space-align-center"
+      >
+        <div
+          class="arco-space-item"
+          style="margin-right:8px"
+        >
+          <button
+            class="arco-btn arco-btn-secondary arco-btn-size-default arco-btn-shape-square"
+            type="button"
+          >
+            <span>
+              Open Message
+            </span>
+          </button>
+        </div>
+        <div
+          class="arco-space-item"
+        >
+          <button
+            class="arco-btn arco-btn-secondary arco-btn-size-default arco-btn-shape-square"
+            type="button"
+          >
+            <span>
+              Open Notification
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders ConfigProvider/demo/modal-setting.md correctly 1`] = `
+<div
+  class="arco-space arco-space-vertical"
+>
+  <div
+    class="arco-space-item"
+  >
+    <h6
+      class="arco-typography arco-typography-rtl"
+    >
+      局部 RTL 视图
+    </h6>
+    <div
+      class="arco-tabs arco-tabs-horizontal arco-tabs-line arco-tabs-top arco-tabs-size-default arco-tabs-rtl"
+      style="margin-bottom:20px"
+    >
+      <div
+        class="arco-tabs-header-nav arco-tabs-header-nav-horizontal arco-tabs-header-nav-top arco-tabs-header-size-default arco-tabs-header-nav-line"
+      >
+        <div
+          class="arco-tabs-header-scroll"
+        >
           <div
-            class="arco-table-pagination"
+            class="arco-tabs-header-wrapper"
           >
             <div
-              class="arco-pagination arco-pagination-size-default"
+              class="arco-tabs-header"
+              style="transform:translateX(0px);-webkit-transform:translateX(0px);-ms-transform:translateX(0px);-moz-transform:translateX(0px);-o-transform:translateX(0px)"
             >
-              <ul
-                class="arco-pagination-list"
+              <div
+                aria-selected="true"
+                class="arco-tabs-header-title arco-tabs-header-title-active"
+                role="tab"
+                tabindex="0"
               >
-                <li
-                  class="arco-pagination-item arco-pagination-item-prev arco-pagination-item-disabled"
+                <span
+                  class="arco-tabs-header-title-text"
                 >
-                  <svg
-                    class="arco-icon arco-icon-left"
-                    fill="none"
-                    height="1em"
-                    stroke="currentColor"
-                    stroke-width="4"
-                    viewBox="0 0 48 48"
-                    width="1em"
-                  >
-                    <path
-                      d="M32 8.4 16.444 23.956 32 39.513"
-                    />
-                  </svg>
-                </li>
-                <li
-                  class="arco-pagination-item arco-pagination-item-next arco-pagination-item-disabled"
+                  Tab 1
+                </span>
+              </div>
+              <div
+                aria-selected="false"
+                class="arco-tabs-header-title"
+                role="tab"
+                tabindex="0"
+              >
+                <span
+                  class="arco-tabs-header-title-text"
                 >
-                  <svg
-                    class="arco-icon arco-icon-right"
-                    fill="none"
-                    height="1em"
-                    stroke="currentColor"
-                    stroke-width="4"
-                    viewBox="0 0 48 48"
-                    width="1em"
-                  >
-                    <path
-                      d="m16 39.513 15.556-15.557L16 8.4"
-                    />
-                  </svg>
-                </li>
-              </ul>
+                  Tab 2
+                </span>
+              </div>
+              <div
+                aria-selected="false"
+                class="arco-tabs-header-title"
+                role="tab"
+                tabindex="0"
+              >
+                <span
+                  class="arco-tabs-header-title-text"
+                >
+                  Tab 3
+                </span>
+              </div>
+              <div
+                class="arco-tabs-header-ink"
+              />
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div
+      class="arco-space arco-space-horizontal arco-space-align-center arco-space-rtl"
+    >
+      <div
+        class="arco-space-item"
+      >
+        <button
+          class="arco-btn arco-btn-primary arco-btn-size-default arco-btn-shape-square arco-btn-rtl"
+          type="button"
+        >
+          <span>
+            Confirm
+          </span>
+        </button>
       </div>
     </div>
   </div>
@@ -985,7 +1249,11 @@ Array [
       style="margin-right:8px"
     >
       <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
         class="arco-cascader arco-cascader-single arco-cascader-size-default"
+        role="combobox"
         style="width:200px"
         tabindex="0"
       >
@@ -993,30 +1261,44 @@ Array [
           class="arco-cascader-view"
           title=""
         >
-          <input
-            class="arco-cascader-view-input"
-            placeholder="Cascader"
-            style="width:100%;pointer-events:none"
-            tabindex="-1"
-            value=""
-          />
           <span
-            class="arco-cascader-view-value arco-cascader-hidden"
-          />
+            class="arco-cascader-view-selector"
+          >
+            <input
+              autocomplete="off"
+              class="arco-cascader-view-input"
+              placeholder="Cascader"
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-cascader-view-value-mirror"
+            >
+              Cascader
+            </span>
+            <span
+              class="arco-cascader-view-value"
+              style="display:none"
+            >
+              Cascader
+            </span>
+          </span>
           <div
+            aria-hidden="true"
             class="arco-cascader-suffix"
           >
             <div
               class="arco-cascader-arrow-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-down"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -1032,7 +1314,11 @@ Array [
       style="margin-right:8px"
     >
       <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
         class="arco-select arco-select-single arco-select-size-default"
+        role="combobox"
         style="width:200px"
         tabindex="0"
       >
@@ -1040,30 +1326,44 @@ Array [
           class="arco-select-view"
           title=""
         >
-          <input
-            class="arco-select-view-input"
-            placeholder="Select"
-            style="width:100%;pointer-events:none"
-            tabindex="-1"
-            value=""
-          />
           <span
-            class="arco-select-view-value arco-select-hidden"
-          />
+            class="arco-select-view-selector"
+          >
+            <input
+              autocomplete="off"
+              class="arco-select-view-input"
+              placeholder="Select"
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-select-view-value-mirror"
+            >
+              Select
+            </span>
+            <span
+              class="arco-select-view-value"
+              style="display:none"
+            >
+              Select
+            </span>
+          </span>
           <div
+            aria-hidden="true"
             class="arco-select-suffix"
           >
             <div
               class="arco-select-arrow-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-down"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -1078,7 +1378,11 @@ Array [
       class="arco-space-item"
     >
       <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
         class="arco-tree-select arco-tree-select-single arco-tree-select-size-default"
+        role="combobox"
         style="width:200px"
         tabindex="0"
       >
@@ -1086,30 +1390,44 @@ Array [
           class="arco-tree-select-view"
           title=""
         >
-          <input
-            class="arco-tree-select-view-input"
-            placeholder="TreeSelect"
-            style="width:100%;pointer-events:none"
-            tabindex="-1"
-            value=""
-          />
           <span
-            class="arco-tree-select-view-value arco-tree-select-hidden"
-          />
+            class="arco-tree-select-view-selector"
+          >
+            <input
+              autocomplete="off"
+              class="arco-tree-select-view-input"
+              placeholder="TreeSelect"
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-tree-select-view-value-mirror"
+            >
+              TreeSelect
+            </span>
+            <span
+              class="arco-tree-select-view-value"
+              style="display:none"
+            >
+              TreeSelect
+            </span>
+          </span>
           <div
+            aria-hidden="true"
             class="arco-tree-select-suffix"
           >
             <div
               class="arco-tree-select-arrow-icon"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-down"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -1135,6 +1453,7 @@ Array [
       </div>
       <div
         class="arco-list-content"
+        role="list"
       >
         <div
           class="arco-empty"
@@ -1146,13 +1465,13 @@ Array [
               class="arco-empty-image"
             >
               <svg
+                aria-hidden="true"
                 class="arco-icon arco-icon-empty"
                 fill="none"
-                height="1em"
+                focusable="false"
                 stroke="currentColor"
                 stroke-width="4"
                 viewBox="0 0 48 48"
-                width="1em"
               >
                 <path
                   d="M24 5v6m7 1 4-4m-18 4-4-4m28.5 22H28s-1 3-4 3-4-3-4-3H6.5M40 41H8a2 2 0 0 1-2-2v-8.46a2 2 0 0 1 .272-1.007l6.15-10.54A2 2 0 0 1 14.148 18H33.85a2 2 0 0 1 1.728.992l6.149 10.541A2 2 0 0 1 42 30.541V39a2 2 0 0 1-2 2Z"
@@ -1246,13 +1565,13 @@ Array [
                               class="arco-empty-image"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="arco-icon arco-icon-empty"
                                 fill="none"
-                                height="1em"
+                                focusable="false"
                                 stroke="currentColor"
                                 stroke-width="4"
                                 viewBox="0 0 48 48"
-                                width="1em"
                               >
                                 <path
                                   d="M24 5v6m7 1 4-4m-18 4-4-4m28.5 22H28s-1 3-4 3-4-3-4-3H6.5M40 41H8a2 2 0 0 1-2-2v-8.46a2 2 0 0 1 .272-1.007l6.15-10.54A2 2 0 0 1 14.148 18H33.85a2 2 0 0 1 1.728.992l6.149 10.541A2 2 0 0 1 42 30.541V39a2 2 0 0 1-2 2Z"
@@ -1274,56 +1593,549 @@ Array [
             </div>
           </div>
         </div>
-        <div
-          class="arco-table-pagination"
-        >
-          <div
-            class="arco-pagination arco-pagination-size-default"
-          >
-            <ul
-              class="arco-pagination-list"
-            >
-              <li
-                class="arco-pagination-item arco-pagination-item-prev arco-pagination-item-disabled"
-              >
-                <svg
-                  class="arco-icon arco-icon-left"
-                  fill="none"
-                  height="1em"
-                  stroke="currentColor"
-                  stroke-width="4"
-                  viewBox="0 0 48 48"
-                  width="1em"
-                >
-                  <path
-                    d="M32 8.4 16.444 23.956 32 39.513"
-                  />
-                </svg>
-              </li>
-              <li
-                class="arco-pagination-item arco-pagination-item-next arco-pagination-item-disabled"
-              >
-                <svg
-                  class="arco-icon arco-icon-right"
-                  fill="none"
-                  height="1em"
-                  stroke="currentColor"
-                  stroke-width="4"
-                  viewBox="0 0 48 48"
-                  width="1em"
-                >
-                  <path
-                    d="m16 39.513 15.556-15.557L16 8.4"
-                  />
-                </svg>
-              </li>
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
   </div>,
 ]
+`;
+
+exports[`renders ConfigProvider/demo/rtl.md correctly 1`] = `
+<div>
+  <button
+    aria-checked="true"
+    class="arco-switch arco-switch-type-circle arco-switch-checked"
+    role="switch"
+    type="button"
+  >
+    <div
+      class="arco-switch-dot"
+    />
+    <div
+      class="arco-switch-text-holder"
+    >
+      RTL
+    </div>
+    <div
+      class="arco-switch-text"
+    >
+      RTL
+    </div>
+  </button>
+  <div
+    class="arco-divider arco-divider-horizontal"
+    role="separator"
+  />
+  <div
+    class="arco-tabs arco-tabs-horizontal arco-tabs-line arco-tabs-top arco-tabs-size-default arco-tabs-rtl"
+    style="margin-bottom:20px"
+  >
+    <div
+      class="arco-tabs-header-nav arco-tabs-header-nav-horizontal arco-tabs-header-nav-top arco-tabs-header-size-default arco-tabs-header-nav-line"
+    >
+      <div
+        class="arco-tabs-header-scroll"
+      >
+        <div
+          class="arco-tabs-header-wrapper"
+        >
+          <div
+            class="arco-tabs-header"
+            style="transform:translateX(0px);-webkit-transform:translateX(0px);-ms-transform:translateX(0px);-moz-transform:translateX(0px);-o-transform:translateX(0px)"
+          >
+            <div
+              aria-selected="true"
+              class="arco-tabs-header-title arco-tabs-header-title-active"
+              role="tab"
+              tabindex="0"
+            >
+              <span
+                class="arco-tabs-header-title-text"
+              >
+                Tab 1
+              </span>
+            </div>
+            <div
+              aria-selected="false"
+              class="arco-tabs-header-title"
+              role="tab"
+              tabindex="0"
+            >
+              <span
+                class="arco-tabs-header-title-text"
+              >
+                Tab 2
+              </span>
+            </div>
+            <div
+              aria-selected="false"
+              class="arco-tabs-header-title"
+              role="tab"
+              tabindex="0"
+            >
+              <span
+                class="arco-tabs-header-title-text"
+              >
+                Tab 3
+              </span>
+            </div>
+            <div
+              class="arco-tabs-header-ink"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="arco-space arco-space-vertical arco-space-rtl"
+    style="width:100%"
+  >
+    <div
+      class="arco-space-item"
+      style="margin-bottom:8px"
+    >
+      <div
+        class="arco-space arco-space-horizontal arco-space-align-center arco-space-rtl"
+      >
+        <div
+          class="arco-space-item"
+          style="margin-left:24px"
+        >
+          <span
+            class="arco-badge arco-badge-rtl"
+          >
+            <div
+              class="arco-avatar arco-avatar-square arco-avatar-rtl"
+              style="font-size:"
+            >
+              <span
+                class="arco-avatar-text"
+              />
+            </div>
+            <span
+              class="arco-badge-number"
+            >
+              <span
+                class=""
+              >
+                9
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          class="arco-space-item"
+          style="margin-left:24px"
+        >
+          <span
+            class="arco-badge arco-badge-rtl"
+          >
+            <div
+              class="arco-avatar arco-avatar-square arco-avatar-rtl"
+              style="font-size:"
+            >
+              <span
+                class="arco-avatar-text"
+              />
+            </div>
+            <span
+              class="arco-badge-dot"
+              style="width:10px;height:10px"
+            />
+          </span>
+        </div>
+        <div
+          class="arco-space-item"
+          style="margin-left:24px"
+        >
+          <div
+            class="arco-tag arco-tag-red arco-tag-checked arco-tag-size-default arco-tag-rtl"
+          >
+            <span
+              class="arco-tag-content"
+            >
+              red
+            </span>
+            <span
+              aria-label="Close"
+              class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+              role="button"
+              tabindex="0"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-close"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+        <div
+          class="arco-space-item"
+          style="margin-left:24px"
+        >
+          <div
+            class="arco-tag arco-tag-arcoblue arco-tag-checked arco-tag-size-default arco-tag-rtl"
+          >
+            <span
+              class="arco-tag-content"
+            >
+              arcoblue
+            </span>
+            <span
+              aria-label="Close"
+              class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+              role="button"
+              tabindex="0"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-close"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+        <div
+          class="arco-space-item"
+        >
+          <div
+            class="arco-tag arco-tag-green arco-tag-checked arco-tag-size-default arco-tag-rtl"
+          >
+            <span
+              class="arco-tag-content"
+            >
+              green
+            </span>
+            <span
+              aria-label="Close"
+              class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+              role="button"
+              tabindex="0"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-close"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="arco-space-item"
+      style="margin-bottom:8px"
+    >
+      <div
+        class="arco-space arco-space-horizontal arco-space-align-center arco-space-rtl"
+      >
+        <div
+          class="arco-space-item"
+          style="margin-left:8px"
+        >
+          <div
+            class="arco-picker arco-picker-size-default arco-picker-rtl"
+          >
+            <div
+              class="arco-picker-input"
+            >
+              <input
+                class="arco-picker-start-time"
+                placeholder="请选择日期"
+                value=""
+              />
+            </div>
+            <div
+              class="arco-picker-suffix"
+            >
+              <span
+                class="arco-picker-suffix-icon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="arco-icon arco-icon-calendar"
+                  fill="none"
+                  focusable="false"
+                  stroke="currentColor"
+                  stroke-width="4"
+                  viewBox="0 0 48 48"
+                >
+                  <path
+                    d="M7 22h34M14 5v8m20-8v8M8 41h32a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v30a1 1 0 0 0 1 1Z"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="arco-space-item"
+        >
+          <div
+            class="arco-picker arco-picker-range arco-picker-size-default arco-picker-rtl"
+            style="width:300px"
+          >
+            <div
+              class="arco-picker-input arco-picker-input-active"
+            >
+              <input
+                placeholder="开始日期"
+                value=""
+              />
+            </div>
+            <span
+              class="arco-picker-separator"
+            >
+              -
+            </span>
+            <div
+              class="arco-picker-input"
+            >
+              <input
+                placeholder="结束日期"
+                value=""
+              />
+            </div>
+            <div
+              class="arco-picker-suffix"
+            >
+              <span
+                class="arco-picker-suffix-icon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="arco-icon arco-icon-calendar"
+                  fill="none"
+                  focusable="false"
+                  stroke="currentColor"
+                  stroke-width="4"
+                  viewBox="0 0 48 48"
+                >
+                  <path
+                    d="M7 22h34M14 5v8m20-8v8M8 41h32a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v30a1 1 0 0 0 1 1Z"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="arco-space-item"
+    >
+      <div
+        class="arco-pagination arco-pagination-size-default arco-pagination-rtl"
+      >
+        <ul
+          class="arco-pagination-list"
+        >
+          <li
+            aria-label="上一页"
+            class="arco-pagination-item arco-pagination-item-prev"
+            tabindex="0"
+          >
+            <svg
+              aria-hidden="true"
+              class="arco-icon arco-icon-right"
+              fill="none"
+              focusable="false"
+              stroke="currentColor"
+              stroke-width="4"
+              viewBox="0 0 48 48"
+            >
+              <path
+                d="m16 39.513 15.556-15.557L16 8.4"
+              />
+            </svg>
+          </li>
+          <li
+            aria-label="第 1 页"
+            class="arco-pagination-item"
+            tabindex="0"
+          >
+            1
+          </li>
+          <li
+            aria-label="第 2 页"
+            class="arco-pagination-item"
+            tabindex="0"
+          >
+            2
+          </li>
+          <li
+            aria-label="第 3 页"
+            class="arco-pagination-item"
+            tabindex="0"
+          >
+            3
+          </li>
+          <li
+            aria-label="第 4 页"
+            class="arco-pagination-item"
+            tabindex="0"
+          >
+            4
+          </li>
+          <li
+            aria-current="true"
+            aria-label="第 5 页"
+            class="arco-pagination-item arco-pagination-item-active"
+            tabindex="0"
+          >
+            5
+          </li>
+          <li
+            aria-label="第 6 页"
+            class="arco-pagination-item"
+            tabindex="0"
+          >
+            6
+          </li>
+          <li
+            aria-label="第 7 页"
+            class="arco-pagination-item"
+            tabindex="0"
+          >
+            7
+          </li>
+          <li
+            aria-label="向后 5 页"
+            class="arco-pagination-item arco-pagination-item-jumper"
+          >
+            <svg
+              aria-hidden="true"
+              class="arco-icon arco-icon-more"
+              fill="none"
+              focusable="false"
+              stroke="currentColor"
+              stroke-width="4"
+              viewBox="0 0 48 48"
+            >
+              <path
+                d="M38 25v-2h2v2h-2ZM23 25v-2h2v2h-2ZM8 25v-2h2v2H8Z"
+                fill="currentColor"
+                stroke="none"
+              />
+              <path
+                d="M38 25v-2h2v2h-2ZM23 25v-2h2v2h-2ZM8 25v-2h2v2H8Z"
+              />
+            </svg>
+          </li>
+          <li
+            aria-label="第 20 页"
+            class="arco-pagination-item"
+            tabindex="0"
+          >
+            20
+          </li>
+          <li
+            aria-label="下一页"
+            class="arco-pagination-item arco-pagination-item-next"
+            tabindex="0"
+          >
+            <svg
+              aria-hidden="true"
+              class="arco-icon arco-icon-left"
+              fill="none"
+              focusable="false"
+              stroke="currentColor"
+              stroke-width="4"
+              viewBox="0 0 48 48"
+            >
+              <path
+                d="M32 8.4 16.444 23.956 32 39.513"
+              />
+            </svg>
+          </li>
+        </ul>
+        <div
+          aria-label="页码"
+          class="arco-pagination-option"
+        >
+          <div
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            class="arco-select arco-select-single arco-select-size-default arco-select-rtl"
+            role="combobox"
+            tabindex="0"
+          >
+            <div
+              class="arco-select-view"
+              title="10 条/页"
+            >
+              <span
+                class="arco-select-view-selector"
+              >
+                <input
+                  aria-hidden="true"
+                  autocomplete="off"
+                  class="arco-select-view-input arco-select-hidden"
+                  style="width:100%;pointer-events:none"
+                  tabindex="-1"
+                  value=""
+                />
+                <span
+                  class="arco-select-view-value"
+                >
+                  10 条/页
+                </span>
+              </span>
+              <div
+                aria-hidden="true"
+                class="arco-select-suffix"
+              >
+                <div
+                  class="arco-select-arrow-icon"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="arco-icon arco-icon-down"
+                    fill="none"
+                    focusable="false"
+                    stroke="currentColor"
+                    stroke-width="4"
+                    viewBox="0 0 48 48"
+                  >
+                    <path
+                      d="M39.6 17.443 24.043 33 8.487 17.443"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 `;
 
 exports[`renders ConfigProvider/demo/tablePagination.md correctly 1`] = `
@@ -1346,7 +2158,9 @@ Array [
       class="arco-space-item"
     >
       <button
+        aria-checked="true"
         class="arco-switch arco-switch-type-circle arco-switch-checked"
+        role="switch"
         type="button"
       >
         <div
@@ -1625,6 +2439,7 @@ exports[`renders ConfigProvider/demo/theme.md correctly 1`] = `
 Array [
   <div
     class="arco-radio-group arco-radio-size-default arco-radio-mode-outline"
+    role="radiogroup"
     style="display:block;margin-bottom:40px"
   >
     <label

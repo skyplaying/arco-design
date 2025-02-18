@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import { ReactNode, CSSProperties } from 'react';
 
 /**
  * @title Anchor
@@ -12,6 +12,13 @@ export interface AnchorProps {
    * @defaultValue true
    */
   animation?: boolean;
+  /**
+   * @zh 方向
+   * @en Direction
+   * @defaultValue vertical
+   * @version 2.51.0
+   */
+  direction?: 'vertical' | 'horizontal';
   /**
    * @zh 滚动容器。传入选择器或者dom元素。
    * @en Scrolling container. Pass in selector or DOM Element
@@ -96,5 +103,5 @@ export interface AnchorLinkProps {
    * @zh 文本内容。可以是字符串或者自定义节点。
    * @en The content of the hyperlink
    */
-  title?: string | React.ReactNode;
+  title?: string | ReactNode;
 }

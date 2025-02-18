@@ -3,6 +3,8 @@ import Tooltip from '../Tooltip';
 import { ConfigContext } from '../ConfigProvider';
 import { PopoverProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import cs from '../_util/classNames';
+import { isFunction, isEmptyReactNode } from '../_util/is';
 
 const defaultProps: PopoverProps = {
   position: 'top',
@@ -11,7 +13,7 @@ const defaultProps: PopoverProps = {
 };
 
 function Popover(baseProps: PropsWithChildren<PopoverProps>, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<PropsWithChildren<PopoverProps>>(
     baseProps,
     defaultProps,
@@ -35,6 +37,17 @@ function Popover(baseProps: PropsWithChildren<PopoverProps>, ref) {
   } = props;
   const prefixCls = getPrefixCls('popover');
 
+  const usedTitle = isFunction(title) ? title() : title;
+  const usedContent = isFunction(content) ? content() : content;
+
+  const renderContent =
+    isEmptyReactNode(usedTitle, true) && isEmptyReactNode(usedContent, true) ? null : (
+      <div className={cs(`${prefixCls}-inner`, { [`${prefixCls}-inner-rtl`]: rtl })}>
+        {usedTitle ? <div className={`${prefixCls}-title`}>{usedTitle}</div> : null}
+        <div className={`${prefixCls}-inner-content`}>{usedContent}</div>
+      </div>
+    );
+
   return (
     <Tooltip
       {...rest}
@@ -48,12 +61,7 @@ function Popover(baseProps: PropsWithChildren<PopoverProps>, ref) {
       getPopupContainer={getPopupContainer}
       position={position}
       trigger={trigger}
-      content={
-        <div className={`${prefixCls}-inner`}>
-          {title ? <div className={`${prefixCls}-title`}>{title}</div> : null}
-          <div className={`${prefixCls}-inner-content`}>{content}</div>
-        </div>
-      }
+      content={renderContent}
       popupHoverStay
       unmountOnExit={unmountOnExit}
       triggerProps={triggerProps}

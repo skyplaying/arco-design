@@ -1,3 +1,43 @@
+## 2.61.0
+
+2024-03-15
+
+### 🆕 Feature
+
+- `ConfigProvider` component adds `effectGlobalModal` attribute([#2562](https://github.com/arco-design/arco-design/pull/2562))
+
+## 2.59.1
+
+2024-01-26
+
+### 🐛 BugFix
+
+- Fixed a bug where the default value of `ConfigProvider` was mistakenly changed when Notice was called.([#2511](https://github.com/arco-design/arco-design/pull/2511))
+
+## 2.41.0
+
+2022-10-28
+
+### 🆕 Feature
+
+- Add Malay.([#1465](https://github.com/arco-design/arco-design/pull/1465))
+
+## 2.33.0
+
+2022-05-13
+
+### 🆕 Feature
+
+- The `componentConfig` of the `ConfigProvider` component supports configuring `Timeline.Item`.([#862](https://github.com/arco-design/arco-design/pull/862))
+
+## 2.28.0
+
+2022-01-07
+
+### 🆕 Feature
+
+- Support setting French, Italian, German, Spanish([#413](https://github.com/arco-design/arco-design/pull/413))
+
 ## 2.23.0
 
 2021-09-27

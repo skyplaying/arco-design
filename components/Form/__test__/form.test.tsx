@@ -1,6 +1,8 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { mount } from 'enzyme';
+import { act } from 'react-test-renderer';
+import { cleanup, fireEvent, render, sleep } from '../../../tests/util';
+import { FormInstance, FormProps } from '..';
 import {
   Form,
   AutoComplete,
@@ -320,17 +322,20 @@ class Demo extends React.Component<any> {
             </Button>
           </FormItem>
         </Form>
-        {JSON.stringify(this.state.formValues)}
-        {JSON.stringify(this.state.changeValue)}
+        <span id="formValues">{JSON.stringify(this.state.formValues)}</span>
+
+        <span id="changeValue">{JSON.stringify(this.state.changeValue)}</span>
       </div>
     );
   }
 }
 
 describe('ControlForm', () => {
-  let formRef = null;
-  let formValues = { ...fieldInitvalues };
+  let formRef: FormInstance;
+  let formValues;
+  formValues = { ...fieldInitvalues };
   let wrapper;
+  let rerender;
   let onBlurMock = jest.fn();
   let submitMock = jest.fn();
   let submitFailMock = jest.fn();
@@ -338,46 +343,77 @@ describe('ControlForm', () => {
     onBlurMock = jest.fn();
     submitMock = jest.fn();
     submitFailMock = jest.fn();
-    wrapper = mount(
+
+    wrapper = render(
       <Demo
-        saveFormRef={(node) => (formRef = node)}
+        saveFormRef={(node) => (formRef = node as FormInstance)}
         initialValues={fieldInitvalues}
         onBlur={onBlurMock}
         onSubmitFailed={submitFailMock}
         onSubmit={submitMock}
       />
     );
+
+    rerender = (props: FormProps) => {
+      return wrapper.rerender(
+        <Demo
+          saveFormRef={(node) => (formRef = node as FormInstance)}
+          initialValues={fieldInitvalues}
+          onBlur={onBlurMock}
+          onSubmitFailed={submitFailMock}
+          onSubmit={submitMock}
+          {...props}
+        />
+      );
+    };
     formValues = { ...fieldInitvalues };
     expect(formRef).toBeInstanceOf(Object);
   });
 
   afterEach(() => {
     wrapper.unmount();
+    cleanup();
   });
 
-  it('be controled', () => {
-    wrapper.setProps({ initialValues: { ...fieldInitvalues, slider: 30 } });
+  it('be controled', async () => {
+    rerender({ initialValues: { ...fieldInitvalues, slider: 30 } });
 
     expect(formRef.getFieldsValue(['slider']).slider).toBe(20);
-    const InputNumber = wrapper.find('InputNumber');
 
     formValues = formRef.getFieldsValue();
-    InputNumber.find('input').simulate('change', {
+
+    fireEvent.change(wrapper.querySelector('.arco-input-number input'), {
       target: { value: '12' },
     });
-    expect(wrapper.state().changeValue).toEqual({ number: 12 });
-    expect(wrapper.state().formValues).toEqual({ ...formValues, number: 12 });
+
+    expect(JSON.parse(wrapper.querySelector('#changeValue').textContent)).toEqual({ number: 12 });
+
+    expect(JSON.parse(wrapper.querySelector('#formValues').textContent)).toEqual({
+      ...formValues,
+      number: 12,
+    });
 
     formValues = formRef.getFieldsValue();
     formRef.resetFields(['slider']);
-    expect(wrapper.state().changeValue).toEqual({ slider: 20 });
-    expect(wrapper.state().formValues).toEqual({ ...formValues, slider: 20 });
+
+    await sleep(10);
+
+    expect(JSON.parse(wrapper.querySelector('#changeValue').textContent)).toEqual({
+      slider: 20,
+    });
+
+    expect(JSON.parse(wrapper.querySelector('#formValues').textContent)).toEqual({
+      ...formValues,
+      slider: 20,
+    });
   });
 
-  it('setFieldValue', () => {
+  it('setFieldValue', async () => {
     formRef.setFieldValue('name', 'test');
-    expect(wrapper.state().changeValue).toEqual({ name: 'test' });
-    expect(wrapper.state().formValues).toEqual({
+    await sleep(10);
+
+    expect(JSON.parse(wrapper.querySelector('#changeValue').textContent)).toEqual({ name: 'test' });
+    expect(JSON.parse(wrapper.querySelector('#formValues').textContent)).toEqual({
       ...fieldInitvalues,
       name: 'test',
     });
@@ -406,7 +442,7 @@ describe('ControlForm', () => {
   });
 
   it('normalize', () => {
-    wrapper.setProps({
+    rerender({
       normalize: (value) => {
         if (value > 10) {
           return 10;
@@ -415,43 +451,61 @@ describe('ControlForm', () => {
       },
     });
 
-    const InputNumber = wrapper.find('InputNumber');
-    InputNumber.find('input').simulate('change', { target: { value: '12' } });
-    expect(wrapper.state().changeValue).toEqual({ number: 10 });
-    expect(wrapper.state().formValues).toEqual({ ...formValues, number: 10 });
+    fireEvent.change(wrapper.querySelector('.arco-input-number input'), {
+      target: { value: '12' },
+    });
+    expect(JSON.parse(wrapper.querySelector('#changeValue').textContent)).toEqual({ number: 10 });
+    expect(JSON.parse(wrapper.querySelector('#formValues').textContent)).toEqual({
+      ...formValues,
+      number: 10,
+    });
   });
 
-  it('array validateTrigger', () => {
-    const InputNumber = wrapper.find('InputNumber');
+  it('array validateTrigger', async () => {
+    const input = wrapper.querySelector('.arco-input-number input');
 
     formRef.setFieldValue('number', 120);
-    InputNumber.find('input').simulate('focus');
-    InputNumber.find('input').simulate('blur');
-    expect(formRef.getFieldsError().number.message).toBe('`120` is not less than `10`');
+    act(() => {
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+    });
 
-    InputNumber.find('input').simulate('change', { target: { value: '12' } });
-    expect(formRef.getFieldsError().number.message).toBe('`12` is not less than `10`');
+    await sleep(10);
 
-    InputNumber.find('input').simulate('change', { target: { value: '' } });
-    expect(formRef.getFieldsError().number.message).toBe('number is required');
+    expect(formRef.getFieldsError()?.number?.message).toBe('`120` 大于最大值 `10`');
 
-    InputNumber.find('input').simulate('change', { target: { value: '1' } });
+    fireEvent.change(input, { target: { value: '12' } });
+
+    await sleep(10);
+    expect(formRef.getFieldsError()?.number?.message).toBe('`12` 大于最大值 `10`');
+
+    fireEvent.change(input, { target: { value: '' } });
+
+    await sleep(10);
+    expect(formRef.getFieldsError()?.number?.message).toBe('number 是必填项');
+
+    fireEvent.change(input, { target: { value: '1' } });
 
     // TODO: 是否被setField过的也是属于touche字段
     expect(formRef.getTouchedFields()).toEqual(['number']);
+    await sleep(10);
+    expect(formRef.getFieldsError()?.number?.message).toBe('`1` 小于最小值 `5`');
+    fireEvent.change(input, { target: { value: '9' } });
 
-    expect(formRef.getFieldsError().number.message).toBe('`1` is not greater than `5`');
-    InputNumber.find('input').simulate('change', { target: { value: '9' } });
+    await sleep(10);
     expect(formRef.getFieldsError()).toEqual({});
   });
 
   it('string validateTrigger', async () => {
-    const Input = wrapper.find('Input').at(0);
+    const input = wrapper.find('.arco-input')[0];
 
     formRef.setFieldValue('name', '');
-    Input.find('input').simulate('focus');
-    Input.find('input').simulate('blur');
-    expect(formRef.getFieldsError().name.message).toBe('string is required');
+    act(() => {
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+    });
+    await sleep(10);
+    expect(formRef.getFieldsError()?.name?.message).toBe('name 是必填项');
     expect(onBlurMock.mock.calls.length).toBe(1);
   });
 
@@ -524,7 +578,7 @@ describe('ControlForm', () => {
     });
   });
 
-  it('submit', (done) => {
+  it('submit', async (done) => {
     formRef.setFieldsValue({
       ...fieldInitvalues,
       name: 'test',
@@ -537,7 +591,10 @@ describe('ControlForm', () => {
       space: ['beijing', 'beijingshi', 'chaoyang', 'datunli'],
       date: [dayjs(), dayjs()],
     });
-    wrapper.find('form').simulate('submit');
+
+    fireEvent.submit(wrapper.querySelector('form'));
+
+    await sleep(10);
 
     expect(formRef.getFieldsError()).toEqual({
       readme: {
@@ -549,26 +606,27 @@ describe('ControlForm', () => {
 
     formRef.setFieldValue('readme', true);
 
-    wrapper.find('form').simulate('submit');
+    fireEvent.submit(wrapper.querySelector('form'));
 
     setTimeout(() => {
       expect(formRef.getFieldsError()).toEqual({});
       expect(submitMock).toHaveBeenCalled();
       done();
-    }, 0);
+    }, 10);
   });
 
   it('onValidateFail', (done) => {
-    wrapper.find('form').simulate('submit');
+    fireEvent.submit(wrapper.querySelector('form'));
 
     setTimeout(() => {
       expect(submitFailMock).toHaveBeenCalled();
       done();
-    }, 0);
+    }, 10);
   });
 
   it('label for', async () => {
-    const wrapper = mount(
+    cleanup();
+    const wrapper = render(
       <Form>
         <Form.Item field="a" label="label">
           <Input id="input" />
@@ -576,14 +634,44 @@ describe('ControlForm', () => {
       </Form>
     );
 
-    const label = wrapper.find('label');
+    expect(wrapper.querySelector('label')?.getAttribute('for')).toBe('a_input');
+    expect(wrapper.querySelector('input')?.getAttribute('id')).toBe('input');
+  });
 
-    expect(label.getDOMNode().getAttribute('for')).toBe('a_input');
-    expect(
-      wrapper
-        .find('Input')
-        .getDOMNode()
-        .getAttribute('id')
-    ).toBe('input a_input');
+  it('clearFields', async () => {
+    cleanup();
+    let form;
+    let changeValues;
+    render(
+      <Form
+        ref={(node) => (form = node)}
+        onValuesChange={(v) => {
+          changeValues = v;
+        }}
+      >
+        <Form.Item field="a" label="label">
+          <Input />
+        </Form.Item>
+        <Form.Item field="b" label="label">
+          <Input />
+        </Form.Item>
+      </Form>
+    );
+
+    form.setFieldsValue({ a: 1, b: 2 });
+    expect(changeValues).toEqual({ a: 1, b: 2 });
+
+    form.clearFields('a');
+    expect(changeValues).toEqual({ a: undefined });
+
+    form.clearFields(['a', 'b']);
+
+    expect(changeValues).toEqual({ a: undefined, b: undefined });
+
+    form.setFieldsValue({ a: 1, b: 2 });
+    form.clearFields();
+
+    expect(changeValues).toEqual({ a: undefined, b: undefined });
+    expect(form.getFieldsValue()).toEqual({ a: undefined, b: undefined });
   });
 });

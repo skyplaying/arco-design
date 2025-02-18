@@ -9,6 +9,7 @@ import IconCaretDown from '../../../icon/react-icon/IconCaretDown';
 import IconCaretUp from '../../../icon/react-icon/IconCaretUp';
 import IconFilter from '../../../icon/react-icon/IconFilter';
 import Checkbox from '../../Checkbox';
+import Space from '../../Space';
 import { ColumnComponentProps } from '../interface';
 import { ConfigContext } from '../../ConfigProvider';
 import useComponent from '../hooks/useComponent';
@@ -25,6 +26,8 @@ function getTooltipContent(nextSorterDirection: 'ascend' | 'descend', locale: Lo
   return locale.Table.cancelSort;
 }
 
+const triggerPopupAlign = { bottom: 0 };
+
 function Column<T>({
   onSort,
   onFilter,
@@ -40,6 +43,7 @@ function Column<T>({
   filters = [],
   columnFixedStyle,
   className,
+  cellStyle,
   headerCellStyle,
   rowSpan,
   colSpan,
@@ -57,9 +61,10 @@ function Column<T>({
   showSorterTooltip,
   index,
 }: ColumnComponentProps<T>) {
-  const { locale } = useContext(ConfigContext);
+  const { locale, rtl } = useContext(ConfigContext);
 
-  const innerDataIndex = dataIndex === undefined ? index : dataIndex;
+  // const innerDataIndex = dataIndex === undefined ? index : dataIndex;
+  const innerDataIndex = _key || dataIndex || index;
 
   // stateCurrentFilter 标记了下拉框中选中的 filter 项目，在受控模式下它与 currentFilter 可以不同
   const [currentFilter, setCurrentFilter, stateCurrentFilter] = useMergeValue<string[]>([], {
@@ -97,12 +102,12 @@ function Column<T>({
     if (!currentFilter) return;
     onHandleFilter &&
       onHandleFilter({ onFilter, filters, dataIndex: innerDataIndex }, stateCurrentFilter);
-    setFilterVisible(false);
+    onVisibleChange(false);
   }
 
   function handleFilterReset() {
     onHandleFilterReset({ dataIndex: innerDataIndex });
-    setFilterVisible(false);
+    onVisibleChange(false);
   }
 
   function onVisibleChange(filterVisible: boolean) {
@@ -151,7 +156,7 @@ function Column<T>({
         filterKeys: stateCurrentFilter,
         setFilterKeys: (filterKeys: string[], callback?: Function) => {
           setCurrentFilter(filterKeys);
-          callback && callback();
+          callback?.();
         },
         confirm,
       })
@@ -181,14 +186,14 @@ function Column<T>({
             );
           })}
         </div>
-        <div className={`${prefixCls}-filters-btn`}>
-          <Button onClick={handleFilterReset} size="mini" style={{ marginRight: 8 }}>
+        <Space className={`${prefixCls}-filters-btn`}>
+          <Button onClick={handleFilterReset} size="mini">
             {locale.Table.resetText}
           </Button>
           <Button onClick={handleFilter} type="primary" size="mini">
             {locale.Table.okText}
           </Button>
-        </div>
+        </Space>
       </div>
     );
   }
@@ -208,6 +213,12 @@ function Column<T>({
   let styleTh: CSSProperties = {
     ...columnFixedStyle,
   };
+  if (isObject(cellStyle)) {
+    styleTh = {
+      ...styleTh,
+      ...cellStyle,
+    };
+  }
   if (isObject(headerCellStyle)) {
     styleTh = {
       ...styleTh,
@@ -287,8 +298,8 @@ function Column<T>({
           popup={renderFilters}
           trigger="click"
           classNames="slideDynamicOrigin"
-          position="br"
-          popupAlign={{ bottom: 0 }}
+          position={rtl ? 'bl' : 'br'}
+          popupAlign={triggerPopupAlign}
           popupVisible={filterVisible}
           onVisibleChange={onVisibleChange}
           {...filterDropdownTriggerProps}

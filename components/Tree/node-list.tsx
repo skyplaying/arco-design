@@ -1,13 +1,5 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-} from 'react';
+import React, { useMemo, forwardRef, useImperativeHandle, useRef } from 'react';
 import VirtualList, { VirtualListHandle } from '../_class/VirtualList';
-import useUpdate from '../_util/hooks/useUpdate';
 import Node from './node';
 import scrollIntoViewIfNeed from '../_util/scrollIntoView';
 
@@ -23,20 +15,22 @@ function NodeList(props, ref) {
     virtualListProps,
     expandedKeys,
     currentExpandKeys,
-    saveCacheNode,
     nodeList,
     getNodeProps,
+    getDataSet,
   } = props;
   const isVirtual = virtualListProps?.threshold !== null;
   const virtualListRef = useRef<VirtualListHandle>();
   const treeWrapperRef = useRef<HTMLDivElement>();
+  const dataSetRef = useRef<HTMLDivElement>();
   const expandedKeysSet = useMemo(() => new Set(expandedKeys), [expandedKeys]);
+
   const visibleKeys: Set<string> = useMemo(() => {
     const newKeys = new Set<string>();
     const currentExpandKeysSet = new Set(currentExpandKeys);
     nodeList.forEach((nodeProps) => {
       const pathParentKeys = nodeProps.pathParentKeys || [];
-      // 如果父节点处于正在展开状态，子节点暂时不可见，因为父节点的children会在animaiton中渲染出来。
+      // 如果父节点处于正在展开状态，子节点暂时不可见，因为父节点的children会在animation中渲染出来。
       // 当动画完成时，父节点children隐藏，此时在这里渲染子节点。 anyway，一切为了动画！！！
       if (
         pathParentKeys.every((key) => !currentExpandKeysSet.has(key) && expandedKeysSet.has(key))
@@ -47,27 +41,21 @@ function NodeList(props, ref) {
     return newKeys;
   }, [expandedKeysSet, currentExpandKeys, nodeList]);
 
-  const calcChildrenList = useCallback(() => {
+  const calcChildrenList = () => {
     return nodeList.filter((item) => {
       const pass = !filterNode || (filterNode && filterNode(item));
 
       if (pass && visibleKeys.has(item.key)) {
         return true;
       }
-      // 过滤掉的也缓存一下，避免被收起的节点在onSelect回调中，selectedNodes出现undefined
-      saveCacheNode(<Node {...item} {...getNodeProps(item)} key={item.key} />);
       return false;
     });
-  }, [nodeList, filterNode, visibleKeys]);
+  };
 
-  // 默认值不能为nodeList，防止在设置defaultExpandedKeys时，应该被隐藏的节点初始化的时候展示了。
-  const [childrenList, setChildrenList] = useState(() => {
+  // 默认值不能为nodeList，防止在设置defaultExpandedKeys 时，应该被隐藏的节点初始化的时候展示了。
+  const childrenList = useMemo(() => {
     return calcChildrenList();
-  });
-
-  useUpdate(() => {
-    setChildrenList(calcChildrenList());
-  }, [calcChildrenList]);
+  }, [nodeList, filterNode, visibleKeys]);
 
   useImperativeHandle(ref, () => {
     return {
@@ -111,19 +99,32 @@ function NodeList(props, ref) {
       data={childrenList}
       isStaticItemHeight={false}
       itemKey={getKey}
+      onMouseDown={props.onMouseDown}
+      {...props.ariaProps}
       {...virtualListProps}
     >
-      {(item) => {
-        const node = <Node {...item} {...getNodeProps(item, expandedKeysSet)} key={item.key} />;
-        saveCacheNode(node);
+      {(item, _, { itemIndex }) => {
+        if (itemIndex === 0) {
+          dataSetRef.current = getDataSet();
+        }
+        const nodeProps = getNodeProps(item, dataSetRef.current);
+        const node = <Node {...item} key={item.key} {...nodeProps} />;
         return node;
       }}
     </VirtualList>
   ) : (
-    <div className={className} style={style} ref={treeWrapperRef}>
+    <div
+      role="tree"
+      tabIndex={0}
+      className={className}
+      style={style}
+      ref={treeWrapperRef}
+      {...props.ariaProps}
+      onMouseDown={props.onMouseDown}
+    >
       {childrenList.map((item) => {
-        const node = <Node {...item} {...getNodeProps(item, expandedKeysSet)} key={item.key} />;
-        saveCacheNode(node);
+        const nodeProps = getNodeProps(item);
+        const node = <Node {...nodeProps} key={item.key} />;
         return node;
       })}
     </div>

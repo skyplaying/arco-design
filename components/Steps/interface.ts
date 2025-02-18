@@ -45,7 +45,7 @@ export interface StepsProps {
    * @zh 自定义步骤条节点 ，不支持箭头模式
    * @en Customize the step,arrow type is not supported
    */
-  customDot?: (IconDot: React.ReactNode, stepConfig: CustomDotRecord) => React.ReactNode;
+  customDot?: (IconDot: ReactNode, stepConfig: CustomDotRecord) => ReactNode;
   /**
    * @zh 点击步骤切换的回调，设置这个属性后，步骤条可点击切换。
    * @en Callback when click step, after setting this prop, the step bar will switch when clicked.
@@ -89,10 +89,16 @@ export interface StepProps {
   nextStepError?: boolean;
   icon?: ReactNode;
   type?: 'default' | 'arrow' | 'dot' | 'navigation';
-  customDot?: (IconDot: React.ReactNode, stepConfig: CustomDotRecord) => React.ReactNode;
+  customDot?: (IconDot: ReactNode, stepConfig: CustomDotRecord) => ReactNode;
   labelPlacement?: 'horizontal' | 'vertical';
   lineless?: boolean;
-  onClick?: (index: number, id: any) => void;
+  /**
+   * @zh 点击回调
+   * @en Callback when item is clicked
+   * @version `e` in `2.40.0`
+   */
+  onClick?: (index: number, id: any, e) => void;
+  onChange?: (index: number, id: any) => void;
   /**
    * @zh 指定节点的 ID，将在 onChange 回调中作为参数。
    * @en Specify the ID of the node, which will be used as a parameter in callback onChange

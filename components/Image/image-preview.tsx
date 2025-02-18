@@ -7,9 +7,12 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  WheelEvent,
 } from 'react';
-import { CSSTransition } from 'react-transition-group';
-import { findDOMNode } from 'react-dom';
+import ArcoCSSTransition from '../_util/CSSTransition';
+import { findDOMNode } from '../_util/react-dom';
+import useMergeProps from '../_util/hooks/useMergeProps';
+import useMergeValue from '../_util/hooks/useMergeValue';
 import cs from '../_util/classNames';
 import { on, off, isServerRendering } from '../_util/dom';
 import ResizeObserver from '../_util/resizeObserver';
@@ -21,18 +24,19 @@ import IconClose from '../../icon/react-icon/IconClose';
 import IconRotateLeft from '../../icon/react-icon/IconRotateLeft';
 import IconRotateRight from '../../icon/react-icon/IconRotateRight';
 import IconOriginalSize from '../../icon/react-icon/IconOriginalSize';
-
 import ConfigProvider, { ConfigContext } from '../ConfigProvider';
 import { ImagePreviewProps } from './interface';
 import useImageStatus from './utils/hooks/useImageStatus';
-import getScale, { minScale, maxScale } from './utils/getScale';
+import PreviewScales, { defaultScales } from './utils/getScale';
 import getFixTranslate from './utils/getFixTranslate';
 import ImagePreviewToolbar from './image-preview-toolbar';
-import useMergeValue from '../_util/hooks/useMergeValue';
 import Portal from '../Portal';
 import { PreviewGroupContext } from './previewGroupContext';
 import ImagePreviewArrow from './image-preview-arrow';
 import useOverflowHidden from '../_util/hooks/useOverflowHidden';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Esc } from '../_util/keycode';
+import useUpdate from '../_util/hooks/useUpdate';
+import { isUndefined } from '../_util/is';
 
 const ROTATE_STEP = 90;
 
@@ -40,48 +44,65 @@ export type ImagePreviewHandle = {
   reset: () => void;
 };
 
-function Preview(props: ImagePreviewProps, ref) {
+const defaultProps: Partial<ImagePreviewProps> = {
+  maskClosable: true,
+  closable: true,
+  breakPoint: 316,
+  actionsLayout: [
+    'fullScreen',
+    'rotateRight',
+    'rotateLeft',
+    'zoomIn',
+    'zoomOut',
+    'originalSize',
+    'extra',
+  ],
+  getPopupContainer: () => document.body,
+  escToExit: true,
+  scales: defaultScales,
+  resetTranslate: true,
+};
+
+function Preview(baseProps: ImagePreviewProps, ref) {
+  const { previewGroup, previewUrlMap, currentIndex, setCurrentIndex, infinite, previewPropsMap } =
+    useContext(PreviewGroupContext);
+  const mergedPreviewProps = previewGroup ? previewPropsMap.get(currentIndex) : {};
+  const mergedProps = useMergeProps(baseProps, defaultProps, mergedPreviewProps);
   const {
     className,
     style,
     src,
     defaultVisible,
-    maskClosable = true,
-    closable = true,
-    breakPoint = 316,
+    maskClosable,
+    closable,
+    breakPoint,
     actions,
-    actionsLayout = [
-      'fullScreen',
-      'rotateRight',
-      'rotateLeft',
-      'zoomIn',
-      'zoomOut',
-      'originalSize',
-      'extra',
-    ],
-    getPopupContainer = () => document.body,
+    actionsLayout,
+    getPopupContainer,
     onVisibleChange,
-  } = props;
-
-  const { previewGroup, previewUrlMap, currentId, setCurrentId, infinite } = useContext(
-    PreviewGroupContext
-  );
-  const mergedSrc = previewGroup ? previewUrlMap.get(currentId) : src;
-  const previewUrlIdList = Array.from(previewUrlMap.keys());
-  const currentIndex = previewUrlIdList.indexOf(currentId);
-
+    scales,
+    escToExit,
+    imgAttributes = {},
+    imageRender,
+    extra: extraNode = null,
+    resetTranslate,
+  } = mergedProps;
+  const mergedSrc = previewGroup ? previewUrlMap.get(currentIndex) : src;
+  const [previewImgSrc, setPreviewImgSrc] = useState(mergedSrc);
   const [visible, setVisible] = useMergeValue(false, {
     defaultValue: defaultVisible,
-    value: props.visible,
+    value: mergedProps.visible,
   });
 
-  const { getPrefixCls, locale } = useContext(ConfigContext);
+  const globalContext = useContext(ConfigContext);
+  const { getPrefixCls, locale, rtl } = globalContext;
   const prefixCls = getPrefixCls('image');
   const previewPrefixCls = `${prefixCls}-preview`;
   const classNames = cs(
     previewPrefixCls,
     {
       [`${previewPrefixCls}-hide`]: !visible,
+      [`${previewPrefixCls}-rtl`]: rtl,
     },
     className
   );
@@ -89,6 +110,8 @@ function Preview(props: ImagePreviewProps, ref) {
   const refImage = useRef<HTMLImageElement>();
   const refImageContainer = useRef<HTMLDivElement>();
   const refWrapper = useRef<HTMLDivElement>();
+  const refRootWrapper = useRef<HTMLDivElement>();
+  const keyboardEventOn = useRef<boolean>(false);
 
   const refMoveData = useRef({
     pageX: 0,
@@ -105,6 +128,19 @@ function Preview(props: ImagePreviewProps, ref) {
   const [rotate, setRotate] = useState(0);
   const [moving, setMoving] = useState(false);
 
+  const previewScales = useMemo(() => {
+    return new PreviewScales(scales);
+  }, []);
+
+  const {
+    onLoad,
+    onError,
+    onMouseDown,
+    style: imgStyle,
+    className: imgClassName,
+    ...restImgAttributes
+  } = imgAttributes;
+
   // Reset image params
   function reset() {
     setTranslate({ x: 0, y: 0 });
@@ -114,12 +150,13 @@ function Preview(props: ImagePreviewProps, ref) {
 
   useImperativeHandle<ImagePreviewHandle, ImagePreviewHandle>(ref, () => ({
     reset,
+    getRootDOMNode: () => refRootWrapper.current,
   }));
 
   const [container, setContainer] = useState<HTMLElement>();
   const getContainer = useCallback(() => container, [container]);
   useEffect(() => {
-    const container = getPopupContainer && getPopupContainer();
+    const container = getPopupContainer?.();
     const containerDom = (findDOMNode(container) || document.body) as HTMLElement;
     setContainer(containerDom);
   }, [getPopupContainer]);
@@ -130,14 +167,13 @@ function Preview(props: ImagePreviewProps, ref) {
 
   // Jump to image at the specified index
   function jumpTo(index: number) {
-    const previewListLen = previewUrlIdList.length;
+    const previewListLen = previewUrlMap.size;
     if (infinite) {
       index %= previewListLen;
       if (index < 0) index = previewListLen - Math.abs(index);
     }
     if (index !== currentIndex && index >= 0 && index <= previewListLen - 1) {
-      const nextId = previewUrlIdList[index];
-      setCurrentId(nextId);
+      setCurrentIndex(index);
     }
   }
 
@@ -176,13 +212,26 @@ function Preview(props: ImagePreviewProps, ref) {
   };
 
   function onZoomIn() {
-    const newScale = getScale(scale, 'zoomIn');
+    const newScale = previewScales.getNextScale(scale, 'zoomIn');
     onScaleChange(newScale);
   }
 
   function onZoomOut() {
-    const newScale = getScale(scale, 'zoomOut');
+    const newScale = previewScales.getNextScale(scale, 'zoomOut');
     onScaleChange(newScale);
+  }
+
+  function onWheelZoom(e: WheelEvent<HTMLImageElement>) {
+    if (e.deltaY > 0) {
+      // 缩小
+      if (scale >= previewScales.minScale) {
+        // e.preventDefault();
+        onZoomOut();
+      }
+    } else if (scale <= previewScales.maxScale) {
+      // e.preventDefault();
+      onZoomIn();
+    }
   }
 
   function onResetScale() {
@@ -213,7 +262,7 @@ function Preview(props: ImagePreviewProps, ref) {
   function close() {
     if (visible) {
       onVisibleChange && onVisibleChange(false, visible);
-      setVisible(false);
+      isUndefined(mergedProps.visible) && setVisible(false);
     }
   }
 
@@ -258,9 +307,19 @@ function Preview(props: ImagePreviewProps, ref) {
     setMoving(false);
   };
 
+  function onImgLoaded(e) {
+    setStatus('loaded');
+    onLoad && onLoad(e);
+  }
+
+  function onImgLoadError(e) {
+    setStatus('error');
+    onError && onError(e);
+  }
+
   // Record position data on move start
   const onMoveStart = (e) => {
-    e.preventDefault && e.preventDefault();
+    e.preventDefault?.();
     setMoving(true);
 
     const ev = e.type === 'touchstart' ? e.touches[0] : e;
@@ -268,6 +327,7 @@ function Preview(props: ImagePreviewProps, ref) {
     refMoveData.current.pageY = ev.pageY;
     refMoveData.current.originX = translate.x;
     refMoveData.current.originY = translate.y;
+    onMouseDown?.(e);
   };
 
   useEffect(() => {
@@ -283,14 +343,16 @@ function Preview(props: ImagePreviewProps, ref) {
 
   // Correct translate after moved
   useEffect(() => {
-    if (!moving) {
+    if (resetTranslate && !moving) {
       checkAndFixTranslate();
     }
   }, [moving, translate]);
 
   // Correct translate when scale changes
   useEffect(() => {
-    checkAndFixTranslate();
+    if (resetTranslate) {
+      checkAndFixTranslate();
+    }
   }, [scale]);
 
   // Reset when preview is opened
@@ -302,9 +364,53 @@ function Preview(props: ImagePreviewProps, ref) {
 
   // Reset on first mount or image switches
   useEffect(() => {
-    setStatus('loading');
+    setPreviewImgSrc(mergedSrc);
+    setStatus(mergedSrc ? 'loading' : 'loaded');
     reset();
   }, [mergedSrc]);
+
+  useUpdate(() => {
+    previewScales.updateScale(scales);
+    setScale(1);
+  }, [scales]);
+
+  // Close when pressing esc
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e) {
+        switch (e.key) {
+          case Esc.key:
+            if (escToExit) {
+              close();
+            }
+            break;
+          case ArrowRight.key:
+            onNext();
+            break;
+          case ArrowLeft.key:
+            onPrev();
+            break;
+          case ArrowUp.key:
+            onZoomIn();
+            break;
+          case ArrowDown.key:
+            onZoomOut();
+            break;
+          default:
+        }
+      }
+    };
+
+    if (visible && !moving && !keyboardEventOn.current) {
+      keyboardEventOn.current = true;
+      on(document, 'keydown', onKeyDown);
+    }
+
+    return () => {
+      keyboardEventOn.current = false;
+      off(document, 'keydown', onKeyDown);
+    };
+  }, [visible, escToExit, moving, currentIndex, scale]);
 
   const defaultActions = [
     {
@@ -330,14 +436,14 @@ function Preview(props: ImagePreviewProps, ref) {
       name: locale.ImagePreview.zoomIn,
       content: <IconZoomIn />,
       onClick: onZoomIn,
-      disabled: scale === maxScale,
+      disabled: scale === previewScales.maxScale,
     },
     {
       key: 'zoomOut',
       name: locale.ImagePreview.zoomOut,
       content: <IconZoomOut />,
       onClick: onZoomOut,
-      disabled: scale === minScale,
+      disabled: scale === previewScales.minScale,
     },
     {
       key: 'originalSize',
@@ -347,17 +453,47 @@ function Preview(props: ImagePreviewProps, ref) {
     },
   ];
 
+  const renderImage = () => {
+    const image = (
+      <img
+        onWheel={onWheelZoom}
+        ref={refImage}
+        className={cs(imgClassName, `${previewPrefixCls}-img`, {
+          [`${previewPrefixCls}-img-moving`]: moving,
+        })}
+        style={{
+          ...imgStyle,
+          transform: `translate(${translate.x}px, ${translate.y}px) rotate(${rotate}deg)`,
+        }}
+        key={previewImgSrc}
+        src={previewImgSrc}
+        {...restImgAttributes}
+        onLoad={onImgLoaded}
+        onError={onImgLoadError}
+        onMouseDown={(event) => {
+          // only trigger onMoveStart when press mouse left button
+          event.button === 0 && onMoveStart(event);
+        }}
+      />
+    );
+
+    return imageRender?.(image) ?? image;
+  };
+
   return (
     <Portal visible={visible} forceRender={false} getContainer={getContainer}>
-      <ConfigProvider getPopupContainer={() => refWrapper.current}>
+      {/* ConfigProvider need to inherit the outermost Context.
+      https://github.com/arco-design/arco-design/issues/387 */}
+      <ConfigProvider {...globalContext} getPopupContainer={() => refWrapper.current}>
         <div
           className={classNames}
           style={{
             ...(style || {}),
             ...(isFixed ? {} : { zIndex: 'inherit', position: 'absolute' }),
           }}
+          ref={refRootWrapper}
         >
-          <CSSTransition
+          <ArcoCSSTransition
             in={visible}
             timeout={400}
             appear
@@ -365,18 +501,20 @@ function Preview(props: ImagePreviewProps, ref) {
             mountOnEnter
             unmountOnExit={false}
             onEnter={(e) => {
+              if (!e) return;
               e.parentNode.style.display = 'block';
               e.style.display = 'block';
             }}
             onExited={(e) => {
+              if (!e) return;
               e.parentNode.style.display = '';
               e.style.display = 'none';
             }}
           >
             <div className={`${previewPrefixCls}-mask`} />
-          </CSSTransition>
+          </ArcoCSSTransition>
           {visible && (
-            <ResizeObserver onResize={onWrapperResize}>
+            <ResizeObserver onResize={onWrapperResize} getTargetDOMNode={() => refWrapper.current}>
               <div
                 ref={refWrapper}
                 className={`${previewPrefixCls}-wrapper`}
@@ -388,31 +526,14 @@ function Preview(props: ImagePreviewProps, ref) {
                   style={{ transform: `scale(${scale}, ${scale})` }}
                   onClick={onOutsideImgClick}
                 >
-                  <img
-                    ref={refImage}
-                    className={cs(`${previewPrefixCls}-img`, {
-                      [`${previewPrefixCls}-img-moving`]: moving,
-                    })}
-                    key={mergedSrc}
-                    src={mergedSrc}
-                    style={{
-                      transform: `translate(${translate.x}px, ${translate.y}px) rotate(${rotate}deg)`,
-                    }}
-                    onLoad={() => {
-                      setStatus('loaded');
-                    }}
-                    onError={() => {
-                      setStatus('error');
-                    }}
-                    onMouseDown={onMoveStart}
-                  />
+                  {renderImage()}
                   {isLoading && (
                     <div className={`${previewPrefixCls}-loading`}>
                       <IconLoading />
                     </div>
                   )}
                 </div>
-                <CSSTransition
+                <ArcoCSSTransition
                   in={scaleValueVisible}
                   timeout={400}
                   appear
@@ -422,7 +543,7 @@ function Preview(props: ImagePreviewProps, ref) {
                   <div className={`${previewPrefixCls}-scale-value`}>
                     {(scale * 100).toFixed(0)}%
                   </div>
-                </CSSTransition>
+                </ArcoCSSTransition>
                 {isLoaded && (
                   <ImagePreviewToolbar
                     prefixCls={prefixCls}
@@ -440,13 +561,14 @@ function Preview(props: ImagePreviewProps, ref) {
                 )}
                 {previewGroup && (
                   <ImagePreviewArrow
-                    previewCount={previewUrlIdList.length}
+                    previewCount={previewUrlMap.size}
                     current={currentIndex}
                     infinite={infinite}
                     onPrev={onPrev}
                     onNext={onNext}
                   />
                 )}
+                {extraNode}
               </div>
             </ResizeObserver>
           )}

@@ -1,14 +1,13 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode, DetailedHTMLProps, HTMLAttributes } from 'react';
+import { ResizeBoxProps } from '../ResizeBox';
 import { Omit } from '../_util/type';
+import { GridResponsiveBreakpoint } from '../Grid/interface';
 
 /**
  * @title Layout
  */
 export interface LayoutProps
-  extends Omit<
-    React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>,
-    'className' | 'ref'
-  > {
+  extends Omit<DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>, 'className' | 'ref'> {
   style?: CSSProperties;
   className?: string | string[];
   /**
@@ -25,10 +24,7 @@ export interface LayoutProps
  * @title Layout.Header
  */
 export interface HeaderProps
-  extends Omit<
-    React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>,
-    'className' | 'ref'
-  > {
+  extends Omit<DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>, 'className' | 'ref'> {
   className?: string | string[];
 }
 
@@ -36,10 +32,7 @@ export interface HeaderProps
  * @title Layout.Footer
  */
 export interface FooterProps
-  extends Omit<
-    React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>,
-    'className' | 'ref'
-  > {
+  extends Omit<DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>, 'className' | 'ref'> {
   className?: string | string[];
 }
 
@@ -47,10 +40,7 @@ export interface FooterProps
  * @title Layout.Content
  */
 export interface ContentProps
-  extends Omit<
-    React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>,
-    'className' | 'ref'
-  > {
+  extends Omit<DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>, 'className' | 'ref'> {
   className?: string | string[];
 }
 
@@ -79,7 +69,7 @@ export interface SiderProps {
    */
   collapsible?: boolean;
   /**
-   * @zh 收缩宽度，设置为 0 会出现特殊 trigger
+   * @zh 收缩宽度
    * @en Width of collapsed sider
    * @defaultValue 48
    */
@@ -98,7 +88,7 @@ export interface SiderProps {
    * @zh 自定义底部折叠触发器，设置为 null 时隐藏 trigger
    * @en Customize the trigger element to collapse sider at bottom. Set it to `null` to hide the trigger
    */
-  trigger?: string | React.ReactNode;
+  trigger?: string | ReactNode;
   /**
    * @zh 宽度
    * @en Width of sider
@@ -109,7 +99,7 @@ export interface SiderProps {
    * @zh 触发响应式布局的断点, 详见[响应式栅格](/react/components/Grid)
    * @en Breakpoint in responsive layout. See details [Grid](/react/components/Grid)
    */
-  breakpoint?: 'xxl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
+  breakpoint?: GridResponsiveBreakpoint;
   /**
    * @zh 触发响应式布局断点时的回调
    * @en Callback when responsive layout breakpoint is triggered
@@ -129,6 +119,12 @@ export interface SiderProps {
    * See details [ResizeBox](/react/components/resize-box).
    */
   resizeDirections?: string[];
+  /**
+   * @zh 可以接受 `ResizeBox` 所有参数，在伸缩开启时，可以通过 `resizeBoxProps` 对菜单栏的 `width` 进行受控展示或者与 `collapsed` 联动
+   * @en All props of `ResizeBox` can be accepted. The `width` of the menu bar can be displayed in a controlled manner through `resizeBoxProps` or linked with `collapsed`
+   * @version 2.34.0
+   */
+  resizeBoxProps?: ResizeBoxProps;
   onSiderMount?: (id: string) => void;
   onSiderUnmount?: (id: string) => void;
 }

@@ -1,3 +1,117 @@
+## 2.65.0
+
+2024-11-29
+
+### 🆕 Feature
+
+- `Tree` component supports turning off node expansion and collapse animations through the `animation` property([#2880](https://github.com/arco-design/arco-design/pull/2880))
+
+## 2.63.2
+
+2024-08-08
+
+### 🐛 BugFix
+
+- Fixed the bug where `dataTransfer.setData` does not take effect when setting `dataTransfer.setData` in `onDragStart` of `Tree` component.([#2743](https://github.com/arco-design/arco-design/pull/2743))
+
+## 2.61.3
+
+2024-04-12
+
+### 🐛 BugFix
+
+- Fixed the bug where the collapsed nodes of the `Tree` component in the lower boundary scene of React 18 cannot be expanded.([#2634](https://github.com/arco-design/arco-design/pull/2634))
+
+## 2.56.2
+
+2023-12-01
+
+### 🐛 BugFix
+
+- Fixed an issue where the `Tree` component onCheck callback parameter extra.checkedNodes failed to return information about all selected nodes in virtual scrolling scenarios.
+
+## 2.56.0
+
+2023-11-17
+
+### 🐛 BugFix
+
+- Fixed an issue where the connection line style was incorrect when the `size` of the `Tree` component was not `default`.([#2365](https://github.com/arco-design/arco-design/pull/2365))
+
+## 2.55.2
+
+2023-11-10
+
+### 🐛 BugFix
+
+- Fixed the bug where `Tree` would flicker when expanded or collapsed under react 18.([#2338](https://github.com/arco-design/arco-design/pull/2338))
+- Fixed the bug that the expansion and collapse animation of `Tree` did not take effect when controlled.([#2338](https://github.com/arco-design/arco-design/pull/2338))
+
+## 2.52.0
+
+2023-08-18
+
+### 💎 Enhancement
+
+- Optimize the problem that the Tree component is stuck interactively under large data. (There will be a more significant improvement after manually enabling `__ArcoAdapterMode__ `, but after enabling it, the parameter whose callback parameter type is NodeInstance will become `FakeNodeInstance` type([#2158](https://github.com/arco-design/arco-design/pull/2158))
+
+## 2.50.0
+
+2023-06-30
+
+### 🐛 BugFix
+
+- Fix the bug of `scrollIntoView` method execution error caused by the boundary condition of `Tree` component.([#2057](https://github.com/arco-design/arco-design/pull/2057))
+
+## 2.47.1
+
+2023-04-21
+
+### 🐛 BugFix
+
+- Fix the bug that the parent node of the disabled node cannot be selected after the child node of the disabled node is selected when the echo mode of the `Tree` component is set to `child`.([#1938](https://github.com/arco-design/arco-design/pull/1938))
+- Fix the bug that `Tree` component was updated wrongly when the child node of the disabled node was checked, and then unchecked, the checked state of the parent node of the disabled node was incorrectly updated.([#1938](https://github.com/arco-design/arco-design/pull/1938))
+
+## 2.44.1
+
+2023-02-03
+
+### 💎 Enhancement
+
+- Optimize the problem of unnecessary vertical scrollbars in certain cases when virtual scrolling is enabled for the `Tree` component([#1739](https://github.com/arco-design/arco-design/pull/1739))
+
+## 2.30.0
+
+2022-03-04
+
+### 🆕 Feature
+
+- `Tree` component's `allowDrop` callback parameter supports `dragNode`([#614](https://github.com/arco-design/arco-design/pull/614))
+
+## 2.29.0
+
+2022-02-11
+
+### 🆕 Feature
+
+- The `Tree` component supports expanding child nodes when a node is clicked via the `expandOnClick` property([#511](https://github.com/arco-design/arco-design/pull/511))
+
+## 2.27.0
+
+2021-12-17
+
+### 🆕 Feature
+
+- `Tree` supports `halfChecked` property([#331](https://github.com/arco-design/arco-design/pull/331))
+
+## 2.25.1
+
+2021-11-26
+
+### 🐛 BugFix
+
+- Fix the bug that the `Tree` component can no longer be collapsed when there is no child node after expansion.([#230](https://github.com/arco-design/arco-design/pull/230))
+
 ## 2.23.1
 
 2021-10-15

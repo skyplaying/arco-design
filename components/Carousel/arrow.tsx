@@ -6,9 +6,12 @@ import IconDown from '../../icon/react-icon/IconDown';
 import cs from '../_util/classNames';
 import { ConfigContext } from '../ConfigProvider';
 import { CarouselArrowProps } from './interface';
+import useKeyboardEvent from '../_util/hooks/useKeyboardEvent';
 
 function CarouselArrow(props: CarouselArrowProps, ref) {
-  const { className, direction, showArrow, prev, next } = props;
+  const { className, direction = 'horizontal', showArrow = 'always', prev, next, icons } = props;
+
+  const getKeyboardEvents = useKeyboardEvent();
   const { getPrefixCls } = useContext(ConfigContext);
   const prefixCls = getPrefixCls('carousel');
   const arrowClass = cs(
@@ -18,30 +21,47 @@ function CarouselArrow(props: CarouselArrowProps, ref) {
     },
     className
   );
+  const iconPrev =
+    icons && icons.hasOwnProperty('prev') ? (
+      icons.prev
+    ) : direction === 'horizontal' ? (
+      <IconLeft />
+    ) : (
+      <IconUp />
+    );
+  const iconNext =
+    icons && icons.hasOwnProperty('next') ? (
+      icons.next
+    ) : direction === 'horizontal' ? (
+      <IconRight />
+    ) : (
+      <IconDown />
+    );
 
   return (
     <div ref={ref} className={arrowClass}>
       <div
         className={`${prefixCls}-arrow-${direction === 'vertical' ? 'top' : 'left'}`}
         onClick={prev}
+        role="button"
+        tabIndex={0}
+        {...getKeyboardEvents({ onPressEnter: prev })}
       >
-        {direction === 'horizontal' ? <IconLeft /> : <IconUp />}
+        {iconPrev}
       </div>
       <div
         className={`${prefixCls}-arrow-${direction === 'vertical' ? 'bottom' : 'right'}`}
         onClick={next}
+        role="button"
+        tabIndex={0}
+        {...getKeyboardEvents({ onPressEnter: next })}
       >
-        {direction === 'horizontal' ? <IconRight /> : <IconDown />}
+        {iconNext}
       </div>
     </div>
   );
 }
 
 const CarouselArrowComponent = React.forwardRef<unknown, CarouselArrowProps>(CarouselArrow);
-
-CarouselArrowComponent.defaultProps = {
-  direction: 'horizontal',
-  showArrow: 'always',
-};
 
 export default CarouselArrowComponent;

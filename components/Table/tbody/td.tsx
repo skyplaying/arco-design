@@ -1,10 +1,12 @@
-import React, { CSSProperties, ReactNode, memo } from 'react';
+import React, { CSSProperties, ReactNode, memo, useContext, useMemo } from 'react';
 import get from 'lodash/get';
 import pick from '../../_util/pick';
 import { isObject, isString } from '../../_util/is';
 import cs from '../../_util/classNames';
 import useComponent from '../hooks/useComponent';
-import { ComponentsProps, InternalColumnProps, SorterResult } from '../interface';
+import { getOriginData } from '../utils';
+import { ConfigContext } from '../../ConfigProvider';
+import { ComponentsProps, InternalColumnProps, SorterInfo } from '../interface';
 
 type TdType = {
   prefixCls?: string;
@@ -15,7 +17,7 @@ type TdType = {
   InnerComponentTd?: any;
   column?: InternalColumnProps;
   columnIndex?: number;
-  currentSorter?: SorterResult;
+  currentSorter?: SorterInfo;
   placeholder?: ReactNode;
   indentSize?: number;
   record?: any;
@@ -52,6 +54,7 @@ function Td(props: TdType) {
     recordHaveChildren,
     haveTreeData,
   } = props;
+  const { rtl } = useContext(ConfigContext);
   const { ComponentBodyCell } = useComponent(components);
 
   const classNameTd = cs(
@@ -63,6 +66,7 @@ function Td(props: TdType) {
     },
     column.className
   );
+
   let tdProps: {
     rowSpan?: number;
     colSpan?: number;
@@ -72,11 +76,18 @@ function Td(props: TdType) {
   let styleTd: CSSProperties = {};
 
   if (column.fixed === 'left') {
-    styleTd.left = stickyOffset;
+    styleTd[rtl ? 'right' : 'left'] = stickyOffset;
   }
 
   if (column.fixed === 'right') {
-    styleTd.right = stickyOffset;
+    styleTd[rtl ? 'left' : 'right'] = stickyOffset;
+  }
+
+  if (isObject(column.cellStyle)) {
+    styleTd = {
+      ...styleTd,
+      ...column.cellStyle,
+    };
   }
 
   if (isObject(column.bodyCellStyle)) {
@@ -100,8 +111,11 @@ function Td(props: TdType) {
     ? column.onCell(record, trIndex)
     : { onHandleSave: () => {} };
 
-  let renderElement =
-    column.render && column.render(get(record, column.dataIndex), record, trIndex);
+  let renderElement = useMemo(
+    () =>
+      column.render && column.render(get(record, column.dataIndex), getOriginData(record), trIndex),
+    [record, column, trIndex]
+  );
 
   if (isInvalidRenderElement(renderElement)) {
     tdProps = renderElement.props;
@@ -118,7 +132,7 @@ function Td(props: TdType) {
 
   const cellChildren = column.render
     ? renderElement
-    : v === undefined
+    : v === undefined || (typeof v === 'string' && v.trim() === '') || v === null
     ? column.placeholder === undefined
       ? placeholder
       : column.placeholder
@@ -147,7 +161,7 @@ function Td(props: TdType) {
         </ComponentBodyCell>
       ) : (
         <ComponentBodyCell
-          rowData={record}
+          rowData={getOriginData(record)}
           className={`${prefixCls}-cell-wrap-value`}
           column={column}
           onHandleSave={onHandleSave}
@@ -181,10 +195,11 @@ function Td(props: TdType) {
         className={cs(`${prefixCls}-cell`, {
           [`${prefixCls}-cell-text-ellipsis`]: column.ellipsis,
         })}
-        style={column.cellStyle}
         {...titleProps}
       >
-        {paddingLeft ? <span style={{ paddingLeft, height: 1 }} /> : null}
+        {paddingLeft ? (
+          <span className={`${prefixCls}-cell-indent`} style={{ paddingLeft }} />
+        ) : null}
         {content}
       </div>
     </InnerComponentTd>

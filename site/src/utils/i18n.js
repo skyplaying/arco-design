@@ -7,7 +7,10 @@ export function goPath(language, setLocal) {
       localStorage.setItem('arco-lang', 'en-US');
     }
     newPath = path.replace(/(\/([^/]*))/, (str, $1, $2) => {
-      return `${$1}${$2 && '/'}en-US`;
+      if (!path.includes('/en-US')) {
+        return `${$1}${$2 && '/'}en-US`;
+      }
+      return str;
     });
   } else {
     if (setLocal) {
@@ -22,10 +25,10 @@ export function goPath(language, setLocal) {
   }
 }
 
-export function i18nRedirect(lang) {
+export function resetI18nLocalStorage(lang) {
   const localLang = localStorage.getItem('arco-lang');
   if (localLang && localLang !== lang) {
-    goPath(localLang);
+    localStorage.setItem('arco-lang', lang);
   }
 }
 

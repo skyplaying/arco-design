@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders Cascader/demo/basic.md correctly 1`] = `
+exports[`renders Cascader/demo/addon.md correctly 1`] = `
 <div
   class="arco-space arco-space-horizontal arco-space-align-center"
 >
@@ -9,43 +9,70 @@ exports[`renders Cascader/demo/basic.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
-      class="arco-cascader arco-cascader-single arco-cascader-size-default"
+      class="arco-cascader-wrapper"
       style="width:300px;margin-bottom:20px"
-      tabindex="0"
     >
       <div
-        class="arco-cascader-view"
-        title=""
+        class="arco-cascader-addbefore"
       >
-        <input
-          class="arco-cascader-view-input"
-          placeholder="Please select ..."
-          style="width:100%;pointer-events:none"
-          tabindex="-1"
-          value=""
-        />
-        <span
-          class="arco-cascader-view-value arco-cascader-hidden"
-        />
+        Select city
+      </div>
+      <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        class="arco-cascader arco-cascader-single arco-cascader-size-default"
+        role="combobox"
+        tabindex="0"
+      >
         <div
-          class="arco-cascader-suffix"
+          class="arco-cascader-view"
+          title=""
         >
-          <div
-            class="arco-cascader-arrow-icon"
+          <span
+            class="arco-cascader-view-selector"
           >
-            <svg
-              class="arco-icon arco-icon-down"
-              fill="none"
-              height="1em"
-              stroke="currentColor"
-              stroke-width="4"
-              viewBox="0 0 48 48"
-              width="1em"
+            <input
+              autocomplete="off"
+              class="arco-cascader-view-input"
+              placeholder="Please select ..."
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-cascader-view-value-mirror"
             >
-              <path
-                d="M39.6 17.443 24.043 33 8.487 17.443"
-              />
-            </svg>
+              Please select ...
+            </span>
+            <span
+              class="arco-cascader-view-value"
+              style="display:none"
+            >
+              Please select ...
+            </span>
+          </span>
+          <div
+            aria-hidden="true"
+            class="arco-cascader-suffix"
+          >
+            <div
+              class="arco-cascader-arrow-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-down"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M39.6 17.443 24.043 33 8.487 17.443"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -55,43 +82,342 @@ exports[`renders Cascader/demo/basic.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
-      class="arco-cascader arco-cascader-single arco-cascader-size-default"
+      class="arco-cascader-wrapper"
       style="width:300px;margin-bottom:20px"
-      tabindex="0"
     >
       <div
-        class="arco-cascader-view"
-        title=""
+        class="arco-cascader-addbefore"
       >
-        <input
-          class="arco-cascader-view-input"
-          placeholder="Hover to expand"
-          style="width:100%;pointer-events:none"
-          tabindex="-1"
-          value=""
-        />
-        <span
-          class="arco-cascader-view-value arco-cascader-hidden"
-        />
+        Select city
+      </div>
+      <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+        role="combobox"
+        tabindex="0"
+      >
         <div
-          class="arco-cascader-suffix"
+          class="arco-cascader-view"
+          title=""
         >
           <div
-            class="arco-cascader-arrow-icon"
+            class="arco-input-tag arco-input-tag-size-default arco-input-tag-has-placeholder"
           >
-            <svg
-              class="arco-icon arco-icon-down"
-              fill="none"
-              height="1em"
-              stroke="currentColor"
-              stroke-width="4"
-              viewBox="0 0 48 48"
-              width="1em"
+            <div
+              class="arco-input-tag-view"
             >
-              <path
-                d="M39.6 17.443 24.043 33 8.487 17.443"
-              />
-            </svg>
+              <div
+                class="arco-input-tag-inner"
+              >
+                <input
+                  autocomplete="off"
+                  class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
+                  placeholder="Hover to expand"
+                  value=""
+                />
+                <span
+                  class="arco-input-tag-input-mirror"
+                >
+                  Hover to expand
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            class="arco-cascader-suffix"
+          >
+            <div
+              class="arco-cascader-arrow-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-down"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M39.6 17.443 24.043 33 8.487 17.443"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders Cascader/demo/basic.md correctly 1`] = `
+<div>
+  <div
+    class="arco-space arco-space-horizontal arco-space-align-center"
+  >
+    <div
+      class="arco-space-item"
+      style="margin-right:24px"
+    >
+      <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        class="arco-cascader arco-cascader-single arco-cascader-size-default"
+        role="combobox"
+        style="width:300px;margin-bottom:20px"
+        tabindex="0"
+      >
+        <div
+          class="arco-cascader-view"
+          title=""
+        >
+          <span
+            class="arco-cascader-view-selector"
+          >
+            <input
+              autocomplete="off"
+              class="arco-cascader-view-input"
+              placeholder="Please select ..."
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-cascader-view-value-mirror"
+            >
+              Please select ...
+            </span>
+            <span
+              class="arco-cascader-view-value"
+              style="display:none"
+            >
+              Please select ...
+            </span>
+          </span>
+          <div
+            aria-hidden="true"
+            class="arco-cascader-suffix"
+          >
+            <div
+              class="arco-cascader-arrow-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-down"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M39.6 17.443 24.043 33 8.487 17.443"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="arco-space-item"
+    >
+      <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        class="arco-cascader arco-cascader-single arco-cascader-size-default"
+        role="combobox"
+        style="width:300px;margin-bottom:20px"
+        tabindex="0"
+      >
+        <div
+          class="arco-cascader-view"
+          title=""
+        >
+          <span
+            class="arco-cascader-view-selector"
+          >
+            <input
+              autocomplete="off"
+              class="arco-cascader-view-input"
+              placeholder="Hover to expand"
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-cascader-view-value-mirror"
+            >
+              Hover to expand
+            </span>
+            <span
+              class="arco-cascader-view-value"
+              style="display:none"
+            >
+              Hover to expand
+            </span>
+          </span>
+          <div
+            aria-hidden="true"
+            class="arco-cascader-suffix"
+          >
+            <div
+              class="arco-cascader-arrow-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-down"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M39.6 17.443 24.043 33 8.487 17.443"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div
+    class="arco-space arco-space-horizontal arco-space-align-center"
+  >
+    <div
+      class="arco-space-item"
+      style="margin-right:24px"
+    >
+      <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        class="arco-cascader arco-cascader-single arco-cascader-size-default arco-cascader-error"
+        role="combobox"
+        style="width:300px;margin-bottom:20px"
+        tabindex="0"
+      >
+        <div
+          class="arco-cascader-view"
+          title=""
+        >
+          <span
+            class="arco-cascader-view-selector"
+          >
+            <input
+              autocomplete="off"
+              class="arco-cascader-view-input"
+              placeholder="Please select ..."
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-cascader-view-value-mirror"
+            >
+              Please select ...
+            </span>
+            <span
+              class="arco-cascader-view-value"
+              style="display:none"
+            >
+              Please select ...
+            </span>
+          </span>
+          <div
+            aria-hidden="true"
+            class="arco-cascader-suffix"
+          >
+            <div
+              class="arco-cascader-arrow-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-down"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M39.6 17.443 24.043 33 8.487 17.443"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="arco-space-item"
+    >
+      <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        class="arco-cascader arco-cascader-single arco-cascader-size-default arco-cascader-warning"
+        role="combobox"
+        style="width:300px;margin-bottom:20px"
+        tabindex="0"
+      >
+        <div
+          class="arco-cascader-view"
+          title=""
+        >
+          <span
+            class="arco-cascader-view-selector"
+          >
+            <input
+              autocomplete="off"
+              class="arco-cascader-view-input"
+              placeholder="Hover to expand"
+              style="width:100%;pointer-events:none"
+              tabindex="-1"
+              value=""
+            />
+            <span
+              class="arco-cascader-view-value-mirror"
+            >
+              Hover to expand
+            </span>
+            <span
+              class="arco-cascader-view-value"
+              style="display:none"
+            >
+              Hover to expand
+            </span>
+          </span>
+          <div
+            aria-hidden="true"
+            class="arco-cascader-suffix"
+          >
+            <div
+              class="arco-cascader-arrow-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-down"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M39.6 17.443 24.043 33 8.487 17.443"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -109,7 +435,11 @@ exports[`renders Cascader/demo/change_on_select.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -117,33 +447,46 @@ exports[`renders Cascader/demo/change_on_select.md correctly 1`] = `
         class="arco-cascader-view"
         title=""
       >
-        <input
-          class="arco-cascader-view-input"
-          placeholder="Please select ..."
-          style="width:100%"
-          value=""
-        />
         <span
-          class="arco-cascader-view-value arco-cascader-hidden"
-        />
+          class="arco-cascader-view-selector"
+        >
+          <input
+            autocomplete="off"
+            class="arco-cascader-view-input"
+            placeholder="Please select ..."
+            style="width:100%"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value-mirror"
+          >
+            Please select ...
+          </span>
+          <span
+            class="arco-cascader-view-value"
+            style="display:none"
+          >
+            Please select ...
+          </span>
+        </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -155,7 +498,11 @@ exports[`renders Cascader/demo/change_on_select.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -173,36 +520,37 @@ exports[`renders Cascader/demo/change_on_select.md correctly 1`] = `
               class="arco-input-tag-inner"
             >
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder="Please select ..."
                 value=""
               />
               <span
                 class="arco-input-tag-input-mirror"
               >
-                Please select ...
+                Please select ...
               </span>
             </div>
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -215,7 +563,11 @@ exports[`renders Cascader/demo/change_on_select.md correctly 1`] = `
 
 exports[`renders Cascader/demo/clear.md correctly 1`] = `
 <div
+  aria-autocomplete="list"
+  aria-expanded="false"
+  aria-haspopup="listbox"
   class="arco-cascader arco-cascader-single arco-cascader-size-default"
+  role="combobox"
   style="width:300px"
   tabindex="0"
 >
@@ -223,32 +575,39 @@ exports[`renders Cascader/demo/clear.md correctly 1`] = `
     class="arco-cascader-view"
     title="Shanghai / Shanghai / Huangpu"
   >
-    <input
-      class="arco-cascader-view-input arco-cascader-hidden"
-      placeholder="Please select ..."
-      style="width:100%;pointer-events:none"
-      tabindex="-1"
-      value="Shanghai / Shanghai / Huangpu"
-    />
     <span
-      class="arco-cascader-view-value"
+      class="arco-cascader-view-selector"
     >
-      Shanghai / Shanghai / Huangpu
+      <input
+        aria-hidden="true"
+        autocomplete="off"
+        class="arco-cascader-view-input arco-cascader-hidden"
+        placeholder="Please select ..."
+        style="width:100%;pointer-events:none"
+        tabindex="-1"
+        value=""
+      />
+      <span
+        class="arco-cascader-view-value"
+      >
+        Shanghai / Shanghai / Huangpu
+      </span>
     </span>
     <div
+      aria-hidden="true"
       class="arco-cascader-suffix"
     >
       <span
         class="arco-icon-hover arco-cascader-clear-icon"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-close"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -259,13 +618,13 @@ exports[`renders Cascader/demo/clear.md correctly 1`] = `
         class="arco-cascader-arrow-icon"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-down"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -286,7 +645,11 @@ exports[`renders Cascader/demo/control.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -294,33 +657,46 @@ exports[`renders Cascader/demo/control.md correctly 1`] = `
         class="arco-cascader-view"
         title=""
       >
-        <input
-          class="arco-cascader-view-input"
-          placeholder="Please select ..."
-          style="width:100%"
-          value=""
-        />
         <span
-          class="arco-cascader-view-value arco-cascader-hidden"
-        />
+          class="arco-cascader-view-selector"
+        >
+          <input
+            autocomplete="off"
+            class="arco-cascader-view-input"
+            placeholder="Please select ..."
+            style="width:100%"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value-mirror"
+          >
+            Please select ...
+          </span>
+          <span
+            class="arco-cascader-view-value"
+            style="display:none"
+          >
+            Please select ...
+          </span>
+        </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -332,7 +708,11 @@ exports[`renders Cascader/demo/control.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -350,36 +730,37 @@ exports[`renders Cascader/demo/control.md correctly 1`] = `
               class="arco-input-tag-inner"
             >
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder="Please select ..."
                 value=""
               />
               <span
                 class="arco-input-tag-input-mirror"
               >
-                Please select ...
+                Please select ...
               </span>
             </div>
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -398,7 +779,9 @@ exports[`renders Cascader/demo/custom_children.md correctly 1`] = `
     City
   </span>
   <span
-    class="arco-link"
+    class="arco-link trigger-element"
+    role="button"
+    tabindex="0"
   >
     Shanghai, Shanghai, Huangpu
   </span>
@@ -414,7 +797,11 @@ exports[`renders Cascader/demo/disabled.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -422,31 +809,38 @@ exports[`renders Cascader/demo/disabled.md correctly 1`] = `
         class="arco-cascader-view"
         title="Beijing / Beijing / Dongcheng / Chaoyangmen"
       >
-        <input
-          class="arco-cascader-view-input arco-cascader-hidden"
-          placeholder="Beijing / Beijing / Dongcheng / Chaoyangmen"
-          style="width:100%"
-          value="Beijing / Beijing / Dongcheng / Chaoyangmen"
-        />
         <span
-          class="arco-cascader-view-value"
+          class="arco-cascader-view-selector"
         >
-          Beijing / Beijing / Dongcheng / Chaoyangmen
+          <input
+            aria-hidden="true"
+            autocomplete="off"
+            class="arco-cascader-view-input arco-cascader-hidden"
+            placeholder="Beijing / Beijing / Dongcheng / Chaoyangmen"
+            style="width:100%"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value"
+          >
+            Beijing / Beijing / Dongcheng / Chaoyangmen
+          </span>
         </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <span
             class="arco-icon-hover arco-cascader-clear-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-close"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -454,20 +848,19 @@ exports[`renders Cascader/demo/disabled.md correctly 1`] = `
             </svg>
           </span>
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -479,7 +872,11 @@ exports[`renders Cascader/demo/disabled.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -498,26 +895,27 @@ exports[`renders Cascader/demo/disabled.md correctly 1`] = `
             >
               <div
                 class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+                title="Beijing / Beijing / Dongcheng / Chaoyangmen"
               >
                 <span
-                  class="arco-input-tag-tag-content"
-                  title="Beijing / Beijing / Dongcheng / Chaoyangmen"
+                  class="arco-tag-content"
                 >
-                  Beijing / Beijing / Dongcheng / Chaoyangmen
+                  Beijing / Beijing / Dongcheng / Chaoyangmen
                 </span>
               </div>
               <div
                 class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+                title="Beijing / Beijing / Dongcheng / Jianguomen"
               >
                 <span
-                  class="arco-input-tag-tag-content"
-                  title="Beijing / Beijing / Dongcheng / Jianguomen"
+                  class="arco-tag-content"
                 >
-                  Beijing / Beijing / Dongcheng / Jianguomen
+                  Beijing / Beijing / Dongcheng / Jianguomen
                 </span>
               </div>
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder=""
                 value=""
               />
@@ -528,19 +926,20 @@ exports[`renders Cascader/demo/disabled.md correctly 1`] = `
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <span
             class="arco-icon-hover arco-cascader-clear-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-close"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -548,24 +947,147 @@ exports[`renders Cascader/demo/disabled.md correctly 1`] = `
             </svg>
           </span>
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders Cascader/demo/draggable.md correctly 1`] = `
+<div
+  aria-autocomplete="list"
+  aria-expanded="false"
+  aria-haspopup="listbox"
+  class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+  role="combobox"
+  style="width:600px"
+  tabindex="0"
+>
+  <div
+    class="arco-cascader-view"
+    title=""
+  >
+    <div
+      class="arco-input-tag arco-input-tag-size-default"
+    >
+      <div
+        class="arco-input-tag-view"
+      >
+        <div
+          class="arco-input-tag-inner"
+        >
+          <div
+            class="arco-draggable"
+          >
+            <li
+              class="arco-draggable-item"
+              draggable="true"
+              style="display:inline-block"
+            >
+              <div
+                class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+                title="Beijing / Beijing / Chaoyang / Datunli"
+              >
+                <span
+                  class="arco-tag-content"
+                >
+                  Beijing / Beijing / Chaoyang / Datunli
+                </span>
+                <span
+                  aria-label="Close"
+                  class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+                  role="button"
+                  tabindex="0"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="arco-icon arco-icon-close"
+                    fill="none"
+                    focusable="false"
+                    stroke="currentColor"
+                    stroke-width="4"
+                    viewBox="0 0 48 48"
+                  >
+                    <path
+                      d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </li>
+            <li
+              class="arco-draggable-item"
+              draggable="true"
+              style="display:inline-block"
+            >
+              <input
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
+                placeholder=""
+                value=""
+              />
+              <span
+                class="arco-input-tag-input-mirror"
+              />
+            </li>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      aria-hidden="true"
+      class="arco-cascader-suffix"
+    >
+      <span
+        class="arco-icon-hover arco-cascader-clear-icon"
+      >
+        <svg
+          aria-hidden="true"
+          class="arco-icon arco-icon-close"
+          fill="none"
+          focusable="false"
+          stroke="currentColor"
+          stroke-width="4"
+          viewBox="0 0 48 48"
+        >
+          <path
+            d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
+          />
+        </svg>
+      </span>
+      <div
+        class="arco-cascader-arrow-icon"
+      >
+        <svg
+          aria-hidden="true"
+          class="arco-icon arco-icon-down"
+          fill="none"
+          focusable="false"
+          stroke="currentColor"
+          stroke-width="4"
+          viewBox="0 0 48 48"
+        >
+          <path
+            d="M39.6 17.443 24.043 33 8.487 17.443"
+          />
+        </svg>
       </div>
     </div>
   </div>
@@ -581,7 +1103,11 @@ exports[`renders Cascader/demo/dropdown.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-size-default"
+      role="combobox"
       style="width:300px"
       tabindex="0"
     >
@@ -589,30 +1115,44 @@ exports[`renders Cascader/demo/dropdown.md correctly 1`] = `
         class="arco-cascader-view"
         title=""
       >
-        <input
-          class="arco-cascader-view-input"
-          placeholder="Please select ..."
-          style="width:100%;pointer-events:none"
-          tabindex="-1"
-          value=""
-        />
         <span
-          class="arco-cascader-view-value arco-cascader-hidden"
-        />
+          class="arco-cascader-view-selector"
+        >
+          <input
+            autocomplete="off"
+            class="arco-cascader-view-input"
+            placeholder="Please select ..."
+            style="width:100%;pointer-events:none"
+            tabindex="-1"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value-mirror"
+          >
+            Please select ...
+          </span>
+          <span
+            class="arco-cascader-view-value"
+            style="display:none"
+          >
+            Please select ...
+          </span>
+        </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
             class="arco-cascader-arrow-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -627,7 +1167,11 @@ exports[`renders Cascader/demo/dropdown.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-size-default"
+      role="combobox"
       style="width:300px"
       tabindex="0"
     >
@@ -635,29 +1179,39 @@ exports[`renders Cascader/demo/dropdown.md correctly 1`] = `
         class="arco-cascader-view"
         title=""
       >
-        <input
-          class="arco-cascader-view-input"
-          style="width:100%;pointer-events:none"
-          tabindex="-1"
-          value=""
-        />
         <span
-          class="arco-cascader-view-value arco-cascader-hidden"
-        />
+          class="arco-cascader-view-selector"
+        >
+          <input
+            autocomplete="off"
+            class="arco-cascader-view-input"
+            style="width:100%;pointer-events:none"
+            tabindex="-1"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value-mirror"
+          />
+          <span
+            class="arco-cascader-view-value"
+            style="display:none"
+          />
+        </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
             class="arco-cascader-arrow-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -674,7 +1228,11 @@ exports[`renders Cascader/demo/dropdown.md correctly 1`] = `
 exports[`renders Cascader/demo/filedNames.md correctly 1`] = `
 <div>
   <div
+    aria-autocomplete="list"
+    aria-expanded="false"
+    aria-haspopup="listbox"
     class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+    role="combobox"
     style="width:300px"
     tabindex="0"
   >
@@ -693,24 +1251,27 @@ exports[`renders Cascader/demo/filedNames.md correctly 1`] = `
           >
             <div
               class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+              title="Beijing / Beijing / Chaoyang / Datunli"
             >
               <span
-                class="arco-input-tag-tag-content"
-                title="Beijing / Beijing / Chaoyang / Datunli"
+                class="arco-tag-content"
               >
-                Beijing / Beijing / Chaoyang / Datunli
+                Beijing / Beijing / Chaoyang / Datunli
               </span>
               <span
+                aria-label="Close"
                 class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+                role="button"
+                tabindex="0"
               >
                 <svg
+                  aria-hidden="true"
                   class="arco-icon arco-icon-close"
                   fill="none"
-                  height="1em"
+                  focusable="false"
                   stroke="currentColor"
                   stroke-width="4"
                   viewBox="0 0 48 48"
-                  width="1em"
                 >
                   <path
                     d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -719,7 +1280,8 @@ exports[`renders Cascader/demo/filedNames.md correctly 1`] = `
               </span>
             </div>
             <input
-              class="arco-input-tag-input arco-input-tag-input-size-default"
+              autocomplete="off"
+              class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
               placeholder=""
               value=""
             />
@@ -730,19 +1292,20 @@ exports[`renders Cascader/demo/filedNames.md correctly 1`] = `
         </div>
       </div>
       <div
+        aria-hidden="true"
         class="arco-cascader-suffix"
       >
         <span
           class="arco-icon-hover arco-cascader-clear-icon"
         >
           <svg
+            aria-hidden="true"
             class="arco-icon arco-icon-close"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
               d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -750,20 +1313,19 @@ exports[`renders Cascader/demo/filedNames.md correctly 1`] = `
           </svg>
         </span>
         <div
-          class="arco-cascader-expand-icon"
+          class="arco-cascader-arrow-icon"
         >
           <svg
-            class="arco-icon arco-icon-expand"
+            aria-hidden="true"
+            class="arco-icon arco-icon-down"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
-            style="transform:rotate(-45deg)"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
-              d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+              d="M39.6 17.443 24.043 33 8.487 17.443"
             />
           </svg>
         </div>
@@ -782,7 +1344,11 @@ exports[`renders Cascader/demo/filter_option.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -790,31 +1356,38 @@ exports[`renders Cascader/demo/filter_option.md correctly 1`] = `
         class="arco-cascader-view"
         title="Shanghai / Shanghai / Huangpu"
       >
-        <input
-          class="arco-cascader-view-input arco-cascader-hidden"
-          placeholder="Shanghai / Shanghai / Huangpu"
-          style="width:100%"
-          value="Shanghai / Shanghai / Huangpu"
-        />
         <span
-          class="arco-cascader-view-value"
+          class="arco-cascader-view-selector"
         >
-          Shanghai / Shanghai / Huangpu
+          <input
+            aria-hidden="true"
+            autocomplete="off"
+            class="arco-cascader-view-input arco-cascader-hidden"
+            placeholder="Shanghai / Shanghai / Huangpu"
+            style="width:100%"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value"
+          >
+            Shanghai / Shanghai / Huangpu
+          </span>
         </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <span
             class="arco-icon-hover arco-cascader-clear-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-close"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -822,20 +1395,19 @@ exports[`renders Cascader/demo/filter_option.md correctly 1`] = `
             </svg>
           </span>
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -847,7 +1419,11 @@ exports[`renders Cascader/demo/filter_option.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -866,24 +1442,27 @@ exports[`renders Cascader/demo/filter_option.md correctly 1`] = `
             >
               <div
                 class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+                title="Beijing / Beijing / Chaoyang / Datunli"
               >
                 <span
-                  class="arco-input-tag-tag-content"
-                  title="Beijing / Beijing / Chaoyang / Datunli"
+                  class="arco-tag-content"
                 >
-                  Beijing / Beijing / Chaoyang / Datunli
+                  Beijing / Beijing / Chaoyang / Datunli
                 </span>
                 <span
+                  aria-label="Close"
                   class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+                  role="button"
+                  tabindex="0"
                 >
                   <svg
+                    aria-hidden="true"
                     class="arco-icon arco-icon-close"
                     fill="none"
-                    height="1em"
+                    focusable="false"
                     stroke="currentColor"
                     stroke-width="4"
                     viewBox="0 0 48 48"
-                    width="1em"
                   >
                     <path
                       d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -892,7 +1471,8 @@ exports[`renders Cascader/demo/filter_option.md correctly 1`] = `
                 </span>
               </div>
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder=""
                 value=""
               />
@@ -903,19 +1483,20 @@ exports[`renders Cascader/demo/filter_option.md correctly 1`] = `
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <span
             class="arco-icon-hover arco-cascader-clear-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-close"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -923,20 +1504,19 @@ exports[`renders Cascader/demo/filter_option.md correctly 1`] = `
             </svg>
           </span>
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -956,7 +1536,11 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="max-width:300px"
       tabindex="0"
     >
@@ -964,31 +1548,38 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
         class="arco-cascader-view"
         title="Shanghai / Shanghai / Huangpu"
       >
-        <input
-          class="arco-cascader-view-input arco-cascader-hidden"
-          placeholder="Shanghai / Shanghai / Huangpu"
-          style="width:100%"
-          value="Shanghai / Shanghai / Huangpu"
-        />
         <span
-          class="arco-cascader-view-value"
+          class="arco-cascader-view-selector"
         >
-          Shanghai / Shanghai / Huangpu
+          <input
+            aria-hidden="true"
+            autocomplete="off"
+            class="arco-cascader-view-input arco-cascader-hidden"
+            placeholder="Shanghai / Shanghai / Huangpu"
+            style="width:100%"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value"
+          >
+            Shanghai / Shanghai / Huangpu
+          </span>
         </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <span
             class="arco-icon-hover arco-cascader-clear-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-close"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -996,20 +1587,19 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
             </svg>
           </span>
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -1021,7 +1611,11 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="max-width:300px"
       tabindex="0"
     >
@@ -1040,24 +1634,27 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
             >
               <div
                 class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+                title="Beijing / Beijing / Chaoyang / Datunli"
               >
                 <span
-                  class="arco-input-tag-tag-content"
-                  title="Beijing / Beijing / Chaoyang / Datunli"
+                  class="arco-tag-content"
                 >
-                  Beijing / Beijing / Chaoyang / Datunli
+                  Beijing / Beijing / Chaoyang / Datunli
                 </span>
                 <span
+                  aria-label="Close"
                   class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+                  role="button"
+                  tabindex="0"
                 >
                   <svg
+                    aria-hidden="true"
                     class="arco-icon arco-icon-close"
                     fill="none"
-                    height="1em"
+                    focusable="false"
                     stroke="currentColor"
                     stroke-width="4"
                     viewBox="0 0 48 48"
-                    width="1em"
                   >
                     <path
                       d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -1066,7 +1663,8 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
                 </span>
               </div>
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder=""
                 value=""
               />
@@ -1077,19 +1675,20 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <span
             class="arco-icon-hover arco-cascader-clear-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-close"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -1097,20 +1696,19 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
             </svg>
           </span>
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -1123,7 +1721,11 @@ exports[`renders Cascader/demo/footer.md correctly 1`] = `
 
 exports[`renders Cascader/demo/format.md correctly 1`] = `
 <div
+  aria-autocomplete="list"
+  aria-expanded="false"
+  aria-haspopup="listbox"
   class="arco-cascader arco-cascader-single arco-cascader-size-default"
+  role="combobox"
   style="width:300px"
   tabindex="0"
 >
@@ -1131,32 +1733,39 @@ exports[`renders Cascader/demo/format.md correctly 1`] = `
     class="arco-cascader-view"
     title="Shanghai > Shanghai > Huangpu"
   >
-    <input
-      class="arco-cascader-view-input arco-cascader-hidden"
-      placeholder="Please select ..."
-      style="width:100%;pointer-events:none"
-      tabindex="-1"
-      value="Shanghai > Shanghai > Huangpu"
-    />
     <span
-      class="arco-cascader-view-value"
+      class="arco-cascader-view-selector"
     >
-      Shanghai &gt; Shanghai &gt; Huangpu
+      <input
+        aria-hidden="true"
+        autocomplete="off"
+        class="arco-cascader-view-input arco-cascader-hidden"
+        placeholder="Please select ..."
+        style="width:100%;pointer-events:none"
+        tabindex="-1"
+        value=""
+      />
+      <span
+        class="arco-cascader-view-value"
+      >
+        Shanghai &gt; Shanghai &gt; Huangpu
+      </span>
     </span>
     <div
+      aria-hidden="true"
       class="arco-cascader-suffix"
     >
       <span
         class="arco-icon-hover arco-cascader-clear-icon"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-close"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -1167,13 +1776,13 @@ exports[`renders Cascader/demo/format.md correctly 1`] = `
         class="arco-cascader-arrow-icon"
       >
         <svg
+          aria-hidden="true"
           class="arco-icon arco-icon-down"
           fill="none"
-          height="1em"
+          focusable="false"
           stroke="currentColor"
           stroke-width="4"
           viewBox="0 0 48 48"
-          width="1em"
         >
           <path
             d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -1194,7 +1803,11 @@ exports[`renders Cascader/demo/loadmore.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -1202,33 +1815,46 @@ exports[`renders Cascader/demo/loadmore.md correctly 1`] = `
         class="arco-cascader-view"
         title=""
       >
-        <input
-          class="arco-cascader-view-input"
-          placeholder="Please select ..."
-          style="width:100%"
-          value=""
-        />
         <span
-          class="arco-cascader-view-value arco-cascader-hidden"
-        />
+          class="arco-cascader-view-selector"
+        >
+          <input
+            autocomplete="off"
+            class="arco-cascader-view-input"
+            placeholder="Please select ..."
+            style="width:100%"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value-mirror"
+          >
+            Please select ...
+          </span>
+          <span
+            class="arco-cascader-view-value"
+            style="display:none"
+          >
+            Please select ...
+          </span>
+        </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -1240,7 +1866,11 @@ exports[`renders Cascader/demo/loadmore.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -1258,36 +1888,37 @@ exports[`renders Cascader/demo/loadmore.md correctly 1`] = `
               class="arco-input-tag-inner"
             >
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder="Please select ..."
                 value=""
               />
               <span
                 class="arco-input-tag-input-mirror"
               >
-                Please select ...
+                Please select ...
               </span>
             </div>
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -1300,96 +1931,110 @@ exports[`renders Cascader/demo/loadmore.md correctly 1`] = `
 
 exports[`renders Cascader/demo/multiple.md correctly 1`] = `
 <div
-  class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
-  style="width:300px"
-  tabindex="0"
->
-  <div
-    class="arco-cascader-view"
-    title=""
-  >
-    <div
-      class="arco-input-tag arco-input-tag-size-default"
-    >
-      <div
-        class="arco-input-tag-view"
-      >
-        <div
-          class="arco-input-tag-inner"
-        >
-          <div
-            class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
-          >
-            <span
-              class="arco-input-tag-tag-content"
-              title="Beijing / Beijing / Chaoyang / Datunli"
-            >
-              Beijing / Beijing / Chaoyang / Datunli
-            </span>
-            <span
-              class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
-            >
-              <svg
-                class="arco-icon arco-icon-close"
-                fill="none"
-                height="1em"
-                stroke="currentColor"
-                stroke-width="4"
-                viewBox="0 0 48 48"
-                width="1em"
-              >
-                <path
-                  d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
-                />
-              </svg>
-            </span>
-          </div>
-          <input
-            class="arco-input-tag-input arco-input-tag-input-size-default"
-            placeholder=""
-            value=""
-          />
-          <span
-            class="arco-input-tag-input-mirror"
-          />
-        </div>
-      </div>
-    </div>
-    <div
-      class="arco-cascader-suffix"
-    >
-      <div
-        class="arco-cascader-expand-icon"
-      >
-        <svg
-          class="arco-icon arco-icon-expand"
-          fill="none"
-          height="1em"
-          stroke="currentColor"
-          stroke-width="4"
-          style="transform:rotate(-45deg)"
-          viewBox="0 0 48 48"
-          width="1em"
-        >
-          <path
-            d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
-          />
-        </svg>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`renders Cascader/demo/onSearch.md correctly 1`] = `
-<div
   class="arco-space arco-space-horizontal arco-space-align-center"
 >
   <div
     class="arco-space-item"
+    style="margin-right:8px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
+      style="width:300px"
+      tabindex="0"
+    >
+      <div
+        class="arco-cascader-view"
+        title=""
+      >
+        <div
+          class="arco-input-tag arco-input-tag-size-default"
+        >
+          <div
+            class="arco-input-tag-view"
+          >
+            <div
+              class="arco-input-tag-inner"
+            >
+              <div
+                class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+                title="Beijing / Beijing / Chaoyang / Datunli"
+              >
+                <span
+                  class="arco-tag-content"
+                >
+                  Beijing / Beijing / Chaoyang / Datunli
+                </span>
+                <span
+                  aria-label="Close"
+                  class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+                  role="button"
+                  tabindex="0"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="arco-icon arco-icon-close"
+                    fill="none"
+                    focusable="false"
+                    stroke="currentColor"
+                    stroke-width="4"
+                    viewBox="0 0 48 48"
+                  >
+                    <path
+                      d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <input
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
+                placeholder=""
+                value=""
+              />
+              <span
+                class="arco-input-tag-input-mirror"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          aria-hidden="true"
+          class="arco-cascader-suffix"
+        >
+          <div
+            class="arco-cascader-arrow-icon"
+          >
+            <svg
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
+              fill="none"
+              focusable="false"
+              stroke="currentColor"
+              stroke-width="4"
+              viewBox="0 0 48 48"
+            >
+              <path
+                d="M39.6 17.443 24.043 33 8.487 17.443"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="arco-space-item"
+  >
+    <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
+      class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px"
       tabindex="0"
     >
@@ -1407,38 +2052,214 @@ exports[`renders Cascader/demo/onSearch.md correctly 1`] = `
               class="arco-input-tag-inner"
             >
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
-                placeholder="Please enter ..."
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
+                placeholder="Please select ..."
                 value=""
               />
               <span
                 class="arco-input-tag-input-mirror"
               >
-                Please enter ...
+                Please select ...
               </span>
             </div>
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders Cascader/demo/onSearch.md correctly 1`] = `
+<div>
+  <div
+    style="margin-bottom:20px"
+  >
+    <label
+      class="arco-checkbox"
+    >
+      <input
+        type="checkbox"
+      />
+      <span
+        class="arco-icon-hover arco-checkbox-icon-hover arco-checkbox-mask-wrapper"
+      >
+        <div
+          class="arco-checkbox-mask"
+        >
+          <svg
+            aria-hidden="true"
+            class="arco-checkbox-mask-icon"
+            fill="currentColor"
+            focusable="false"
+            height="200"
+            viewBox="0 0 1024 1024"
+            width="200"
+          >
+            <path
+              d="M877.44815445 206.10060629a64.72691371 64.72691371 0 0 0-95.14856334 4.01306852L380.73381888 685.46812814 235.22771741 533.48933518a64.72691371 64.72691371 0 0 0-92.43003222-1.03563036l-45.82665557 45.82665443a64.72691371 64.72691371 0 0 0-0.90617629 90.61767965l239.61903446 250.10479331a64.72691371 64.72691371 0 0 0 71.19960405 15.14609778 64.33855261 64.33855261 0 0 0 35.08198741-21.23042702l36.24707186-42.71976334 40.5190474-40.77795556-3.36579926-3.49525333 411.40426297-486.74638962a64.72691371 64.72691371 0 0 0-3.88361443-87.64024149l-45.3088404-45.43829334z"
+              p-id="840"
+            />
+          </svg>
+        </div>
+      </span>
+      <span
+        class="arco-checkbox-text"
+      >
+        是否以搜索面板展示可选项
+      </span>
+    </label>
+  </div>
+  <div
+    class="arco-space arco-space-horizontal arco-space-align-center"
+  >
+    <div
+      class="arco-space-item"
+      style="margin-right:24px"
+    >
+      <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+        role="combobox"
+        style="width:300px"
+        tabindex="0"
+      >
+        <div
+          class="arco-cascader-view"
+          title=""
+        >
+          <span
+            class="arco-cascader-view-selector"
+          >
+            <input
+              autocomplete="off"
+              class="arco-cascader-view-input"
+              placeholder="Please enter ..."
+              style="width:100%"
+              value=""
+            />
+            <span
+              class="arco-cascader-view-value-mirror"
+            >
+              Please enter ...
+            </span>
+            <span
+              class="arco-cascader-view-value"
+              style="display:none"
+            >
+              Please enter ...
+            </span>
+          </span>
+          <div
+            aria-hidden="true"
+            class="arco-cascader-suffix"
+          >
+            <div
+              class="arco-cascader-arrow-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-down"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M39.6 17.443 24.043 33 8.487 17.443"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="arco-space-item"
+    >
+      <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+        role="combobox"
+        style="width:300px"
+        tabindex="0"
+      >
+        <div
+          class="arco-cascader-view"
+          title=""
+        >
+          <div
+            class="arco-input-tag arco-input-tag-size-default arco-input-tag-has-placeholder"
+          >
+            <div
+              class="arco-input-tag-view"
+            >
+              <div
+                class="arco-input-tag-inner"
+              >
+                <input
+                  autocomplete="off"
+                  class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
+                  placeholder="Please enter ..."
+                  value=""
+                />
+                <span
+                  class="arco-input-tag-input-mirror"
+                >
+                  Please enter ...
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            class="arco-cascader-suffix"
+          >
+            <div
+              class="arco-cascader-arrow-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="arco-icon arco-icon-down"
+                fill="none"
+                focusable="false"
+                stroke="currentColor"
+                stroke-width="4"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M39.6 17.443 24.043 33 8.487 17.443"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -1456,7 +2277,11 @@ exports[`renders Cascader/demo/render_option.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -1464,35 +2289,41 @@ exports[`renders Cascader/demo/render_option.md correctly 1`] = `
         class="arco-cascader-view"
         title="Shanghai / Shanghai / Huangpu"
       >
-        <input
-          class="arco-cascader-view-input arco-cascader-hidden"
-          placeholder="Shanghai / Shanghai / Huangpu"
-          style="width:100%"
-          value="Shanghai / Shanghai / Huangpu"
-        />
         <span
-          class="arco-cascader-view-value"
+          class="arco-cascader-view-selector"
         >
-          Shanghai / Shanghai / Huangpu
+          <input
+            aria-hidden="true"
+            autocomplete="off"
+            class="arco-cascader-view-input arco-cascader-hidden"
+            placeholder="Shanghai / Shanghai / Huangpu"
+            style="width:100%"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value"
+          >
+            Shanghai / Shanghai / Huangpu
+          </span>
         </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -1504,7 +2335,11 @@ exports[`renders Cascader/demo/render_option.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -1523,24 +2358,27 @@ exports[`renders Cascader/demo/render_option.md correctly 1`] = `
             >
               <div
                 class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+                title="Beijing / Beijing / Chaoyang / Datunli"
               >
                 <span
-                  class="arco-input-tag-tag-content"
-                  title="Beijing / Beijing / Chaoyang / Datunli"
+                  class="arco-tag-content"
                 >
-                  Beijing / Beijing / Chaoyang / Datunli
+                  Beijing / Beijing / Chaoyang / Datunli
                 </span>
                 <span
+                  aria-label="Close"
                   class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+                  role="button"
+                  tabindex="0"
                 >
                   <svg
+                    aria-hidden="true"
                     class="arco-icon arco-icon-close"
                     fill="none"
-                    height="1em"
+                    focusable="false"
                     stroke="currentColor"
                     stroke-width="4"
                     viewBox="0 0 48 48"
-                    width="1em"
                   >
                     <path
                       d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -1549,7 +2387,8 @@ exports[`renders Cascader/demo/render_option.md correctly 1`] = `
                 </span>
               </div>
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder=""
                 value=""
               />
@@ -1560,23 +2399,23 @@ exports[`renders Cascader/demo/render_option.md correctly 1`] = `
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -1596,7 +2435,11 @@ exports[`renders Cascader/demo/search.md correctly 1`] = `
     style="margin-right:24px"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -1604,31 +2447,38 @@ exports[`renders Cascader/demo/search.md correctly 1`] = `
         class="arco-cascader-view"
         title="Shanghai / Shanghai / Huangpu"
       >
-        <input
-          class="arco-cascader-view-input arco-cascader-hidden"
-          placeholder="Shanghai / Shanghai / Huangpu"
-          style="width:100%"
-          value="Shanghai / Shanghai / Huangpu"
-        />
         <span
-          class="arco-cascader-view-value"
+          class="arco-cascader-view-selector"
         >
-          Shanghai / Shanghai / Huangpu
+          <input
+            aria-hidden="true"
+            autocomplete="off"
+            class="arco-cascader-view-input arco-cascader-hidden"
+            placeholder="Shanghai / Shanghai / Huangpu"
+            style="width:100%"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value"
+          >
+            Shanghai / Shanghai / Huangpu
+          </span>
         </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <span
             class="arco-icon-hover arco-cascader-clear-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-close"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -1636,20 +2486,19 @@ exports[`renders Cascader/demo/search.md correctly 1`] = `
             </svg>
           </span>
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -1661,7 +2510,11 @@ exports[`renders Cascader/demo/search.md correctly 1`] = `
     class="arco-space-item"
   >
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -1680,24 +2533,27 @@ exports[`renders Cascader/demo/search.md correctly 1`] = `
             >
               <div
                 class="arco-tag arco-tag-checked arco-tag-size-default arco-input-tag-tag arco-cascader-tag"
+                title="Beijing / Beijing / Chaoyang / Datunli"
               >
                 <span
-                  class="arco-input-tag-tag-content"
-                  title="Beijing / Beijing / Chaoyang / Datunli"
+                  class="arco-tag-content"
                 >
-                  Beijing / Beijing / Chaoyang / Datunli
+                  Beijing / Beijing / Chaoyang / Datunli
                 </span>
                 <span
+                  aria-label="Close"
                   class="arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+                  role="button"
+                  tabindex="0"
                 >
                   <svg
+                    aria-hidden="true"
                     class="arco-icon arco-icon-close"
                     fill="none"
-                    height="1em"
+                    focusable="false"
                     stroke="currentColor"
                     stroke-width="4"
                     viewBox="0 0 48 48"
-                    width="1em"
                   >
                     <path
                       d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -1706,7 +2562,8 @@ exports[`renders Cascader/demo/search.md correctly 1`] = `
                 </span>
               </div>
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder=""
                 value=""
               />
@@ -1717,19 +2574,20 @@ exports[`renders Cascader/demo/search.md correctly 1`] = `
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <span
             class="arco-icon-hover arco-cascader-clear-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-close"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M9.857 9.858 24 24m0 0 14.142 14.142M24 24 38.142 9.858M24 24 9.857 38.142"
@@ -1737,20 +2595,19 @@ exports[`renders Cascader/demo/search.md correctly 1`] = `
             </svg>
           </span>
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -1779,8 +2636,10 @@ exports[`renders Cascader/demo/showEmptyChildren.md correctly 1`] = `
           class="arco-checkbox-mask"
         >
           <svg
+            aria-hidden="true"
             class="arco-checkbox-mask-icon"
             fill="currentColor"
+            focusable="false"
             height="200"
             viewBox="0 0 1024 1024"
             width="200"
@@ -1800,7 +2659,11 @@ exports[`renders Cascader/demo/showEmptyChildren.md correctly 1`] = `
     </label>
   </div>
   <div
+    aria-autocomplete="list"
+    aria-expanded="false"
+    aria-haspopup="listbox"
     class="arco-cascader arco-cascader-single arco-cascader-show-search arco-cascader-size-default"
+    role="combobox"
     style="width:300px"
     tabindex="0"
   >
@@ -1808,33 +2671,46 @@ exports[`renders Cascader/demo/showEmptyChildren.md correctly 1`] = `
       class="arco-cascader-view"
       title=""
     >
-      <input
-        class="arco-cascader-view-input"
-        placeholder="Please select ..."
-        style="width:100%"
-        value=""
-      />
       <span
-        class="arco-cascader-view-value arco-cascader-hidden"
-      />
+        class="arco-cascader-view-selector"
+      >
+        <input
+          autocomplete="off"
+          class="arco-cascader-view-input"
+          placeholder="Please select ..."
+          style="width:100%"
+          value=""
+        />
+        <span
+          class="arco-cascader-view-value-mirror"
+        >
+          Please select ...
+        </span>
+        <span
+          class="arco-cascader-view-value"
+          style="display:none"
+        >
+          Please select ...
+        </span>
+      </span>
       <div
+        aria-hidden="true"
         class="arco-cascader-suffix"
       >
         <div
-          class="arco-cascader-expand-icon"
+          class="arco-cascader-arrow-icon"
         >
           <svg
-            class="arco-icon arco-icon-expand"
+            aria-hidden="true"
+            class="arco-icon arco-icon-down"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
-            style="transform:rotate(-45deg)"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
-              d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+              d="M39.6 17.443 24.043 33 8.487 17.443"
             />
           </svg>
         </div>
@@ -1848,6 +2724,7 @@ exports[`renders Cascader/demo/size.md correctly 1`] = `
 <div>
   <div
     class="arco-radio-group arco-radio-group-type-button arco-radio-size-default arco-radio-mode-outline"
+    role="radiogroup"
     style="margin-bottom:20px"
   >
     <label
@@ -1910,7 +2787,11 @@ exports[`renders Cascader/demo/size.md correctly 1`] = `
   </div>
   <div>
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-single arco-cascader-size-default"
+      role="combobox"
       style="width:300px;margin-bottom:20px"
       tabindex="0"
     >
@@ -1918,30 +2799,44 @@ exports[`renders Cascader/demo/size.md correctly 1`] = `
         class="arco-cascader-view"
         title=""
       >
-        <input
-          class="arco-cascader-view-input"
-          placeholder="Please select ..."
-          style="width:100%;pointer-events:none"
-          tabindex="-1"
-          value=""
-        />
         <span
-          class="arco-cascader-view-value arco-cascader-hidden"
-        />
+          class="arco-cascader-view-selector"
+        >
+          <input
+            autocomplete="off"
+            class="arco-cascader-view-input"
+            placeholder="Please select ..."
+            style="width:100%;pointer-events:none"
+            tabindex="-1"
+            value=""
+          />
+          <span
+            class="arco-cascader-view-value-mirror"
+          >
+            Please select ...
+          </span>
+          <span
+            class="arco-cascader-view-value"
+            style="display:none"
+          >
+            Please select ...
+          </span>
+        </span>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
             class="arco-cascader-arrow-icon"
           >
             <svg
+              aria-hidden="true"
               class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
                 d="M39.6 17.443 24.043 33 8.487 17.443"
@@ -1953,7 +2848,11 @@ exports[`renders Cascader/demo/size.md correctly 1`] = `
     </div>
     <br />
     <div
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-haspopup="listbox"
       class="arco-cascader arco-cascader-multiple arco-cascader-show-search arco-cascader-size-default"
+      role="combobox"
       style="width:300px"
       tabindex="0"
     >
@@ -1971,36 +2870,37 @@ exports[`renders Cascader/demo/size.md correctly 1`] = `
               class="arco-input-tag-inner"
             >
               <input
-                class="arco-input-tag-input arco-input-tag-input-size-default"
+                autocomplete="off"
+                class="arco-input-tag-input arco-input-tag-input-size-default arco-input-tag-input-autowidth"
                 placeholder="Please select ..."
                 value=""
               />
               <span
                 class="arco-input-tag-input-mirror"
               >
-                Please select ...
+                Please select ...
               </span>
             </div>
           </div>
         </div>
         <div
+          aria-hidden="true"
           class="arco-cascader-suffix"
         >
           <div
-            class="arco-cascader-expand-icon"
+            class="arco-cascader-arrow-icon"
           >
             <svg
-              class="arco-icon arco-icon-expand"
+              aria-hidden="true"
+              class="arco-icon arco-icon-down"
               fill="none"
-              height="1em"
+              focusable="false"
               stroke="currentColor"
               stroke-width="4"
-              style="transform:rotate(-45deg)"
               viewBox="0 0 48 48"
-              width="1em"
             >
               <path
-                d="M7 26v14c0 .552.444 1 .996 1H22m19-19V8c0-.552-.444-1-.996-1H26"
+                d="M39.6 17.443 24.043 33 8.487 17.443"
               />
             </svg>
           </div>
@@ -2025,38 +2925,56 @@ exports[`renders Cascader/demo/visible.md correctly 1`] = `
     </button>
   </p>
   <div
+    aria-autocomplete="list"
+    aria-expanded="false"
+    aria-haspopup="listbox"
     class="arco-cascader arco-cascader-single arco-cascader-size-default"
-    style="width:300px"
+    role="combobox"
+    style="width:300px;margin-top:20px"
     tabindex="0"
   >
     <div
       class="arco-cascader-view"
       title=""
     >
-      <input
-        class="arco-cascader-view-input"
-        placeholder="Please select ..."
-        style="width:100%;pointer-events:none"
-        tabindex="-1"
-        value=""
-      />
       <span
-        class="arco-cascader-view-value arco-cascader-hidden"
-      />
+        class="arco-cascader-view-selector"
+      >
+        <input
+          autocomplete="off"
+          class="arco-cascader-view-input"
+          placeholder="Please select ..."
+          style="width:100%;pointer-events:none"
+          tabindex="-1"
+          value=""
+        />
+        <span
+          class="arco-cascader-view-value-mirror"
+        >
+          Please select ...
+        </span>
+        <span
+          class="arco-cascader-view-value"
+          style="display:none"
+        >
+          Please select ...
+        </span>
+      </span>
       <div
+        aria-hidden="true"
         class="arco-cascader-suffix"
       >
         <div
           class="arco-cascader-arrow-icon"
         >
           <svg
+            aria-hidden="true"
             class="arco-icon arco-icon-down"
             fill="none"
-            height="1em"
+            focusable="false"
             stroke="currentColor"
             stroke-width="4"
             viewBox="0 0 48 48"
-            width="1em"
           >
             <path
               d="M39.6 17.443 24.043 33 8.487 17.443"

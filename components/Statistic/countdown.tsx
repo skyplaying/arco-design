@@ -5,19 +5,29 @@ import cs from '../_util/classNames';
 import { getDateString } from './util';
 import { ConfigContext } from '../ConfigProvider';
 import { CountdownProps } from './interface';
+import { isFunction } from '../_util/is';
 
 function Countdown(props: CountdownProps, ref) {
   const { getPrefixCls } = useContext(ConfigContext);
-  const { className, style, title, styleValue, value, start, format, onFinish } = props;
+  const {
+    className,
+    style,
+    title,
+    styleValue,
+    value,
+    onFinish,
+    renderFormat,
+    format = 'HH:mm:ss',
+    start = true,
+  } = props;
 
   const dayjsValue = (getDayjsValue(value, format) as Dayjs) || dayjs();
   const now = getDayjsValue(props.now, format) as Dayjs;
 
   const prefixCls = getPrefixCls('statistic');
 
-  const [valueShow, setValueShow] = useState(
-    getDateString(Math.max(dayjsValue.diff(now, 'millisecond'), 0), format)
-  );
+  const [valueDiff, setValueDiff] = useState(dayjsValue.diff(now, 'millisecond'));
+  const [valueShow, setValueShow] = useState(getDateString(Math.max(valueDiff, 0), format));
   const timerRef = useRef(null);
 
   const stopTimer = () => {
@@ -27,13 +37,15 @@ function Countdown(props: CountdownProps, ref) {
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {
+      const _valueDiff = dayjsValue.diff(getNow());
       const _value = dayjsValue.diff(getNow(), 'millisecond');
       if (_value <= 0) {
         stopTimer();
-        onFinish && onFinish();
+        onFinish?.();
       }
       const valueShow = getDateString(Math.max(_value, 0), format as string);
       setValueShow(valueShow);
+      setValueDiff(_valueDiff);
     }, 1000 / 30);
   };
 
@@ -48,6 +60,7 @@ function Countdown(props: CountdownProps, ref) {
     };
   }, [props.start]);
 
+  const valueShowNode = isFunction(renderFormat) ? renderFormat(valueDiff, valueShow) : valueShow;
   return (
     <div
       ref={ref}
@@ -57,7 +70,7 @@ function Countdown(props: CountdownProps, ref) {
       {title && <div className={`${prefixCls}-title`}>{title}</div>}
       <div className={`${prefixCls}-content`}>
         <div className={`${prefixCls}-value`} style={styleValue}>
-          {valueShow}
+          {valueShowNode}
         </div>
       </div>
     </div>
@@ -67,11 +80,6 @@ function Countdown(props: CountdownProps, ref) {
 const CountdownComponent = forwardRef<unknown, CountdownProps>(Countdown);
 
 CountdownComponent.displayName = 'StatisticCountdown';
-
-CountdownComponent.defaultProps = {
-  format: 'HH:mm:ss',
-  start: true,
-};
 
 export default CountdownComponent;
 

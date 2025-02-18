@@ -1,11 +1,11 @@
 import React, { useContext, forwardRef } from 'react';
-import { CSSTransition } from 'react-transition-group';
 import cs from '../_util/classNames';
 import { ConfigContext } from '../ConfigProvider';
 import { isObject } from '../_util/is';
 import Count from './count';
 import { BadgeProps } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import ArcoCSSTransition from '../_util/CSSTransition';
 
 const InnerColors = [
   'red',
@@ -28,7 +28,7 @@ const defaultProps: BadgeProps = {
 };
 
 function Badge(baseProps: BadgeProps, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<BadgeProps>(baseProps, defaultProps, componentConfig?.Badge);
   const {
     count,
@@ -75,7 +75,7 @@ function Badge(baseProps: BadgeProps, ref) {
         </span>
       );
     }
-    if (status || (color && count <= 0)) {
+    if (status || (color && typeof count === 'number' && count <= 0)) {
       return (
         <span className={`${prefixCls}-status-wrapper`}>
           <span
@@ -93,11 +93,11 @@ function Badge(baseProps: BadgeProps, ref) {
         </span>
       );
     }
-    if ((dot || color) && count > 0) {
+    if ((dot || color) && typeof count === 'number' && count > 0) {
       return (
-        <CSSTransition
+        <ArcoCSSTransition
           classNames="badge-zoom"
-          in={dot || color}
+          in={dot || !!color}
           timeout={200}
           appear
           mountOnEnter
@@ -113,7 +113,7 @@ function Badge(baseProps: BadgeProps, ref) {
             )}
             style={{ ...colorStyle, ...dotStyle }}
           />
-        </CSSTransition>
+        </ArcoCSSTransition>
       );
     }
     return (
@@ -134,6 +134,7 @@ function Badge(baseProps: BadgeProps, ref) {
         {
           [`${prefixCls}-status`]: status,
           [`${prefixCls}-no-children`]: !children,
+          [`${prefixCls}-rtl`]: rtl,
         },
         className
       )}

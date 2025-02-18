@@ -1,10 +1,9 @@
 import React from 'react';
-import { mount } from 'enzyme';
 import { useFakeXMLHttpRequest } from 'sinon';
 import { act } from 'react-test-renderer';
-import { UploadProps, UploadItem } from '../interface';
+import { UploadItem } from '../interface';
 import mountTest from '../../../tests/mountTest';
-import { sleep } from '../../../tests/util';
+import { sleep, render, fireEvent } from '../../../tests/util';
 import Upload from '..';
 
 function getFile(name, type = 'txt') {
@@ -14,18 +13,28 @@ function getFile(name, type = 'txt') {
 }
 
 const mockDirectoryItems = () => {
+  let flag = false;
   const getItem = ({ isDirectory, name, children }) => {
     return {
       fullPath: name,
       isDirectory,
       isFile: !isDirectory,
       file: (callback) => {
-        callback({ name });
+        setTimeout(() => {
+          callback({ name });
+        }, 10);
       },
       createReader: () => {
         return {
           readEntries(callback) {
-            return callback((children || []).map((x) => getItem(x)));
+            setTimeout(() => {
+              let items = [];
+              if (!flag) {
+                items = (children || []).map((x) => getItem(x));
+                flag = true;
+              }
+              callback(items);
+            }, 10);
           },
         };
       },
@@ -44,32 +53,30 @@ const mockDirectoryItems = () => {
 
 mountTest(Upload);
 
-describe('Upload drop', function() {
-  const requests = [];
+describe('Upload drop', function () {
+  const requests: any[] = [];
   let xhr;
-  beforeEach(function() {
+  beforeEach(function () {
     xhr = useFakeXMLHttpRequest();
 
-    xhr.onCreate = function(xhr) {
+    xhr.onCreate = function (xhr) {
       requests.push(xhr);
     };
   });
 
-  afterEach(function() {
+  afterEach(function () {
     xhr.restore();
   });
 
-  it('drop upload', async function() {
+  it('drop upload', async function () {
     let fileList: UploadItem[] = [];
-    const wrapper = mount<UploadProps>(
-      <Upload action="/sss" onChange={(files) => (fileList = files)} />
-    );
-    const triggerNode = wrapper.find('Button');
+    const wrapper = render(<Upload action="/sss" onChange={(files) => (fileList = files)} />);
+    const triggerNode = wrapper.find('.arco-btn');
     expect(triggerNode).toHaveLength(1);
     const files = [getFile('file1')];
 
     await act(() => {
-      triggerNode.simulate('drop', {
+      fireEvent.drop(triggerNode.item(0), {
         dataTransfer: {
           files,
         },
@@ -86,15 +93,15 @@ describe('Upload drop', function() {
     expect(fileList.every((x) => x.status === 'done')).toBe(true);
   });
 
-  it('accept .*', async function() {
+  it('accept .*', async function () {
     const mockFn = jest.fn();
-    const wrapper = mount<UploadProps>(<Upload accept=".png" action="/sss" onChange={mockFn} />);
-    const triggerNode = wrapper.find('Button');
+    const wrapper = render(<Upload accept=".png" action="/sss" onChange={mockFn} />);
+    const triggerNode = wrapper.find('.arco-btn');
     expect(triggerNode).toHaveLength(1);
     const files = [getFile('file1')];
 
     await act(() => {
-      triggerNode.simulate('drop', {
+      fireEvent.drop(triggerNode.item(0), {
         dataTransfer: {
           files,
         },
@@ -104,7 +111,7 @@ describe('Upload drop', function() {
     expect(mockFn.mock.calls.length).toBe(0);
 
     await act(() => {
-      triggerNode.simulate('drop', {
+      fireEvent.drop(triggerNode.item(0), {
         dataTransfer: {
           files: [getFile('file2', 'png')],
         },
@@ -113,12 +120,12 @@ describe('Upload drop', function() {
     expect(mockFn.mock.calls.length).toBe(1);
   });
 
-  it('accept excel', async function() {
+  it('accept excel', async function () {
     const mockFn = jest.fn();
-    const wrapper = mount<UploadProps>(
+    const wrapper = render(
       <Upload accept="application/vnd.ms-excel" action="/sss" onChange={mockFn} />
     );
-    const triggerNode = wrapper.find('Button');
+    const triggerNode = wrapper.find('.arco-btn');
     expect(triggerNode).toHaveLength(1);
     const files = [
       new File([new Blob(['aaa'], { type: 'application/vnd.ms-excel' })], 'file.xsl', {
@@ -127,7 +134,7 @@ describe('Upload drop', function() {
     ];
 
     await act(() => {
-      triggerNode.simulate('drop', {
+      fireEvent.drop(triggerNode.item(0), {
         dataTransfer: {
           files,
         },
@@ -137,12 +144,10 @@ describe('Upload drop', function() {
     expect(mockFn.mock.calls.length).toBe(1);
   });
 
-  it('accept xxx/*', async function() {
+  it('accept xxx/*', async function () {
     const mockFn = jest.fn();
-    const wrapper = mount<UploadProps>(
-      <Upload multiple accept="image/*" action="/sss" onChange={mockFn} />
-    );
-    const triggerNode = wrapper.find('Button');
+    const wrapper = render(<Upload multiple accept="image/*" action="/sss" onChange={mockFn} />);
+    const triggerNode = wrapper.find('.arco-btn');
     expect(triggerNode).toHaveLength(1);
     const files = [
       new File([new Blob(['aaa'], { type: 'image/png' })], 'a.png', {
@@ -154,25 +159,24 @@ describe('Upload drop', function() {
     ];
 
     await act(() => {
-      triggerNode.simulate('drop', {
+      fireEvent.drop(triggerNode.item(0), {
         dataTransfer: {
           files,
         },
       });
     });
     await sleep(100);
-    wrapper.update();
 
     expect(wrapper.find('.arco-upload-list-item')).toHaveLength(2);
   });
 
-  it('directory ', async function() {
-    const wrapper = mount<UploadProps>(<Upload directory action="/sss" />);
-    const triggerNode = wrapper.find('Button');
+  it('directory ', async function () {
+    const wrapper = render(<Upload directory action="/sss" />);
+    const triggerNode = wrapper.find('.arco-btn');
     expect(triggerNode).toHaveLength(1);
 
     await act(() => {
-      triggerNode.simulate('drop', {
+      fireEvent.drop(triggerNode.item(0), {
         dataTransfer: {
           items: mockDirectoryItems(),
         },
@@ -180,8 +184,26 @@ describe('Upload drop', function() {
     });
 
     await sleep(100);
-    wrapper.update();
 
     expect(wrapper.find('.arco-upload-list-item')).toHaveLength(2);
+  });
+
+  it('directory false should filter out directory', async function () {
+    const wrapper = render(<Upload action="/sss" multiple />);
+    const triggerNode = wrapper.find('.arco-btn');
+    expect(triggerNode).toHaveLength(1);
+
+    await act(() => {
+      fireEvent.drop(triggerNode.item(0), {
+        dataTransfer: {
+          items: mockDirectoryItems(),
+          files: [getFile('a'), new File([new Blob(['b'], { type: '' })], 'b')],
+        },
+      });
+    });
+
+    await sleep(100);
+
+    expect(wrapper.find('.arco-upload-list-item')).toHaveLength(1);
   });
 });

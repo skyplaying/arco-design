@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import dayjs from 'dayjs';
-import { mount } from 'enzyme';
+
+import { act } from 'react-test-renderer';
 import {
   Form,
   AutoComplete,
@@ -19,6 +20,7 @@ import {
 } from '../..';
 import { FormProps, FormInstance } from '../interface';
 import { UploadItem } from '../../Upload';
+import { sleep, render, fireEvent } from '../../../tests/util';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -99,6 +101,7 @@ type formData = {
   slider: number;
   upload: UploadItem;
   readme: boolean;
+  test: any;
 };
 
 function Demo(props: FormProps & { saveFormRef: (form: FormInstance<formData>) => void }) {
@@ -316,16 +319,16 @@ function Demo(props: FormProps & { saveFormRef: (form: FormInstance<formData>) =
 }
 
 describe('UseForm', () => {
-  let form: FormInstance<formData> | null = null;
+  let form: FormInstance<formData>;
   let formValues = {};
   let changeValue = {};
   let wrapper;
   let submitMock = jest.fn();
   beforeEach(() => {
     submitMock = jest.fn();
-    wrapper = mount(
+    wrapper = render(
       <Demo
-        saveFormRef={(ref) => (form = ref)}
+        saveFormRef={(ref) => (form = ref as FormInstance<formData>)}
         initialValues={fieldInitvalues}
         onSubmit={submitMock}
         onValuesChange={(c, v) => {
@@ -342,9 +345,7 @@ describe('UseForm', () => {
   });
 
   it('be controled', () => {
-    const InputNumber = wrapper.find('InputNumber');
-
-    InputNumber.find('input').simulate('change', {
+    fireEvent.change(wrapper.querySelector('.arco-input-number input'), {
       target: { value: '12' },
     });
     expect(changeValue).toEqual({ number: 12 });
@@ -382,44 +383,62 @@ describe('UseForm', () => {
     });
   });
 
+  it('getFieldValue should not change the store', () => {
+    form.setFieldValue('test', { x: { y: 1 } });
+    const testValue = form.getFieldValue('test');
+    testValue.x.y = 2;
+    expect(form.getFieldValue('test')).toEqual({ x: { y: 1 } });
+  });
+
   it('normalize', () => {
-    const InputNumber = wrapper.find('InputNumber');
-    InputNumber.find('input').simulate('change', { target: { value: '300' } });
+    fireEvent.change(wrapper.querySelector('.arco-input-number input'), {
+      target: { value: '300' },
+    });
     expect(changeValue).toEqual({ number: 10 });
     expect(formValues).toEqual({ ...formValues, number: 10 });
   });
 
-  it('array validateTrigger', () => {
-    const InputNumber = wrapper.find('InputNumber');
+  it('array validateTrigger', async () => {
+    const InputNumber = wrapper.querySelector('.arco-input-number input');
 
     form.setFieldValue('number', 120);
-    InputNumber.find('input').simulate('focus');
-    InputNumber.find('input').simulate('blur');
-    expect(form.getFieldsError().number.message).toBe('`120` is not less than `10`');
+    act(() => {
+      fireEvent.focus(InputNumber);
+      fireEvent.blur(InputNumber);
+    });
 
-    InputNumber.find('input').simulate('change', { target: { value: '12' } });
-    expect(form.getFieldsError().number.message).toBe('`12` is not less than `10`');
+    await sleep(10);
+    expect(form.getFieldsError().number?.message).toBe('`120` 大于最大值 `10`');
 
-    InputNumber.find('input').simulate('change', { target: { value: '' } });
-    expect(form.getFieldsError().number.message).toBe('number is required');
+    fireEvent.change(InputNumber, { target: { value: '12' } });
+    await sleep(10);
+    expect(form.getFieldsError().number?.message).toBe('`12` 大于最大值 `10`');
 
-    InputNumber.find('input').simulate('change', { target: { value: '1' } });
+    fireEvent.change(InputNumber, { target: { value: '' } });
+    await sleep(10);
+    expect(form.getFieldsError().number?.message).toBe('number 是必填项');
+
+    fireEvent.change(InputNumber, { target: { value: '1' } });
 
     // TODO: 是否被setField过的也是属于touche字段
     expect(form.getTouchedFields()).toEqual(['number']);
 
-    expect(form.getFieldsError().number.message).toBe('`1` is not greater than `5`');
-    InputNumber.find('input').simulate('change', { target: { value: '9' } });
+    await sleep(10);
+    expect(form.getFieldsError().number?.message).toBe('`1` 小于最小值 `5`');
+    fireEvent.change(InputNumber, { target: { value: '9' } });
+    await sleep(10);
     expect(form.getFieldsError()).toEqual({});
   });
 
   it('string validateTrigger', async () => {
-    const Input = wrapper.find('Input').at(0);
+    const input = wrapper.find('input')[0];
 
     form.setFieldValue('name', '');
-    Input.find('input').simulate('focus');
-    Input.find('input').simulate('blur');
-    expect(form.getFieldsError().name.message).toBe('string is required');
+    fireEvent.focus(input);
+
+    fireEvent.blur(input);
+    await sleep(20);
+    expect(form.getFieldsError().name?.message).toBe('name 是必填项');
   });
 
   describe('validate', () => {
@@ -491,7 +510,7 @@ describe('UseForm', () => {
     });
   });
 
-  it('submit', (done) => {
+  it('submit', async (done) => {
     form.setFieldsValue({
       ...fieldInitvalues,
       name: 'test',
@@ -504,8 +523,9 @@ describe('UseForm', () => {
       space: ['beijing', 'beijingshi', 'chaoyang', 'datunli'],
       date: [dayjs(), dayjs()],
     });
-    wrapper.find('form').simulate('submit');
+    fireEvent.submit(wrapper.find('form')[0]);
 
+    await sleep(10);
     expect(form.getFieldsError()).toEqual({
       readme: {
         value: undefined,
@@ -516,13 +536,13 @@ describe('UseForm', () => {
 
     form.setFieldValue('readme', true);
 
-    wrapper.find('form').simulate('submit');
+    fireEvent.submit(wrapper.querySelector('form'));
 
     setTimeout(() => {
       expect(form.getFieldsError()).toEqual({});
       expect(submitMock).toHaveBeenCalled();
       done();
-    }, 0);
+    }, 10);
   });
 
   it('scrollToField', () => {
@@ -538,7 +558,7 @@ describe('UseForm', () => {
     }
 
     expect(form.getFieldsError().name).toEqual({
-      message: 'string is required',
+      message: 'name 是必填项',
       requiredError: true,
       type: 'string',
       value: undefined,
@@ -546,7 +566,7 @@ describe('UseForm', () => {
 
     expect(form.getFieldsError(['name'])).toEqual({
       name: {
-        message: 'string is required',
+        message: 'name 是必填项',
         requiredError: true,
         type: 'string',
         value: undefined,
@@ -556,13 +576,13 @@ describe('UseForm', () => {
     expect(form.getFieldsError()).toEqual(e.errors);
     expect(form.getFieldsError()).toEqual({
       name: {
-        message: 'string is required',
+        message: 'name 是必填项',
         requiredError: true,
         type: 'string',
         value: undefined,
       },
       number: {
-        message: 'number is required',
+        message: 'number 是必填项',
         requiredError: true,
         type: 'number',
         value: undefined,

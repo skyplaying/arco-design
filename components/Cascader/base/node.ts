@@ -167,6 +167,21 @@ class Node<T> {
     }
   };
 
+  public getSelfChildrenValue = () => {
+    const result = [];
+    const join = (pathValue, nodes) => {
+      if (!nodes || !nodes.length) {
+        result.push(pathValue);
+        return;
+      }
+      (nodes || []).forEach((node) => {
+        join(node.pathValue, node.children);
+      });
+    };
+    join(this.pathValue, this.children);
+    return result;
+  };
+
   public updateHalfState = (checked: boolean) => {
     this._halfChecked = this._isHalfChecked();
     this._checked = this._halfChecked ? false : checked;
@@ -180,7 +195,9 @@ class Node<T> {
 
   // 设置当前节点选中状态
   public setCheckedState = (checked: boolean) => {
-    if (this.disabled || checked === this._checked) {
+    const noNeedToUpdate = checked ? this._checked : !this._checked && !this._halfChecked;
+
+    if (this.disabled || noNeedToUpdate) {
       return;
     }
 
@@ -202,7 +219,7 @@ class Node<T> {
 
   // 忽略禁用设置选中状态
   public setCheckedStateIgnoreDisabled = (checked: boolean) => {
-    if (checked === this._checked) {
+    if (checked === Boolean(this._checked)) {
       return;
     }
     this.setCheckedProperty(checked);

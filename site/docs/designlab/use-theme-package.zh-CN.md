@@ -3,13 +3,13 @@
 
 # 使用主题包
 
-在风格配置平台配置主题并发布之后，可在 npm 看到自己发布出去的 npm 包。以下以 `@arco-design/theme-line` 为例描述使用方式。
+在风格配置平台配置主题并发布之后，可在 npm 看到自己发布出去的 npm 包。以下以 `@arco-themes/theme-line` 为例描述使用方式。
 `````
 
 ## 安装
 
-```
-npm i @arco-design/theme-line
+```bash
+npm i @arco-themes/theme-line
 ```
 
 ## 在项目中引用
@@ -24,18 +24,18 @@ npm i @arco-design/theme-line
 
 #### 需要按需加载样式
 
-通过 ArcoWebpack 插件引入主题包（推荐 `1.5.0` 版本及以上）
+通过 [Arco 构建插件](https://github.com/arco-design/arco-plugins/blob/main/README.zh-CN.md) 实现。
 
-在webpack配置中引入 `@arco-design/webpack-plugin` 插件。通过 `theme` 字段指定主题包名。
+以 webpack 配置为例，引入 `@arco-plugins/webpack-react` 插件。通过 `theme` 字段指定主题包名。
 
 ```js
-const ArcoWebpackPlugin = require('@arco-design/webpack-plugin');
+const ArcoWebpackPlugin = require('@arco-plugins/webpack-react');
 
 // webpack config
 {
   plugins: [
     new ArcoWebpackPlugin({
-        theme: '@arco-design/theme-first'
+        theme: '@arco-themes/theme-line'
     })
   ]
 }
@@ -45,11 +45,11 @@ const ArcoWebpackPlugin = require('@arco-design/webpack-plugin');
 
 1.  在项目中直接引入less文件
 
-`import '@arco-design/theme-first/index.less';`
+`import '@arco-themes/theme-line/index.less';`
 
 2.  在项目中直接引入css文件
 
-`import '@arco-design/theme-first/css/arco.css';`
+`import '@arco-themes/theme-line/css/arco.css';`
 
 直接引入css文件时，需要核对和业务项目中使用的组件库版本是否一致。 主要是因为css是在主题发布时候根据指定版本的组件库打包的。
 
@@ -57,6 +57,6 @@ const ArcoWebpackPlugin = require('@arco-design/webpack-plugin');
 
 1. #### 使用开发者模式配置的样式未生效？
 
-如果使用了样式的按需加载，请升级ArcoWebpack插件至少`1.5.0`版本。
+如果使用了样式的按需加载，请升级 ArcoWebpack 插件到最新版本
 
 如果未使用样式按需加载，请查看是否在项目中引入了主题包的 `index.less`.

@@ -18,10 +18,23 @@ export interface PickerProps {
    */
   disabled?: boolean;
   /**
-   * @zh 报错样式
-   * @en Error style
+   * @zh 是否是错误状态。(废弃，下个大版本移除，使用 status='error' 替代)
+   * @en Whether the textarea is error.(Deprecated, removed in the next major version, use status='error' instead)
+   * @deprecated
    */
   error?: boolean;
+  /**
+   * @zh 状态
+   * @en Status
+   * @version 2.45.0
+   */
+  status?: 'error' | 'warning';
+  /**
+   * @zh 前缀
+   * @en prefix
+   * @version 2.43.0
+   */
+  prefix?: ReactNode;
   /**
    * @zh 允许清除
    * @en Whether to show clear button
@@ -71,6 +84,12 @@ export interface PickerProps {
    * @en Whether the popup is visible or not
    */
   popupVisible?: boolean;
+  /**
+   * @zh 触发元素。
+   * @en Trigger element.
+   * @version 2.38.0
+   */
+  triggerElement?: ReactNode;
   /**
    * @zh 可以传入 `Trigger` 组件的参数
    * @en The props of the `Trigger` component
@@ -134,6 +153,16 @@ export interface PickerProps {
    * @en Whether to destroy popup when hidden
    */
   unmountOnExit?: boolean;
+  /**
+   * @zh 设置时区偏移，如果需要 utc 时间则设置为 0。
+   * @en Set the timezone offset, set to 0 if utc time is required.
+   */
+  utcOffset?: number;
+  /**
+   * @zh 设置时区, 如果设置了 `utcOffset`，则以 `utcOffset` 为准。
+   * @en timezone name, if `utcOffset` is set, `utcOffset` takes effect.
+   */
+  timezone?: string;
 }
 
 /**
@@ -181,7 +210,7 @@ export type BaseRangePickerProps = {
    */
   onChange?: (valueString: string[], value: Dayjs[]) => void;
   /**
-   * @zh 选择日期是的回调
+   * @zh 选择日期时的回调
    * @en Callback when select time
    */
   onSelect?: (valueString: string[], value: Dayjs[]) => void;

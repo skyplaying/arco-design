@@ -1,17 +1,26 @@
-import React, { useContext, forwardRef } from 'react';
+import React, { useContext, useMemo, forwardRef } from 'react';
 import cs from '../_util/classNames';
 import { isNumber, isObject } from '../_util/is';
 import { ConfigContext } from '../ConfigProvider';
-import { ColProps } from './interface';
+import { ColProps, FlexType } from './interface';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import { RowContext } from './context';
 
 const defaultProps: ColProps = {
   span: 24,
 };
 
+function getFlexString(flex: FlexType) {
+  if (typeof flex === 'string' && /\d+[px|%|em|rem|]{1}/.test(flex)) {
+    return `0 0 ${flex}`;
+  }
+  return flex;
+}
+
 function Col(baseProps: ColProps, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<ColProps>(baseProps, defaultProps, componentConfig?.['Grid.Col']);
+  const { gutter, div } = useContext(RowContext);
 
   const {
     className,
@@ -19,8 +28,6 @@ function Col(baseProps: ColProps, ref) {
     children,
     span,
     offset,
-    gutter,
-    div,
     order,
     pull,
     push,
@@ -30,16 +37,20 @@ function Col(baseProps: ColProps, ref) {
     lg,
     xl,
     xxl,
+    xxxl,
+    flex,
     ...rest
   } = props;
 
   function adaptationGrid(prefixCls: string, mergeClassName: { [key: string]: any }) {
-    const screenList = { xs, sm, md, lg, xl, xxl };
+    const screenList = { xs, sm, md, lg, xl, xxl, xxxl };
     Object.keys(screenList).forEach((screen) => {
       const screenValue = screenList[screen];
-      if (screenValue && isNumber(screenValue)) {
-        mergeClassName[`${prefixCls}-${screen}-${screenValue}`] = true;
-      } else if (screenValue && isObject(screenValue)) {
+      if (isNumber(screenValue)) {
+        if (screenValue >= 0) {
+          mergeClassName[`${prefixCls}-${screen}-${screenValue}`] = true;
+        }
+      } else if (isObject(screenValue)) {
         mergeClassName[`${prefixCls}-${screen}-${screenValue.span}`] = screenValue.span;
         mergeClassName[`${prefixCls}-${screen}-offset-${screenValue.offset}`] = screenValue.offset;
         mergeClassName[`${prefixCls}-${screen}-order-${screenValue.order}`] = screenValue.order;
@@ -54,13 +65,14 @@ function Col(baseProps: ColProps, ref) {
   let mergeClassName = {
     [`${prefixCls}`]: !div,
     [`${prefixCls}-order-${order}`]: order,
-    [`${prefixCls}-${span}`]: !div && !xs && !sm && !md && !lg && !xl && !xxl,
+    [`${prefixCls}-${span}`]: !div && !xs && !sm && !md && !lg && !xl && !xxl && !xxxl,
     [`${prefixCls}-offset-${offset}`]: offset,
     [`${prefixCls}-pull-${pull}`]: pull,
     [`${prefixCls}-push-${push}`]: push,
+    [`${prefixCls}-rtl`]: rtl,
   };
   mergeClassName = adaptationGrid(prefixCls, mergeClassName);
-  const classNames = cs(mergeClassName, className);
+  const classNames = cs(flex ? prefixCls : mergeClassName, className);
 
   const paddingStyle: {
     paddingLeft?: number;
@@ -81,6 +93,11 @@ function Col(baseProps: ColProps, ref) {
     }
   }
 
+  const flexStyle = useMemo(
+    () => (getFlexString(flex) ? { flex: getFlexString(flex) } : {}),
+    [flex]
+  );
+
   return (
     <div
       ref={ref}
@@ -88,6 +105,7 @@ function Col(baseProps: ColProps, ref) {
       style={{
         ...style,
         ...paddingStyle,
+        ...flexStyle,
       }}
       className={classNames}
     >

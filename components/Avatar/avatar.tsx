@@ -21,7 +21,7 @@ const defaultProps: AvatarProps = {
 
 const Avatar = forwardRef<HTMLElement, PropsWithChildren<AvatarProps>>(
   (props: PropsWithChildren<AvatarProps>, ref) => {
-    const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+    const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
 
     const prefixCls = getPrefixCls('avatar');
     const contextProps = useContext(AvatarContext);
@@ -70,14 +70,15 @@ const Avatar = forwardRef<HTMLElement, PropsWithChildren<AvatarProps>>(
       `${prefixCls}-${shape}`,
       {
         [`${prefixCls}-with-trigger-icon`]: triggerIcon,
+        [`${prefixCls}-rtl`]: rtl,
       },
       className
     );
-
+    const childrenList = React.Children.toArray(children);
     const isImage =
-      children &&
-      React.isValidElement(children) &&
-      (children.type === 'img' || children.type === 'picture');
+      childrenList.length === 1 &&
+      React.isValidElement(childrenList[0]) &&
+      (childrenList[0].type === 'img' || childrenList[0].type === 'picture');
 
     const _triggerIconStyle: CSSProperties = triggerIconStyle || {};
     if (

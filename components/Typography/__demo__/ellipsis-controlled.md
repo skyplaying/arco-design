@@ -1,48 +1,59 @@
 ---
-order: 6
+order: 8
 title:
-  zh-CN: 省略受控
-  en-US: Ellipsis Controlled
+  zh-CN: 省略受控（不推荐）
+  en-US: Ellipsis Controlled (Not recommended)
 ---
 
 ## zh-CN
+
+**不推荐使用 ellipsis 属性开启折叠，建议使用 Typography.Ellipsis 组件替代**
+
 省略操作及相关配置受控案例
 
 ## en-US
+
+**It is not recommended to use the ellipsis attribute to enable folding. It is recommended to use the Typography.Ellipsis component instead.**
 
 Ellipsis and related configuration controlled cases
 
 ```js
 import { useState } from 'react';
-import { Typography, Button, Switch, Input, Form, Descriptions, Space } from '@arco-design/web-react';
-
+import {
+  Typography,
+  Button,
+  Switch,
+  Input,
+  Form,
+  Descriptions,
+  Space,
+} from '@arco-design/web-react';
 const defaultText = `A design is a plan or specification for the construction of an object or system or for the
 implementation of an activity or process. A design is a plan or specification for the
 construction of an object or system or for the implementation of an activity or process. `;
-
 const defaultConfig = {
   ellipsisStr: '...',
 };
-const Demo = () => {
+
+const App = () => {
   const [config, setConfig] = useState(defaultConfig);
   const [rows, setRows] = useState(1);
   const [text, setText] = useState(defaultText);
-
   const { ellipsis, ellipsisStr, expandable, suffix } = config;
   return (
-    <>
+    <div>
       <Space align="start" size={120}>
         <Form
           onValuesChange={(_, values) => setConfig(values)}
-          style={{ width: '400px' }}
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 18 }}
+          style={{ width: '400px', }}
+          labelCol={{ span: 6, }}
+          wrapperCol={{ span: 18, }}
           size="small"
         >
-          <Form.Item label="超出省略" field="ellipsis">
+          <Form.Item label="超出省略" field="ellipsis" triggerPropName="checked">
             <Switch />
           </Form.Item>
-          <Form.Item label="展开/折叠" field="expandable">
+          <Form.Item label="展开/折叠" field="expandable" triggerPropName="checked">
             <Switch />
           </Form.Item>
           <Form.Item label="省略号" field="ellipsisStr" initialValue={defaultConfig.ellipsisStr}>
@@ -52,7 +63,7 @@ const Demo = () => {
             <Input />
           </Form.Item>
           <Form.Item label="省略展示">
-            <Space size="middle">
+            <Space size="medium">
               <Button onClick={() => setRows(Math.max(1, rows - 1))}> row- </Button>
               <Button onClick={() => setRows(rows + 1)}> row+ </Button>
             </Space>
@@ -71,23 +82,36 @@ const Demo = () => {
               label,
               value: String(value),
             })),
-            { label: 'rows', value: rows },
+            {
+              label: 'rows',
+              value: rows,
+            },
           ]}
-          style={{ marginBottom: 20 }}
-          labelStyle={{ paddingRight: 36 }}
+          style={{ marginBottom: 20, }}
+          labelStyle={{ paddingRight: 36, }}
         />
       </Space>
 
       <div>
-        <Typography.Text
-          ellipsis={ellipsis ? { rows: rows, expandable, suffix, ellipsisStr } : undefined}
+        <Typography.Paragraph
+          ellipsis={
+            ellipsis
+              ? {
+                  rows: rows,
+                  expandable,
+                  suffix,
+                  ellipsisStr,
+                  wrapper: "div"
+                }
+              : undefined
+          }
         >
           {text}
-        </Typography.Text>
+        </Typography.Paragraph>
       </div>
-    </>
+    </div>
   );
 };
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```

@@ -1,4 +1,5 @@
 import React, { useState, useContext, forwardRef, CSSProperties } from 'react';
+import useKeyboardEvent from '../_util/hooks/useKeyboardEvent';
 import cs from '../_util/classNames';
 import IconClose from '../../icon/react-icon/IconClose';
 import IconLoading from '../../icon/react-icon/IconLoading';
@@ -30,7 +31,8 @@ const defaultProps: TagProps = {
 };
 
 function Tag(baseProps: TagProps, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
+  const getKeyboardEvents = useKeyboardEvent();
   const props = useMergeProps<TagProps>(baseProps, defaultProps, componentConfig?.Tag);
   const {
     className,
@@ -45,6 +47,8 @@ function Tag(baseProps: TagProps, ref) {
     onCheck,
     icon,
     closeIcon,
+    bordered,
+    __closeIconProps,
     ...rest
   } = props;
 
@@ -69,9 +73,8 @@ function Tag(baseProps: TagProps, ref) {
           setLoading(false);
           setVisible(false);
         })
-        .catch((err) => {
+        .catch(() => {
           setLoading(false);
-          throw err;
         });
     } else {
       setVisible(false);
@@ -98,7 +101,9 @@ function Tag(baseProps: TagProps, ref) {
       [`${prefixCls}-checkable`]: checkable,
       [`${prefixCls}-checked`]: _checked,
       [`${prefixCls}-size-${size}`]: size,
+      [`${prefixCls}-bordered`]: bordered,
       [`${prefixCls}-custom-color`]: _checked && color && !_color,
+      [`${prefixCls}-rtl`]: rtl,
     },
     className
   );
@@ -121,9 +126,18 @@ function Tag(baseProps: TagProps, ref) {
   return (
     <div ref={ref} style={colorStyle} className={classNames} {...otherProps}>
       {icon && <span className={`${prefixCls}-icon`}>{icon}</span>}
-      {children}
+      <span className={`${prefixCls}-content`}>{children}</span>
       {closable && !loading && closeIcon !== null && (
-        <IconHover prefix={prefixCls} className={`${prefixCls}-close-btn`} onClick={onHandleClose}>
+        <IconHover
+          prefix={prefixCls}
+          className={`${prefixCls}-close-btn`}
+          onClick={onHandleClose}
+          role="button"
+          tabIndex={0}
+          {...getKeyboardEvents({ onPressEnter: onHandleClose })}
+          aria-label="Close"
+          {...__closeIconProps}
+        >
           {closeIcon !== undefined ? closeIcon : <IconClose />}
         </IconHover>
       )}

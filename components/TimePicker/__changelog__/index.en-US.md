@@ -1,3 +1,67 @@
+## 2.51.1
+
+2023-08-04
+
+### 🐛 BugFix
+
+- Fix the bug that the default value of `TimePicker` component is not compatible with `disabledHours` `disabledMinites` `DisabledSeconds`.([#2025](https://github.com/arco-design/arco-design/pull/2025) [@bestlyg](https://github.com/bestlyg))
+
+## 2.49.1
+
+2023-06-09
+
+### 🐛 BugFix
+
+- Fix the bug that the warning appears in the console when the `TimePicker` component is set to `scrollSticky={false}`.([#2023](https://github.com/arco-design/arco-design/pull/2023) [@bestlyg](https://github.com/bestlyg))
+
+## 2.44.0
+
+2023-01-13
+
+### 🆕 Feature
+
+- `TimePicker` support set `triggerElement=null` to use panel only.([#1721](https://github.com/arco-design/arco-design/pull/1721))
+
+## 2.43.0
+
+2022-12-23
+
+### 🆕 Feature
+
+- `TimePicker` supports setting prefix by `prefix`.([#1668](https://github.com/arco-design/arco-design/pull/1668))
+
+## 2.38.0
+
+2022-07-29
+
+### 🆕 Feature
+
+- Component `TimePicker` add `triggerElement` prop to support custom trigger element.([#1199](https://github.com/arco-design/arco-design/pull/1199))
+
+## 2.32.0
+
+2022-04-15
+
+### 🐛 BugFix
+
+- Fix the `onSelect` event not triggered when the `TimePicker` input is correct.([#769](https://github.com/arco-design/arco-design/pull/769))
+
+## 2.30.0
+
+2022-03-04
+
+### 🆕 Feature
+
+- The `TimePicker` component supports `utcOffset` and `timezone` to set the UTC time and timezone.([#604](https://github.com/arco-design/arco-design/pull/604))
+
+## 2.27.1
+
+2021-12-24
+
+### 🐛 BugFix
+
+- Fix the bug that the next time the onChange callback is incorrect when the `TimePicker` component is set to `undefined` under the control mode.([#361](https://github.com/arco-design/arco-design/pull/361))
+
 ## 2.23.0-beta.0
 
 2021-09-17

@@ -5,6 +5,7 @@ import IconMore from '../../icon/react-icon/IconMore';
 import { DropdownButtonProps } from './interface';
 import { ConfigContext } from '../ConfigProvider';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import { pickDataAttributes } from '../_util/pick';
 
 const defaultProps: DropdownButtonProps = {
   position: 'br',
@@ -26,17 +27,14 @@ function Button(baseProps: DropdownButtonProps, ref) {
     style,
     children,
     disabled,
-    droplist,
     position = 'br',
-    trigger = 'hover',
     type = 'default',
     size,
     icon = <IconMore />,
-    unmountOnExit = true,
     onClick,
-    onVisibleChange,
     buttonProps,
     buttonsRender,
+    ...dropdownRestProps
   } = props;
 
   let leftButton: ReactNode = (
@@ -58,16 +56,15 @@ function Button(baseProps: DropdownButtonProps, ref) {
     ((rightButton as ReactElement).props && (rightButton as ReactElement).props.loading);
 
   return (
-    <ArcoButton.Group className={className} style={style} ref={ref}>
+    <ArcoButton.Group className={className} style={style} ref={ref} {...pickDataAttributes(props)}>
       {leftButton}
       <Dropdown
-        droplist={droplist}
+        disabled={disabled}
         position={position}
-        trigger={trigger}
-        unmountOnExit={unmountOnExit}
-        onVisibleChange={onVisibleChange}
+        {...dropdownRestProps}
         triggerProps={{
           disabled: disableTrigger,
+          ...dropdownRestProps?.triggerProps,
         }}
       >
         {rightButton}

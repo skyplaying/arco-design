@@ -5,7 +5,7 @@ import { TooltipProps } from '../Tooltip';
 /**
  * @title Menu
  */
-export interface MenuProps {
+export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, 'className'> {
   children?: ReactNode;
   style?: CSSProperties;
   prefixCls?: string;
@@ -62,6 +62,17 @@ export interface MenuProps {
    */
   selectable?: boolean;
   /**
+   * @zh 水平菜单是否自动溢出省略
+   * @en Whether the horizontal menu automatically collapses when it overflows
+   * @defaultValue true
+   * @version 2.24.0
+   */
+  ellipsis?:
+    | boolean
+    | {
+        text?: ReactNode;
+      };
+  /**
    * @zh 是否自动滚动选中项目到可见区域
    * @en Whether to automatically scroll the selected item to the visible area
    */
@@ -97,7 +108,8 @@ export interface MenuProps {
    * @en Click menu item callback
    * @version `event` in 2.15.0, `keyPath` in 2.19.0
    */
-  onClickMenuItem?: (key: string, event, keyPath: string[]) => void;
+  // Do NOT change 'any' to 'void'. Allow to customize the behavior by the return value of `onClickMenuItem` in Dropdown
+  onClickMenuItem?: (key: string, event, keyPath: string[]) => any;
   /**
    * @zh 点击子菜单标题的回调
    * @en Callback when click sub menu
@@ -109,6 +121,12 @@ export interface MenuProps {
    * @en Callback when menu collapse status changed
    */
   onCollapseChange?: (collapse: boolean) => void;
+  /**
+   * @zh 水平菜单自动超出省略发生变化时的回调
+   * @en Callback when horizontal-menu ellipsis status changed
+   * @version 2.57.0
+   */
+  onEllipsisChange?: (status: { lastVisibleIndex: number; overflowNodes: ReactNode[] }) => void;
 
   /**
    * @zh
@@ -133,7 +151,7 @@ export interface MenuProps {
 /**
  * @title Menu.SubMenu
  */
-export interface MenuSubMenuProps {
+export interface MenuSubMenuProps extends Omit<HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   children?: ReactNode;
   style?: CSSProperties;
   className?: string | string[];
@@ -151,8 +169,8 @@ export interface MenuSubMenuProps {
    */
   key: string;
   /**
-   * @zh 弹出模式下，是否将多级菜单头也作为一个菜单项，支持点击选中等状态。
-   * @en Whether to use the subMenu header as a menu item which can be selected if the subMenu is popup mode
+   * @zh 是否将多级菜单头也作为一个菜单项，支持点击选中等状态。
+   * @en Whether to use the subMenu header as a menu item which can be selected
    */
   selectable?: boolean;
   /**
@@ -209,9 +227,15 @@ export interface MenuItemProps extends Omit<HTMLAttributes<HTMLElement>, 'classN
   disabled?: boolean;
   /**
    * @zh 配置最外层标签，可以是 html 标签或是组件
-   * @en Configure the outermost label, which can be an html label or a component
+   * @en Configure the outermost label, which can be a html label or a component
    * @defaultValue div
    * @version 2.16.0
    */
   wrapper?: string | React.FC<any> | React.ComponentClass<any>;
+  /**
+   * @zh 菜单折叠时，指定在 Tooltip 中展示的菜单项节点
+   * @en Set the menu item displayed in Tooltip when menu is collapsed
+   * @version 2.51.0
+   */
+  renderItemInTooltip?: () => ReactNode;
 }

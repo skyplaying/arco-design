@@ -9,6 +9,7 @@
     width: 680px;
     overflow: hidden;
     .home-body-border();
+
     background: var(--home-color-bg-1);
   }
 
@@ -55,6 +56,7 @@
     height: 200px;
   }
 }
+
 .token-component,
 .token-component-wrapper {
   :global(.arco) {
@@ -78,8 +80,17 @@
   }
 }
 
-body[arco-theme="dark"] {
+body[arco-theme='dark'] {
   .token-code {
     border-top: 1px solid var(--home-color-border);
+  }
+}
+
+:global(html.rtl) {
+  .token-body {
+    &-right {
+      margin-left: 0;
+      margin-right: 20px;
+    }
   }
 }

@@ -1,13 +1,12 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { fireEvent, render, sleep } from '../../../tests/util';
 import mountTest from '../../../tests/mountTest';
-import { Button, Form, Input, Radio } from '../..';
-import { FormProps } from '../interface';
+import { Button, Form, FormInstance, Input, Radio } from '../..';
 
 mountTest(Form);
 
 function mountForm(component: React.ReactElement) {
-  return mount<typeof Form, React.PropsWithChildren<FormProps>>(component);
+  return render(component);
 }
 
 describe('setFieldsValue for shouldUpdate items', () => {
@@ -95,9 +94,7 @@ describe('setFieldsValue for shouldUpdate items', () => {
       </div>
     );
 
-    const button = wrapper.find('.form-button').at(0);
-    button.simulate('click');
-
+    fireEvent.click(wrapper.querySelector('.form-button') as HTMLElement);
     expect(formRef.getFieldsValue()).toEqual({
       type: 'B',
       field1: 'setValue',
@@ -110,5 +107,77 @@ describe('setFieldsValue for shouldUpdate items', () => {
       field2: { field2: 'setValue' },
       'field3.field': 'a',
     });
+  });
+});
+
+describe('dependencies', () => {
+  it('default', async () => {
+    let form: FormInstance = {} as FormInstance;
+    const mockValidatorFn = jest.fn();
+    const wrapper = render(
+      <Form
+        ref={(node: FormInstance) => {
+          form = node;
+        }}
+      >
+        <Form.Item field="password" rules={[{ required: true, message: 'password is required' }]}>
+          <Input id="password" />
+        </Form.Item>
+        <Form.Item
+          field="confirm_password"
+          dependencies={['password']}
+          rules={[
+            {
+              validator: (v, cb) => {
+                mockValidatorFn();
+                if (!v) {
+                  return cb('confirm_password is required');
+                }
+                if (form.getFieldValue('password') !== v) {
+                  return cb('confirm_password must be equal with password');
+                }
+                cb(null);
+              },
+            },
+          ]}
+        >
+          <Input id="confirm_password" />
+        </Form.Item>
+      </Form>
+    );
+
+    expect(mockValidatorFn.mock.calls.length).toBe(0);
+    fireEvent.change(wrapper.find('input').item(0), {
+      target: { value: '123' },
+    });
+
+    expect(mockValidatorFn.mock.calls.length).toBe(0);
+
+    expect(form?.getFieldValue('password')).toBe('123');
+
+    fireEvent.change(wrapper.find('input').item(1), {
+      target: { value: '12' },
+    });
+    expect(mockValidatorFn.mock.calls.length).toBe(1);
+    await sleep(10);
+    expect(wrapper.queryByRole('alert')?.textContent).toBe(
+      'confirm_password must be equal with password'
+    );
+    fireEvent.change(wrapper.find('input').item(0), {
+      target: { value: '12' },
+    });
+    await sleep(10);
+    expect(wrapper.queryAllByRole('alert')).toHaveLength(0);
+
+    form.setFieldValue('password', '123');
+    await sleep(10);
+    expect(wrapper.queryByRole('alert')?.textContent).toBe(
+      'confirm_password must be equal with password'
+    );
+    fireEvent.change(wrapper.find('input').item(1), {
+      target: { value: '123' },
+    });
+    await sleep(10);
+    expect(wrapper.queryAllByRole('alert')).toHaveLength(0);
   });
 });

@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react';
 import throttle from 'lodash/throttle';
 import compute from 'compute-scroll-into-view';
@@ -32,7 +33,7 @@ const defaultProps: AnchorProps = {
 };
 
 function Anchor(baseProps: AnchorPropsWithChildren, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<AnchorPropsWithChildren>(
     baseProps,
     defaultProps,
@@ -52,30 +53,42 @@ function Anchor(baseProps: AnchorPropsWithChildren, ref) {
     boundary = 'start',
     targetOffset,
     children,
+    direction = 'vertical',
     onSelect,
     onChange,
+    ...rest
   } = props;
   const prefixCls = getPrefixCls('anchor');
   const classNames = cs(prefixCls, className, {
     [`${prefixCls}-lineless`]: lineless,
+    [`${prefixCls}-rtl`]: rtl,
+    [`${prefixCls}-horizontal`]: direction === 'horizontal',
   });
   const wrapperRef = useRef<HTMLDivElement>(null);
   const sliderLineRef = useRef<HTMLDivElement>(null);
   const linkMap = useRef<Map<string, HTMLElement>>(new Map());
   const isScrolling = useRef(false);
+  const scrollContainer = useRef<HTMLElement | Window>(null);
+
+  // use this flag to trigger re-computing position of active link slider line
+  const [flagUpdateSliderLine, setFlagUpdateSliderLine] = useState(0);
   const [currentLink, setCurrentLink] = useStateWithPromise('');
   const isFirstRender = useIsFirstRender();
 
-  const scrollContainer = useRef<HTMLElement | Window>(null);
   useEffect(() => {
     const container = getContainer(propScrollContainer);
     scrollContainer.current = container;
+  }, [propScrollContainer]);
+
+  const getAffixTarget = useCallback(() => {
+    return getContainer(propScrollContainer);
   }, [propScrollContainer]);
 
   useImperativeHandle(
     ref,
     () => ({
       dom: wrapperRef.current,
+      getRootDOMNode: () => wrapperRef.current,
     }),
     []
   );
@@ -83,11 +96,13 @@ function Anchor(baseProps: AnchorPropsWithChildren, ref) {
   function addLink(hash: string, element: HTMLElement) {
     if (hash) {
       linkMap.current.set(hash, element);
+      setFlagUpdateSliderLine(Math.random());
     }
   }
 
   function removeLink(hash: string) {
     linkMap.current.delete(hash);
+    setFlagUpdateSliderLine(Math.random());
   }
 
   const setActiveLink = useCallback(
@@ -103,7 +118,7 @@ function Anchor(baseProps: AnchorPropsWithChildren, ref) {
 
       if (node && hash !== currentLink) {
         scrollIntoViewIfNeeded(node, {
-          behavior: 'instant',
+          behavior: 'auto',
           block: 'nearest',
           scrollMode: 'if-needed',
           boundary: wrapperRef.current,
@@ -128,12 +143,18 @@ function Anchor(baseProps: AnchorPropsWithChildren, ref) {
       const element = findNode(document, hash);
       let inView = false;
       if (element) {
-        const { top } = element.getBoundingClientRect();
+        const { top, height } = element.getBoundingClientRect();
         if (isWindow(container)) {
-          inView = top >= startTop && top <= (targetOffset ?? documentHeight / 2);
+          const innerTargetOffset = targetOffset ?? documentHeight / 2;
+          inView =
+            (top >= startTop && top <= innerTargetOffset) ||
+            (top <= startTop && top + height >= innerTargetOffset);
         } else {
           const offsetTop = top - containerRect.top - startTop;
-          inView = offsetTop >= 0 && offsetTop <= (targetOffset ?? containerRect.height / 2);
+          const innerTargetOffset = targetOffset ?? containerRect.height / 2;
+          inView =
+            (offsetTop >= 0 && offsetTop <= innerTargetOffset) ||
+            (offsetTop <= 0 && offsetTop + height >= innerTargetOffset);
         }
         if (inView) {
           result = element;
@@ -170,19 +191,33 @@ function Anchor(baseProps: AnchorPropsWithChildren, ref) {
       const offset = isNumber(boundary) ? boundary : 0;
       const actions = compute(element, { block });
       if (!actions.length) return;
-      const { el, top } = actions[0];
-      const targetTop = top - offset;
-      if (!animation) {
-        // Manually trigger scrolling as browser's default action is prevented when `props.hash` is false
-        if (!willChangeHash) {
-          el.scrollTop = targetTop;
-        }
-        return;
-      }
-      slide(el as HTMLElement, targetTop, () => {
+
+      let stopScroll = false;
+
+      const promises = actions.map(({ el, top }) => {
+        return new Promise((resolve) => {
+          if (!stopScroll) {
+            if (el === scrollContainer.current) {
+              stopScroll = true;
+            }
+            const targetTop = top - offset;
+            if (!animation) {
+              // Manually trigger scrolling as browser's default action is prevented when `props.hash` is false
+              if (!willChangeHash) {
+                el.scrollTop = targetTop;
+              }
+              return resolve(null);
+            }
+            return slide(el as HTMLElement, targetTop, resolve);
+          }
+          resolve(null);
+        });
+      });
+
+      isScrolling.current = true;
+      Promise.all(promises).then(() => {
         isScrolling.current = false;
       });
-      isScrolling.current = true;
     } catch (e) {
       console.error(e);
     }
@@ -222,17 +257,27 @@ function Anchor(baseProps: AnchorPropsWithChildren, ref) {
   useEffect(() => {
     const link = linkMap.current.get(currentLink);
     if (link && !lineless && sliderLineRef.current) {
-      sliderLineRef.current.style.top = `${link.offsetTop}px`;
+      if (direction === 'horizontal') {
+        // if (rtl) {
+        //   sliderLineRef.current.style.right = `${link.offsetLeft}px`;
+        // } else {
+        // }
+        sliderLineRef.current.style.left = `${link.offsetLeft}px`;
+        sliderLineRef.current.style.width = `${link.clientWidth}px`;
+      } else {
+        sliderLineRef.current.style.top = `${link.offsetTop}px`;
+      }
     }
-  }, [currentLink, lineless]);
+  }, [currentLink, lineless, direction, rtl, flagUpdateSliderLine]);
 
   const content = (
-    <div className={classNames} style={style} ref={wrapperRef}>
+    <div className={classNames} style={style} ref={wrapperRef} {...rest}>
       {!lineless && currentLink && (
         <div className={`${prefixCls}-line-slider`} ref={sliderLineRef} />
       )}
       <AnchorContext.Provider
         value={{
+          direction,
           currentLink,
           addLink,
           removeLink,
@@ -245,7 +290,12 @@ function Anchor(baseProps: AnchorPropsWithChildren, ref) {
   );
 
   return affix ? (
-    <Affix offsetTop={offsetTop} offsetBottom={offsetBottom} style={affixStyle}>
+    <Affix
+      offsetTop={offsetTop}
+      offsetBottom={offsetBottom}
+      style={affixStyle}
+      target={getAffixTarget}
+    >
       {content}
     </Affix>
   ) : (

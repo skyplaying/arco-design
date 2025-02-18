@@ -1,4 +1,3 @@
-@import '../../style/theme/default.less';
 @import './token.less';
 
 @switch-prefix-cls: ~'@{prefix}-switch';
@@ -45,6 +44,28 @@
   vertical-align: middle;
   overflow: hidden;
 
+  &-type-round,
+  &-type-circle {
+    &:focus-visible {
+      box-shadow: 0 0 0 2px @switch-color-box-shadow_default;
+    }
+
+    &.@{switch-prefix-cls}-checked:focus-visible {
+      box-shadow: 0 0 0 2px @switch-color-box-shadow_checked;
+    }
+  }
+
+  &-type-line {
+    &:focus-visible .@{switch-prefix-cls}-dot {
+      box-shadow: 0 0 0 2px @switch-color-box-shadow_default;
+      transition: none;
+    }
+
+    &.@{switch-prefix-cls}-checked:focus-visible .@{switch-prefix-cls}-dot {
+      box-shadow: 0 0 0 2px @switch-color-box-shadow_checked;
+    }
+  }
+
   &-dot {
     position: absolute;
     display: flex;
@@ -67,9 +88,7 @@
 
   &-checked &-dot {
     color: @switch-color-dot-icon_on;
-    left: 100%;
-    transform: translateX(-100%);
-    margin-left: -@switch-size-default-gap;
+    left: calc(100% - @switch-size-dot-default - @switch-size-default-gap);
   }
 
   &[disabled] &-dot {
@@ -77,14 +96,15 @@
   }
 
   &[disabled]&-checked &-dot {
-    color: @switch-color-dot-icon_on_disabled
+    color: @switch-color-dot-icon_on_disabled;
   }
-    &[disabled] &-dot {
-   color: @switch-color-dot-icon_off_disabled;
+
+  &[disabled] &-dot {
+    color: @switch-color-dot-icon_off_disabled;
   }
 
   &[disabled]&-checked &-dot {
-    color: @switch-color-dot-icon_on_disabled
+    color: @switch-color-dot-icon_on_disabled;
   }
 
   &-text-holder {
@@ -179,8 +199,7 @@
   }
 
   &-small&-checked &-dot {
-    left: 100%;
-    margin-left: -@switch-size-small-gap;
+    left: calc(100% - @switch-size-dot-small - @switch-size-small-gap);
   }
 }
 
@@ -244,8 +263,7 @@
   }
 
   &-type-line&-checked &-dot {
-    left: 100%;
-    margin-left: 0;
+    left: calc(100% - @switch-line-size-dot-default);
   }
 
   // Disabled
@@ -301,6 +319,92 @@
 
     &-icon {
       transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  &-type-line&-small&-checked &-dot {
+    left: calc(100% - @switch-line-size-dot-small);
+  }
+}
+
+.@{switch-prefix-cls}-rtl {
+  direction: rtl;
+
+  .switchSlideText-enter,
+  .switchSlideText-appear {
+    right: -100% !important;
+    left: initial;
+  }
+
+  .switchSlideText-enter-active,
+  .switchSlideText-appear-active {
+    left: initial;
+    right: 8px !important;
+    transition: right @transition-duration-2 @transition-timing-function-standard;
+  }
+
+  .switchSlideText-exit {
+    right: 100% !important;
+    left: initial;
+  }
+
+  .switchSlideText-exit-active {
+    left: initial;
+    right: @switch-size-dot-default + @switch-size-default-gap + 6px !important;
+    transition: right @transition-duration-2 @transition-timing-function-standard;
+  }
+
+  .@{switch-prefix-cls} {
+    &-dot {
+      left: initial;
+      right: @switch-size-default-gap;
+    }
+
+    &-text-holder {
+      margin: 0 @switch-size-dot-default + @switch-size-default-gap + 6px 0 8px;
+    }
+
+    &-text {
+      left: initial;
+      right: @switch-size-dot-default + @switch-size-default-gap + 6px;
+    }
+  }
+
+  &.@{switch-prefix-cls}-small .@{switch-prefix-cls}-dot {
+    right: @switch-size-small-gap;
+  }
+
+  &.@{switch-prefix-cls}-type-line .@{switch-prefix-cls}-dot {
+    right: 0;
+  }
+
+  &.@{switch-prefix-cls}-checked {
+    .@{switch-prefix-cls}-dot {
+      right: calc(100% - @switch-size-dot-default - @switch-size-default-gap);
+    }
+
+    .@{switch-prefix-cls}-text-holder {
+      margin: 0 8px 0 @switch-size-dot-default + @switch-size-default-gap + 6px;
+    }
+
+    .@{switch-prefix-cls}-text {
+      right: 8px;
+      left: initial;
+    }
+
+    &.@{switch-prefix-cls}-small {
+      padding-right: -@switch-size-small-gap;
+      padding-left: 0;
+
+      &.@{switch-prefix-cls}-type-line {
+        padding-right: -@switch-size-small-line-gap;
+        padding-left: 0;
+      }
+    }
+
+    &.@{switch-prefix-cls}-small .@{switch-prefix-cls}-dot {
+      left: initial;
+      right: calc(100% - @switch-size-dot-small - @switch-size-small-gap);
     }
   }
 }

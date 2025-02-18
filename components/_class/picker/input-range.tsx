@@ -5,9 +5,9 @@ import React, {
   forwardRef,
   CSSProperties,
   ReactNode,
+  useState,
 } from 'react';
 import { Dayjs } from 'dayjs';
-import { getResolvedDayjsLocaleName } from '../../_util/dayjs';
 import IconClose from '../../../icon/react-icon/IconClose';
 import IconHover from '../../_class/icon-hover';
 import cs from '../../_util/classNames';
@@ -20,11 +20,12 @@ export interface DateInputRangeProps {
   style?: CSSProperties;
   className?: string | string[];
   error?: boolean;
+  status?: 'error' | 'warning';
   disabled?: boolean | boolean[];
   placeholder?: string[];
   value?: Dayjs[];
   popupVisible?: boolean;
-  format?: string;
+  format?: string | string[];
   size?: 'mini' | 'small' | 'default' | 'large';
   allowClear?: boolean;
   onClear?: (e) => void;
@@ -35,9 +36,12 @@ export interface DateInputRangeProps {
   onChange?: (e) => void;
   inputValue?: string;
   separator?: ReactNode;
-  changeFocusedInputIndex?: (index: number) => void;
+  changeFocusedInputIndex?: (index: number, silent?: boolean) => void;
   focusedInputIndex?: number;
   isPlaceholder?: boolean;
+  prefix?: ReactNode;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>[];
+  onBlur?: (e) => void;
 }
 
 type DateInputHandle = {
@@ -49,6 +53,7 @@ function DateInput(
   {
     allowClear,
     error,
+    status,
     style,
     className,
     disabled,
@@ -68,18 +73,21 @@ function DateInput(
     changeFocusedInputIndex,
     focusedInputIndex,
     isPlaceholder,
+    prefix,
+    inputProps = [],
+    onBlur,
     ...rest
   }: DateInputRangeProps,
   ref
 ) {
-  const { getPrefixCls, size: ctxSize, locale } = useContext(ConfigContext);
+  const { getPrefixCls, size: ctxSize, locale, rtl } = useContext(ConfigContext);
   const input0 = useRef<HTMLInputElement>(null);
   const input1 = useRef<HTMLInputElement>(null);
+  const refRootWrapper = useRef<HTMLDivElement>(null);
+  const [focused, setFocused] = useState([false, false]);
 
   const disabled1 = isArray(disabled) ? disabled[0] : disabled;
   const disabled2 = isArray(disabled) ? disabled[1] : disabled;
-
-  const localeName = getResolvedDayjsLocaleName(locale.locale);
 
   useImperativeHandle<any, DateInputHandle>(ref, () => ({
     focus(index?: number) {
@@ -97,45 +105,83 @@ function DateInput(
         input1.current && input1.current.blur && input1.current.blur();
       }
     },
+    getRootDOMNode: () => {
+      return refRootWrapper.current;
+    },
   }));
 
-  function changeFocusedInput(index: number) {
+  function changeFocusedInput(e, index: number) {
+    inputProps?.[index]?.onClick?.(e);
+
     if (focusedInputIndex !== index) {
       changeFocusedInputIndex(index);
     }
   }
 
-  function onKeyDown(e) {
+  function onKeyDown(e, index) {
     const keyCode = e.keyCode || e.which;
+
+    inputProps?.[index]?.onKeyDown?.(e);
+
     if (keyCode === Enter.code) {
-      onPressEnter && onPressEnter();
+      onPressEnter?.();
     }
     if (keyCode === Tab.code) {
+      // e.preventDefault(); // fix: cannot move focus away from the component with tab
       onPressTab && onPressTab(e);
     }
   }
 
-  function onChangeInput(e) {
+  function onChangeInput(e, index) {
     e.stopPropagation();
+    inputProps?.[index]?.onChange?.(e);
     onChange && onChange(e);
+  }
+
+  function onBlurInput(e, index) {
+    setFocused((prev) => {
+      prev[index] = false;
+      return [...prev];
+    });
+    inputProps?.[index]?.onBlur?.(e);
+    onBlur?.(e);
+  }
+
+  function onFocusInput(e, index) {
+    if (index === 0 || index === 1) {
+      setFocused((prev) => {
+        prev[index] = true;
+        return [...prev];
+      });
+      if (focusedInputIndex !== index) {
+        changeFocusedInputIndex(index, true);
+      }
+    }
+    inputProps?.[index]?.onFocus?.(e);
   }
 
   const prefixCls = getPrefixCls('picker');
   const size = propSize || ctxSize;
 
+  const mergedFocused = focused[0] || focused[1] || !!popupVisible;
+  const inputStatus = status || (error ? 'error' : undefined);
   const inputClassNames = cs(
     prefixCls,
     `${prefixCls}-range`,
     `${prefixCls}-size-${size}`,
     {
-      [`${prefixCls}-focused`]: !!popupVisible,
+      [`${prefixCls}-focused`]: mergedFocused,
       [`${prefixCls}-disabled`]: disabled1 && disabled2,
-      [`${prefixCls}-error`]: error,
+      [`${prefixCls}-${inputStatus}`]: inputStatus,
+      [`${prefixCls}-rtl`]: rtl,
+      [`${prefixCls}-has-prefix`]: prefix,
     },
     className
   );
   const getInputValue = (index: number) => {
-    const valueText = value[index] ? value[index].locale(localeName).format(format) : '';
+    const valueText = value[index]
+      ? value[index].locale(locale.dayjsLocale).format(isArray(format) ? format[index] : format)
+      : '';
     if (inputValue) {
       return index === focusedInputIndex ? inputValue : valueText;
     }
@@ -151,16 +197,25 @@ function DateInput(
   }
 
   return (
-    <div style={style} className={inputClassNames} {...omit(rest, ['onChange', 'onPressEnter'])}>
+    <div
+      style={style}
+      ref={refRootWrapper}
+      className={inputClassNames}
+      {...omit(rest, ['onChange', 'onPressEnter'])}
+    >
+      {prefix && <div className={`${prefixCls}-prefix`}>{prefix}</div>}
       <div className={getFocusInputClassName(0)}>
         <input
           ref={input0}
+          {...inputProps[0]}
           disabled={disabled1}
           placeholder={placeholder[0]}
           value={getInputValue(0)}
-          onChange={onChangeInput}
-          onKeyDown={onKeyDown}
-          onClick={() => changeFocusedInput(0)}
+          onChange={(e) => onChangeInput(e, 0)}
+          onKeyDown={(e) => onKeyDown(e, 0)}
+          onClick={(e) => changeFocusedInput(e, 0)}
+          onBlur={(e) => onBlurInput(e, 0)}
+          onFocus={(e) => onFocusInput(e, 0)}
           {...readOnlyProps}
         />
       </div>
@@ -168,12 +223,15 @@ function DateInput(
       <div className={getFocusInputClassName(1)}>
         <input
           ref={input1}
+          {...inputProps[1]}
           disabled={disabled2}
           placeholder={placeholder[1]}
           value={getInputValue(1)}
-          onChange={onChangeInput}
-          onKeyDown={onKeyDown}
-          onClick={() => changeFocusedInput(1)}
+          onChange={(e) => onChangeInput(e, 1)}
+          onKeyDown={(e) => onKeyDown(e, 1)}
+          onClick={(e) => changeFocusedInput(e, 1)}
+          onBlur={(e) => onBlurInput(e, 1)}
+          onFocus={(e) => onFocusInput(e, 1)}
           {...readOnlyProps}
         />
       </div>

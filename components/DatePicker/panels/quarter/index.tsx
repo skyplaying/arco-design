@@ -47,7 +47,7 @@ function QuarterPicker(props: InnerQuarterPickerProps & PrivateCType) {
     ...rest
   } = props;
 
-  const { locale: globalLocale, getPrefixCls } = useContext(ConfigContext);
+  const { locale: globalLocale, getPrefixCls, rtl } = useContext(ConfigContext);
   const DATEPICKER_LOCALE = merge(globalLocale.DatePicker, locale);
   const CALENDAR_LOCALE = DATEPICKER_LOCALE.Calendar;
 
@@ -115,14 +115,12 @@ function QuarterPicker(props: InnerQuarterPickerProps & PrivateCType) {
         value={pageShowDate}
         mode={panelMode}
         onChangePanel={onChangePanel}
+        DATEPICKER_LOCALE={DATEPICKER_LOCALE}
+        rtl={rtl}
       />
       <div className={`${prefixCls}-wrapper`}>{renderCalendar()}</div>
     </div>
   );
 }
-
-QuarterPicker.defaultProps = {
-  pickerType: 'quarter',
-};
 
 export default QuarterPicker;

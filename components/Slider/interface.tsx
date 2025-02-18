@@ -1,4 +1,5 @@
 import { CSSProperties, ReactNode } from 'react';
+import { InputNumberProps } from '../InputNumber';
 
 export type TooltipPosition =
   | 'top'
@@ -80,12 +81,22 @@ export interface SliderProps {
    * @zh 标签。是一个对象。key 为在[min, max]内的整数。
    * @en The labels on the render ruler. `marks` is an Object, it's `key` is an integer within [min, max].
    */
-  marks?: object;
+  marks?: Record<number, ReactNode>;
+  /**
+   * @zh 针对区间配置，返回区间步长和相对于整个滑动轴的宽度比例(如 0.5 或 "50%")。**只在`marks`场景下生效**
+   * @en For interval configuration, returns the interval step size and the ratio of the width relative to the entire sliding axis (e.g. 0.5 or "50%"). **Only valid in `marks` scene**
+   * @version 2.30.0
+   */
+  getIntervalConfig?: (
+    range: number[],
+    index: number
+  ) => { step?: number; width?: number | string };
   /**
    * @zh 只能选择标签值，此时step将会被忽略
    * @en Whether only the mark value can be selected
    */
   onlyMarkValue?: boolean;
+
   /**
    * @zh 默认值
    * @en To set default value
@@ -102,10 +113,11 @@ export interface SliderProps {
    */
   vertical?: boolean;
   /**
-   * @zh 是否展示输入框。`onlyMarkValue` 为 `true` 时输入框始终隐藏
-   * @en Whether to display the input box. If `onlyMarkValue` is `true`, the input box will always be hidden.
+   * @zh 是否展示输入框，`onlyMarkValue` 为 `true` 或范围内多点选择时输入框始终隐藏。可接受 `InputNumber` 的 `props`。
+   * @en Whether to display the input box. When setting `onlyMarkValue` to `true` or selecting multiple points within the range, the input box will never be displayed. Accepts `props` for `InputNumber`.
+   * @version `InputNumberProps` in `2.32.0`
    */
-  showInput?: boolean;
+  showInput?: boolean | InputNumberProps | InputNumberProps[];
   /**
    * @zh 设置 `tooltip` 所插入的父元素
    * @en The parent node which the `tooltip` will be rendered to
@@ -117,8 +129,8 @@ export interface SliderProps {
    */
   formatTooltip?: (value: number) => string | ReactNode;
   /**
-   * @zh 反向坐标轴
-   * @en Reverse axis
+   * @zh 反向坐标轴, `rtl` 场景默认为 `true`
+   * @en Reverse axis, default `true` in `rtl`
    */
   reverse?: boolean;
   /**

@@ -4,7 +4,17 @@ import { isFunction } from '../_util/is';
 import IconExclamationCircleFill from '../../icon/react-icon/IconExclamationCircleFill';
 
 export const StepsProgress = (props) => {
-  const { size, prefixCls, percent, status, color, type, showText, formatText } = props;
+  const {
+    prefixCls,
+    percent,
+    color,
+    type,
+    formatText,
+    trailColor,
+    showText = true,
+    size = 'default',
+    status = 'normal',
+  } = props;
 
   const strokeWidth = props.strokeWidth || (size === 'small' ? 8 : 4);
   const cls = `${prefixCls}-${type}`;
@@ -28,9 +38,16 @@ export const StepsProgress = (props) => {
 
   return (
     <div className={`${cls}-wrapper`}>
-      <div className={`${cls}-outer`} style={{ height }}>
+      <div
+        className={`${cls}-outer`}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={percent}
+        style={{ height }}
+      >
         {[...new Array(props.steps)].map((_, index) => {
-          const isActive = percent >= (100 / props.steps) * index;
+          const isActive = percent > (100 / props.steps) * index;
           return (
             <div
               key={index}
@@ -38,7 +55,7 @@ export const StepsProgress = (props) => {
                 [`${cls}-item-active`]: isActive,
               })}
               style={{
-                backgroundColor: isActive ? color : '',
+                backgroundColor: isActive ? color : trailColor || '',
               }}
             />
           );
@@ -49,12 +66,6 @@ export const StepsProgress = (props) => {
       )}
     </div>
   );
-};
-
-StepsProgress.defaultProps = {
-  showText: true,
-  size: 'default',
-  status: 'normal',
 };
 
 export default StepsProgress;

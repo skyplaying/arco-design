@@ -1,4 +1,3 @@
-import { findDOMNode } from 'react-dom';
 import React, {
   useState,
   PropsWithChildren,
@@ -10,17 +9,15 @@ import React, {
   useCallback,
   ReactElement,
 } from 'react';
-import { CSSTransition } from 'react-transition-group';
 import FocusLock from 'react-focus-lock';
 import IconClose from '../../icon/react-icon/IconClose';
 import cs from '../_util/classNames';
-import { on, off, isServerRendering } from '../_util/dom';
+import { isServerRendering, contains } from '../_util/dom';
 import { Esc } from '../_util/keycode';
 import Button from '../Button';
 import Portal from '../Portal';
 import confirm, { ConfirmProps } from './confirm';
 import ConfigProvider, { ConfigContext } from '../ConfigProvider';
-import { getModalLocale } from './locale';
 import IconHover from '../_class/icon-hover';
 import { setModalConfig, ModalConfigType, destroyList } from './config';
 import { isFunction, isObject } from '../_util/is';
@@ -30,9 +27,12 @@ import useModal from './useModal';
 import { ModalProps, ModalReturnProps } from './interface';
 import useMergeValue from '../_util/hooks/useMergeValue';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import { findDOMNode } from '../_util/react-dom';
+import ArcoCSSTransition from '../_util/CSSTransition';
 
 type CursorPositionType = { left: number; top: number } | null;
 let cursorPosition: CursorPositionType | null = null;
+let globalDialogIndex = 0;
 
 if (!isServerRendering) {
   document.documentElement.addEventListener(
@@ -103,12 +103,25 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
 
   const modalWrapperRef = useRef<HTMLDivElement>(null);
   const contentWrapper = useRef<HTMLDivElement>(null);
-  const keyboardEventOn = useRef<boolean>(false);
-  const [wrapperVisible, setWrapperVisible] = useState(visible);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const [wrapperVisible, setWrapperVisible] = useState<boolean>();
   const [popupZIndex, setPopupZIndex] = useState<number>();
   const cursorPositionRef = useRef<CursorPositionType>(null);
   const haveOriginTransformOrigin = useRef<boolean>(false);
   const maskClickRef = useRef(false);
+
+  // 标识是否是处于第一次 visible 之前
+  const beforeFirstVisible = useRef<boolean>(true);
+
+  if (visible && beforeFirstVisible.current) {
+    beforeFirstVisible.current = false;
+  }
+
+  const dialogIndex = useRef<number>();
+
+  if (!dialogIndex.current) {
+    dialogIndex.current = globalDialogIndex++;
+  }
 
   const [loading, setLoading] = useMergeValue(false, {
     defaultValue: false,
@@ -116,7 +129,7 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
   });
 
   const prefixCls = context.getPrefixCls('modal', props.prefixCls);
-  const locale = getModalLocale();
+  const { locale, rtl } = context;
 
   // 简洁模式下默认不显示关闭按钮
   const defaultClosable = !simple;
@@ -130,6 +143,13 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
 
   const onCancel = () => {
     props.onCancel && props.onCancel();
+  };
+
+  const onEscExit = (event: React.KeyboardEvent) => {
+    if (escToExit && visible && event.key === Esc.key) {
+      event.stopPropagation();
+      onCancel();
+    }
   };
 
   const inExit = useRef(false);
@@ -166,24 +186,21 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
   };
 
   useEffect(() => {
-    const onKeyDown = (e) => {
-      if (escToExit && e && e.key === Esc.key) {
-        onCancel();
-      }
-    };
-
-    if (visible && !keyboardEventOn.current) {
-      keyboardEventOn.current = true;
-      on(document, 'keydown', onKeyDown);
+    let timer = null;
+    if (escToExit) {
+      timer = setTimeout(() => {
+        // https://github.com/arco-design/arco-design/pull/1439
+        if (contains(document.body, modalWrapperRef.current)) {
+          modalWrapperRef.current?.focus();
+        }
+      });
     }
-
     return () => {
-      keyboardEventOn.current = false;
-      off(document, 'keydown', onKeyDown);
+      timer && clearTimeout(timer);
     };
   }, [visible, escToExit]);
 
-  useEffect(() => {
+  const initPopupZIndex = () => {
     if (visible && popupZIndex === undefined) {
       if (modalWrapperRef.current) {
         // 根据wrapper的zindex，设置内部所有弹出型组件的zindex。
@@ -193,7 +210,7 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
         }
       }
     }
-  }, [visible, popupZIndex]);
+  };
 
   const renderFooter = () => {
     if (footer === null) return;
@@ -208,15 +225,14 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
         {okText || locale.Modal.okText}
       </Button>
     );
-    let footerContent = footer || (
-      <>
-        {!hideCancel && cancelButtonNode}
-        {okButtonNode}
-      </>
-    );
-    if (isFunction(footer)) {
-      footerContent = footer(cancelButtonNode, okButtonNode);
-    }
+    const footerContent = isFunction(footer)
+      ? footer(cancelButtonNode, okButtonNode)
+      : footer || (
+          <>
+            {!hideCancel && cancelButtonNode}
+            {okButtonNode}
+          </>
+        );
 
     return <div className={`${prefixCls}-footer`}>{footerContent}</div>;
   };
@@ -241,7 +257,9 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
     >
       {title && (
         <div className={`${prefixCls}-header`}>
-          <div className={`${prefixCls}-title`}>{title}</div>
+          <div className={`${prefixCls}-title`} id={`arco-dialog-${dialogIndex.current}`}>
+            {title}
+          </div>
         </div>
       )}
       <div ref={contentWrapper} className={`${prefixCls}-content`}>
@@ -255,30 +273,51 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
             {closeIcon}
           </span>
         ) : (
-          <IconHover tabIndex={-1} onClick={onCancel} className={`${prefixCls}-close-icon`}>
+          <IconHover
+            tabIndex={-1}
+            onClick={onCancel}
+            className={`${prefixCls}-close-icon`}
+            role="button"
+            aria-label="Close"
+          >
             <IconClose />
           </IconHover>
         ))}
     </ConfigProvider>
   );
 
+  const ariaProps = title ? { 'aria-labelledby': `arco-dialog-${dialogIndex.current}` } : {};
+
   const modalDom = (
     <div
+      role="dialog"
+      aria-modal="true"
+      {...ariaProps}
       className={cs(
         prefixCls,
         {
           [`${prefixCls}-simple`]: simple,
+          [`${prefixCls}-rtl`]: rtl,
         },
         className
       )}
       style={style}
+      ref={modalRef}
     >
       {innerFocusLock ? (
-        <FocusLock disabled={!visible} autoFocus={innerAutoFocus}>
+        <FocusLock
+          crossFrame={false}
+          disabled={!visible}
+          autoFocus={innerAutoFocus}
+          lockProps={{
+            tabIndex: -1,
+            onKeyDown: onEscExit,
+          }}
+        >
           {element}
         </FocusLock>
       ) : (
-        element
+        <>{element}</>
       )}
     </div>
   );
@@ -295,11 +334,15 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
     e.style.transformOrigin = transformOrigin;
   };
 
-  return (
-    <Portal visible={visible} forceRender={!mountOnEnter} getContainer={getPopupContainer}>
+  // mountOnEnter 只在第一次visible=true之前生效。
+  // 使用 modalRef.current 而不是 mountOnExit 是因为动画结束后，modalRef.current 会变成 null，此时再去销毁dom结点，避免动画问题
+  const forceRender = beforeFirstVisible.current ? !mountOnEnter : !!modalRef.current;
+
+  return visible || forceRender ? (
+    <Portal visible={visible} forceRender={forceRender} getContainer={getPopupContainer}>
       <div ref={ref}>
         {mask ? (
-          <CSSTransition
+          <ArcoCSSTransition
             in={visible}
             timeout={400}
             appear
@@ -307,18 +350,18 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
             classNames="fadeModal"
             unmountOnExit={unmountOnExit}
             onEnter={(e) => {
+              if (!e) return;
               e.style.display = 'block';
             }}
             onExited={(e) => {
+              if (!e) return;
               e.style.display = 'none';
             }}
           >
-            <div className={`${prefixCls}-mask`} style={maskStyle} />
-          </CSSTransition>
+            <div aria-hidden className={`${prefixCls}-mask`} style={maskStyle} />
+          </ArcoCSSTransition>
         ) : null}
         <div
-          role="dialog"
-          aria-hidden="true"
           {...omit(rest, [
             'content',
             'icon',
@@ -331,12 +374,17 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
             'closable',
             'prefixCls',
           ])}
-          ref={modalWrapperRef}
+          tabIndex={!innerFocusLock || !innerAutoFocus ? -1 : null}
+          ref={(node) => {
+            modalWrapperRef.current = node;
+            initPopupZIndex();
+          }}
           className={cs(
             `${prefixCls}-wrapper`,
             {
               [`${prefixCls}-wrapper-no-mask`]: !mask,
               [`${prefixCls}-wrapper-align-center`]: alignCenter,
+              [`${prefixCls}-wrapper-rtl`]: rtl,
             },
             wrapClassName
           )}
@@ -346,12 +394,14 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
             display: visible || wrapperVisible ? 'block' : 'none',
             overflow: !visible && wrapperVisible ? 'hidden' : '',
           }}
+          // 如果 autoFocus 是 false 需要在 modal 外层绑定 onKeyDown, 因为此时 FocusLock 绑定的 onKeyDown 不起作用
+          onKeyDown={!innerFocusLock || !innerAutoFocus ? onEscExit : null}
           onMouseDown={(e) => {
             maskClickRef.current = e.target === e.currentTarget;
           }}
           onClick={onClickMask}
         >
-          <CSSTransition
+          <ArcoCSSTransition
             in={visible}
             timeout={400}
             appear
@@ -359,54 +409,50 @@ function Modal(baseProps: PropsWithChildren<ModalProps>, ref) {
             unmountOnExit={unmountOnExit}
             mountOnEnter={mountOnEnter}
             onEnter={(e: HTMLDivElement) => {
+              if (!e) return;
               setWrapperVisible(true);
               cursorPositionRef.current = cursorPosition;
               haveOriginTransformOrigin.current = !!e.style.transformOrigin;
               setTransformOrigin(e);
+
+              modalRef.current = e;
             }}
             onEntered={(e: HTMLDivElement) => {
+              if (!e) return;
               setTransformOrigin(e);
               cursorPositionRef.current = null;
-              afterOpen && afterOpen();
+              afterOpen?.();
             }}
             onExit={() => {
               inExit.current = true;
             }}
             onExited={(e) => {
+              if (!e) return;
               setWrapperVisible(false);
               setTransformOrigin(e);
-              afterClose && afterClose();
+              afterClose?.();
               inExit.current = false;
+              if (unmountOnExit) {
+                modalRef.current = null;
+              }
             }}
           >
-            <ConfigProvider
-              {...context}
-              prefixCls={props.prefixCls || context.prefixCls}
-              locale={locale}
-              zIndex={popupZIndex || 1050}
-              getPopupContainer={(node) => {
-                return typeof getChildrenPopupContainer === 'function'
-                  ? getChildrenPopupContainer(node)
-                  : document.body;
-              }}
-            >
-              {React.cloneElement(
-                (isFunction(modalRender) ? modalRender(modalDom) : modalDom) as ReactElement,
-                {
-                  onMouseDown: () => {
-                    maskClickRef.current = false;
-                  },
-                  onMouseUp: () => {
-                    maskClickRef.current = false;
-                  },
-                }
-              )}
-            </ConfigProvider>
-          </CSSTransition>
+            {React.cloneElement(
+              (isFunction(modalRender) ? modalRender(modalDom) : modalDom) as ReactElement,
+              {
+                onMouseDown: () => {
+                  maskClickRef.current = false;
+                },
+                onMouseUp: () => {
+                  maskClickRef.current = false;
+                },
+              }
+            )}
+          </ArcoCSSTransition>
         </div>
       </div>
     </Portal>
-  );
+  ) : null;
 }
 
 export interface ModalComponent extends ForwardRefExoticComponent<PropsWithChildren<ModalProps>> {

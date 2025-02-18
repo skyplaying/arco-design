@@ -1,25 +1,30 @@
-import React, { forwardRef, memo, useContext, CSSProperties, useMemo, useRef } from 'react';
-import { plus } from 'number-precision';
+import React, { forwardRef, memo, useContext, CSSProperties, useRef, useMemo } from 'react';
+import NP, { plus, times, divide } from 'number-precision';
+import omit from '../_util/omit';
 import SliderButton from './button';
 import Marks from './marks';
 import Dots from './dots';
 import Input from './input';
 import Ticks from './ticks';
-import { isFunction, isObject } from '../_util/is';
-import { formatPercent, getOffset } from './utils';
+import { isFunction, isObject, isArray } from '../_util/is';
+import {
+  findNearestIndex,
+  formatPercent,
+  getIntervalOffset,
+  needSort,
+  sortNumberArray,
+} from './utils';
 import cs from '../_util/classNames';
 import { ConfigContext } from '../ConfigProvider';
 import { TooltipPosition, SliderProps } from './interface';
 import useMergeValue from '../_util/hooks/useMergeValue';
 import { off, on } from '../_util/dom';
 import useLegalValue from './hooks/useLegalValue';
+import useInterval from './hooks/useInterval';
 import useMergeProps from '../_util/hooks/useMergeProps';
+import useUpdate from '../_util/hooks/useUpdate';
 
-function isSameOrder(firstNums: number[], secondNums) {
-  const diff1 = firstNums[0] - firstNums[1];
-  const diff2 = secondNums[0] - secondNums[1];
-  return diff1 <= 0 === diff2 <= 0;
-}
+NP.enableBoundaryChecking(false);
 
 const defaultProps: SliderProps = {
   max: 100,
@@ -28,7 +33,7 @@ const defaultProps: SliderProps = {
 };
 
 function Slider(baseProps: SliderProps, ref) {
-  const { getPrefixCls, componentConfig } = useContext(ConfigContext);
+  const { getPrefixCls, componentConfig, rtl } = useContext(ConfigContext);
   const props = useMergeProps<SliderProps>(baseProps, defaultProps, componentConfig?.Slider);
   const {
     className,
@@ -46,17 +51,30 @@ function Slider(baseProps: SliderProps, ref) {
     vertical,
     showInput,
     reverse,
+    getIntervalConfig,
+    ...rest
   } = props;
 
   const range = !!propRange;
   const rangeConfig = isObject(propRange) ? { ...propRange } : { draggableBar: false };
+  const isReverse = rtl ? !reverse : reverse;
 
-  const { getLegalValue, getLegalRangeValue, isLegalValue } = useLegalValue({
+  const { intervalConfigs, markList } = useInterval({
+    min,
+    max,
+    onlyMarkValue,
+    step,
+    marks,
+    getIntervalConfig,
+  });
+
+  const { getLegalValue, getLegalRangeValue, isLegalValue, getNextMarkValue } = useLegalValue({
     isRange: range,
     min,
     max,
     onlyMarkValue,
     step,
+    intervalConfigs,
     marks,
   });
 
@@ -65,24 +83,34 @@ function Slider(baseProps: SliderProps, ref) {
     defaultValue: props.defaultValue,
     value: props.value,
   });
+
   // 计算合法值
-  const curVal = getLegalRangeValue(value);
+  let curVal = getLegalRangeValue(value);
   const lastVal = useRef<number[]>(curVal);
-  let [beginVal, endVal] = curVal;
-  if (!isSameOrder(curVal, lastVal.current)) {
-    // 保持顺序
-    [beginVal, endVal] = [endVal, beginVal];
+  // let [beginVal, endVal] = curVal;
+  const reverseOrder = useRef(needSort(curVal));
+
+  // value变化后 更新lastVal
+  useUpdate(() => {
+    lastVal.current = getLegalRangeValue(value);
+  }, [value, getLegalRangeValue]);
+
+  if (reverseOrder.current) {
+    curVal = sortNumberArray(curVal);
   }
-  // 偏移比例
-  const beginOffset = getOffset(beginVal, [min, max]);
-  const endOffset = getOffset(endVal, [min, max]);
-  // 标签数组
-  const markList = useMemo(
-    () => Object.keys(marks || {}).map((key) => ({ key, content: marks[key] })),
-    [marks]
-  );
-  // 是否显示输入框
-  const isShowInput = showInput && !onlyMarkValue;
+
+  const maxVal = curVal[curVal.length - 1];
+  const minVal = curVal[0];
+
+  // 是否显示输入框。多点选择不显示 input
+  const isShowInput = showInput && !onlyMarkValue && (!range || curVal.length < 3);
+  const extraInputProps = useMemo(() => {
+    if (isShowInput && (isArray(showInput) || isObject(showInput))) {
+      return isArray(showInput) ? [...showInput] : [{ ...showInput }, { ...showInput }];
+    }
+    return [];
+  }, [isShowInput, showInput]);
+
   // 样式前缀
   const prefixCls = getPrefixCls('slider');
   // ref
@@ -96,21 +124,30 @@ function Slider(baseProps: SliderProps, ref) {
   const isDragging = useRef(false);
   const barStartDragVal = useRef(0);
 
-  function getEmitParams([beginVal, endVal]: number[]): number | number[] {
-    if (beginVal > endVal) {
-      [beginVal, endVal] = [endVal, beginVal];
-    }
-    return range ? [beginVal, endVal] : endVal;
+  function getEmitParams(value: number[]): number | number[] {
+    const sortedValue = sortNumberArray(value);
+    return range ? sortedValue : sortedValue[sortedValue.length - 1];
   }
 
-  function onChange(val) {
-    let [newBeginVal, newEndVal] = val;
-    newBeginVal = getLegalValue(newBeginVal);
-    newEndVal = getLegalValue(newEndVal);
+  function updateValue(val) {
+    const copyVal = val.map((x) => getLegalValue(x));
+    lastVal.current = copyVal;
+    return copyVal;
+  }
 
-    lastVal.current = [newBeginVal, newEndVal];
-    const emitParams = getEmitParams([newBeginVal, newEndVal]);
+  function onChange(val, reason?: 'mousemove' | 'jumpToClick' | 'inputValueChange') {
+    const newValue = updateValue(val);
+    const emitParams = getEmitParams(newValue);
+
     setValue(emitParams);
+
+    // 在手动修改的情况下才可能出现反序问题。
+    if (reason === 'inputValueChange') {
+      reverseOrder.current = newValue.some((x, i) => x > newValue[i]);
+    } else {
+      // 在mousemove 跟 jumpToClick 顺序会保持 [begin,end]
+      reverseOrder.current = false;
+    }
     if (isFunction(props.onChange)) {
       props.onChange(emitParams);
     }
@@ -124,7 +161,7 @@ function Slider(baseProps: SliderProps, ref) {
   }
 
   function inRange(val: number) {
-    let [range1, range2] = [beginVal, endVal];
+    let [range1, range2] = [curVal[0], curVal[curVal.length - 1]];
     if (range1 > range2) {
       [range1, range2] = [range2, range1];
     }
@@ -135,16 +172,32 @@ function Slider(baseProps: SliderProps, ref) {
   function getValueByCoords(x: number, y: number): number {
     const { left, top, width, height } = position.current;
     let roadLength = width;
-    let diff = reverse ? left + width - x : x - left;
+    let diff = isReverse ? left + width - x : x - left;
     if (vertical) {
       roadLength = height;
-      diff = reverse ? y - top : top + height - y;
+      diff = isReverse ? y - top : top + height - y;
     }
-    diff = diff < 0 ? 0 : diff > roadLength ? roadLength : diff;
-    const stepLen = (roadLength * step) / (max - min);
-    const steps = Math.round(diff / stepLen);
-
-    return plus(min, steps * step);
+    if (roadLength <= 0) {
+      return 0;
+    }
+    // 通过坐标点偏移算出当前值相对于整个滑动轴的比例位置
+    let offset = Math.max(divide(diff, roadLength), 0);
+    offset = Math.min(1, offset);
+    // 通过偏移值算出当前值在哪个区间
+    const currentInterval = intervalConfigs.find((config) => {
+      return offset >= config.beginOffset && offset <= config.endOffset;
+    });
+    const { begin, beginOffset, step: currentStep, endOffset, end } = currentInterval;
+    // 当前值对整体来说，多出这个区间的比例
+    const currentValueOffset = offset - beginOffset;
+    // 这个区间整体的比例
+    const currentIntervalOffset = endOffset - beginOffset;
+    // 当前在这个区间的值 = （在这个区间的比例（相对于整体） / 这个区间相对于整体的比例）* 这个区间的总值
+    const valueInInterval = (currentValueOffset / currentIntervalOffset) * (end - begin);
+    // 算出当前值在这个区间的步数
+    const stepNum = Math.round(valueInInterval / currentStep);
+    // 当前值 = 区间起始值 + 区间步数 * 步长
+    return plus(begin, times(stepNum, currentStep));
   }
 
   function getBarStyle(offsets: number[]): CSSProperties {
@@ -156,19 +209,19 @@ function Slider(baseProps: SliderProps, ref) {
     const endOffset = formatPercent(1 - end);
     return vertical
       ? {
-          [reverse ? 'top' : 'bottom']: beginOffset,
-          [reverse ? 'bottom' : 'top']: endOffset,
+          [isReverse ? 'top' : 'bottom']: beginOffset,
+          [isReverse ? 'bottom' : 'top']: endOffset,
         }
       : {
-          [reverse ? 'right' : 'left']: beginOffset,
-          [reverse ? 'left' : 'right']: endOffset,
+          [isReverse ? 'right' : 'left']: beginOffset,
+          [isReverse ? 'left' : 'right']: endOffset,
         };
   }
 
   function getBtnStyle(offset: number): CSSProperties {
     return vertical
-      ? { [reverse ? 'top' : 'bottom']: formatPercent(offset) }
-      : { [reverse ? 'right' : 'left']: formatPercent(offset) };
+      ? { [isReverse ? 'top' : 'bottom']: formatPercent(offset) }
+      : { [isReverse ? 'right' : 'left']: formatPercent(offset) };
   }
 
   function getTooltipProps() {
@@ -211,29 +264,35 @@ function Slider(baseProps: SliderProps, ref) {
     if (disabled) return;
 
     const value = getLegalValue(val);
-    if (range && endVal - value > value - beginVal) {
-      onChange([value, endVal]);
+    // 找到 value 临近的两个值。
+    const [beforeIndex, nextIndex] = findNearestIndex(value, curVal);
+    const nearBeginVal = curVal[beforeIndex];
+    const nearEndValue = curVal[nextIndex];
+    const copyVal = curVal.slice(0);
+
+    if (range && nearEndValue - value > value - nearBeginVal) {
+      copyVal[beforeIndex] = value;
+      onChange(copyVal, 'jumpToClick');
     } else {
-      onChange([beginVal, value]);
+      copyVal[nextIndex] = value;
+      onChange(copyVal, 'jumpToClick');
     }
     onMouseUp();
   }
 
   function handleInputChange(val) {
-    onChange(val);
+    onChange(val, 'inputValueChange');
     onMouseUp();
   }
 
   // 拖动开始节点
-  function handleBeginMove(x: number, y: number) {
+  function handleMove(x: number, y: number, index) {
     isDragging.current = true;
-    onChange([getValueByCoords(x, y), endVal]);
-  }
+    const copyVal = curVal.slice(0);
 
-  // 拖动结束节点
-  function handleEndMove(x: number, y: number) {
-    isDragging.current = true;
-    onChange([beginVal, getValueByCoords(x, y)]);
+    copyVal[index] = getValueByCoords(x, y);
+
+    onChange(copyVal, 'mousemove');
   }
 
   function handleMoveEnd() {
@@ -241,15 +300,24 @@ function Slider(baseProps: SliderProps, ref) {
     onMouseUp();
   }
 
+  // 结束节点的 arrow event
+  function handleArrowEvent(type: 'addition' | 'subtraction', index: number) {
+    if (disabled) return;
+    const copyVal = curVal.slice(0);
+
+    copyVal[index] = getNextMarkValue(curVal[index], type);
+
+    onChange(copyVal);
+  }
+
   // bar 移动中
   function onBarMouseMove(e) {
     const newVal = getLegalValue(getValueByCoords(e.clientX, e.clientY));
     const offsetVal = newVal - barStartDragVal.current;
-    const newBeginVal = beginVal + offsetVal;
-    const newEndVal = endVal + offsetVal;
+    const copyVal = curVal.map((x) => x + offsetVal);
 
-    if (isLegalValue(newBeginVal) && isLegalValue(newEndVal)) {
-      onChange([newBeginVal, newEndVal]);
+    if (copyVal.every((v) => isLegalValue(v))) {
+      onChange(copyVal, 'mousemove');
     }
   }
 
@@ -262,12 +330,21 @@ function Slider(baseProps: SliderProps, ref) {
 
   return (
     <div
+      {...omit(rest, [
+        'defaultValue',
+        'value',
+        'onChange',
+        'getTooltipContainer',
+        'formatTooltip',
+        'onAfterChange',
+      ])}
       className={cs(
         prefixCls,
         {
           [`${prefixCls}-vertical`]: vertical,
           [`${prefixCls}-with-marks`]: marks,
-          [`${prefixCls}-reverse`]: reverse,
+          [`${prefixCls}-reverse`]: isReverse,
+          [`${prefixCls}-rtl`]: rtl,
         },
         className
       )}
@@ -283,72 +360,75 @@ function Slider(baseProps: SliderProps, ref) {
           })}
           onMouseDown={onRoadMouseDown}
         >
-          <div className={`${prefixCls}-bar`} style={getBarStyle([beginOffset, endOffset])} />
+          <div
+            className={`${prefixCls}-bar`}
+            style={getBarStyle([
+              getIntervalOffset(minVal, intervalConfigs),
+              getIntervalOffset(maxVal, intervalConfigs),
+            ])}
+          />
           {showTicks && (
             <Ticks
-              step={step}
+              intervalConfigs={intervalConfigs}
               min={min}
               max={max}
-              value={[beginVal, endVal]}
+              valueRange={[minVal, maxVal]}
               prefixCls={prefixCls}
               vertical={vertical}
-              reverse={reverse}
+              reverse={isReverse}
             />
           )}
           <Dots
             data={markList}
-            min={min}
-            max={max}
-            value={[beginVal, endVal]}
+            intervalConfigs={intervalConfigs}
+            valueRange={[minVal, maxVal]}
             vertical={vertical}
             prefixCls={prefixCls}
-            reverse={reverse}
+            reverse={isReverse}
             onMouseDown={handleJumpClick}
           />
           <Marks
             data={markList}
-            min={min}
-            max={max}
+            intervalConfigs={intervalConfigs}
             vertical={vertical}
             prefixCls={prefixCls}
-            reverse={reverse}
+            reverse={isReverse}
             onMouseDown={handleJumpClick}
           />
-          {range && (
-            <SliderButton
-              style={getBtnStyle(beginOffset)}
-              disabled={disabled}
-              prefixCls={prefixCls}
-              value={beginVal}
-              vertical={vertical}
-              {...getTooltipProps()}
-              onMoveBegin={getPosition}
-              onMoving={handleBeginMove}
-              onMoveEnd={handleMoveEnd}
-            />
-          )}
-          <SliderButton
-            style={getBtnStyle(endOffset)}
-            disabled={disabled}
-            prefixCls={prefixCls}
-            value={endVal}
-            vertical={vertical}
-            {...getTooltipProps()}
-            onMoveBegin={getPosition}
-            onMoving={handleEndMove}
-            onMoveEnd={handleMoveEnd}
-          />
+          {curVal.map((val, index) => {
+            if (!range && index !== curVal.length - 1) {
+              return null;
+            }
+            return (
+              <SliderButton
+                key={index}
+                style={getBtnStyle(getIntervalOffset(val, intervalConfigs))}
+                disabled={disabled}
+                prefixCls={prefixCls}
+                value={val}
+                maxValue={max}
+                minValue={min}
+                vertical={vertical}
+                {...getTooltipProps()}
+                onMoveBegin={getPosition}
+                onMoving={(x, y) => handleMove(x, y, index)}
+                onMoveEnd={handleMoveEnd}
+                onArrowEvent={(type) => handleArrowEvent(type, index)}
+              />
+            );
+          })}
         </div>
         {isShowInput && (
           <Input
             min={min}
             max={max}
             step={step}
-            value={[beginVal, endVal]}
+            value={curVal}
             range={range}
             disabled={disabled}
             prefixCls={prefixCls}
             onChange={handleInputChange}
+            extra={extraInputProps}
           />
         )}
       </div>

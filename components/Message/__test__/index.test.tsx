@@ -1,12 +1,11 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, $, sleep } from '../../../tests/util';
 import Message from '..';
 import Notice from '../../_class/notice';
 import { IconMessage } from '../../../icon';
-import { $ } from '../../../tests/util';
 
 it('render correctly', () => {
-  const message = mount(
+  const message = render(
     <div>
       <Notice type="info" content="Info type" prefixCls="arco-message" />
       <Notice type="success" content="Success type" prefixCls="arco-message" />
@@ -16,7 +15,7 @@ it('render correctly', () => {
       <Notice type="normal" content="Custom icon" icon={<IconMessage />} prefixCls="arco-message" />
     </div>
   );
-  expect(message.render()).toMatchSnapshot();
+  expect(message.container.firstChild).toMatchSnapshot();
 });
 
 describe('open message', () => {
@@ -63,5 +62,72 @@ describe('open message', () => {
       });
       expect($(`.arco-message-wrapper-${position} .arco-message`).length).toBe(1);
     });
+  });
+
+  it('notice icon prefix', () => {
+    Message.config({
+      prefixCls: 'aaa',
+    });
+    Message.success({
+      content: 'New Content',
+    });
+
+    expect($('.aaa-message')).toHaveLength(1);
+
+    expect($('.aaa-icon-check-circle-fill')).toHaveLength(1);
+
+    Message.config({
+      prefixCls: 'arco',
+    });
+  });
+
+  it('closable=false', () => {
+    Message.info({
+      content: 'closable=false',
+      closable: false,
+      closeIcon: 'xxx',
+    });
+    expect($('.arco-message-close-btn').length).toBe(0);
+  });
+
+  it('closeicon=xxx', () => {
+    Message.info({
+      content: 'closeicon=xxx',
+      closable: true,
+      closeIcon: 'xxx',
+    });
+
+    expect($('.arco-message-close-btn').length).toBe(1);
+    expect($('.arco-message-close-btn').item(0).textContent).toBe('xxx');
+  });
+
+  it('update when maxCount', async () => {
+    jest.useRealTimers();
+
+    Message.config({ maxCount: 2, duration: 0 });
+
+    Message.info('content1');
+
+    Message.info({ id: 'update', content: 'content update 1' });
+
+    Message.info({ id: 'update', content: 'content update 2' });
+
+    expect($('.arco-message').length).toBe(2);
+    expect($('.arco-message .arco-message-content')[0].innerHTML).toBe('content1');
+    expect($('.arco-message .arco-message-content')[1].innerHTML).toBe('content update 2');
+
+    Message.info('content 2');
+
+    await sleep(1000);
+
+    expect($('.arco-message').length).toBe(2);
+    expect($('.arco-message .arco-message-content')[0].innerHTML).toBe('content update 2');
+    expect($('.arco-message .arco-message-content')[1].innerHTML).toBe('content 2');
+
+    Message.info({ id: 'update', content: 'content update 3' });
+
+    expect($('.arco-message').length).toBe(2);
+    expect($('.arco-message .arco-message-content')[0].innerHTML).toBe('content update 3');
+    expect($('.arco-message .arco-message-content')[1].innerHTML).toBe('content 2');
   });
 });

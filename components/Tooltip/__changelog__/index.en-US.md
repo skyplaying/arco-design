@@ -1,3 +1,43 @@
+## 2.61.3
+
+2024-04-12
+
+### 🐛 BugFix
+
+- Fix the bug of text misalignment in `Tooltip` component under rtl([#2618](https://github.com/arco-design/arco-design/pull/2618))
+
+## 2.35.1
+
+2022-06-17
+
+### 🐛 BugFix
+
+- Fixed arrow style of `Tooltip` in dark mode([#995](https://github.com/arco-design/arco-design/pull/995))
+
+## 2.29.2
+
+2022-02-25
+
+### 🐛 BugFix
+
+- ` Tooltip ` content value is false does not display the popup([#579](https://github.com/arco-design/arco-design/pull/579))
+
+## 2.25.0
+
+2021-11-19
+
+### 🆕 Feature
+
+- `Trigger` add `escToClose`, default value is `false`.([#167](https://github.com/arco-design/arco-design/pull/167))
+
+## 2.24.1
+
+2021-11-12
+
+### 💅 Style
+
+- `Tooltip` component add a border in dark mode to avoid overlapping with the background color in the popup box.([#150](https://github.com/arco-design/arco-design/pull/150))
+
 ## 2.23.0
 
 2021-09-27

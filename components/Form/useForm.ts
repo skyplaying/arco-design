@@ -8,6 +8,7 @@ export function getFormInstance<
   FieldKey extends KeyType = keyof FormData
 >(): FormInstance<FormData, FieldValue, FieldKey> {
   const store = new Store<FormData, FieldValue, FieldKey>();
+
   return {
     getFieldsValue: store.getFieldsValue,
     getFieldValue: store.getFieldValue,
@@ -19,19 +20,28 @@ export function getFormInstance<
     setFieldsValue: store.setFieldsValue,
     setFields: store.setFields,
     resetFields: store.resetFields,
+    clearFields: store.clearFields,
     submit: store.submit,
     validate: store.validate,
     scrollToField: () => {},
+    getFieldsState: store.getFieldsState,
+    // arco 内部使用，业务万不可调用
     getInnerMethods: (inner?: boolean): InnerMethodsReturnType<FormData, FieldValue, FieldKey> => {
       const methods = {} as InnerMethodsReturnType<FormData, FieldValue, FieldKey>;
       if (inner) {
         [
           'registerField',
+          'registerWatcher',
+          'registerStateWatcher',
+          'registerFormWatcher',
           'innerSetInitialValues',
           'innerSetInitialValue',
           'innerSetCallbacks',
           'innerSetFieldValue',
           'innerGetStore',
+          'innerGetStoreStatus',
+          'innerGetFieldValue',
+          'innerCollectFormState',
         ].map((key) => {
           methods[key] = store[key];
         });
@@ -53,8 +63,9 @@ export default function useForm<
   if (!formRef.current) {
     if (form) {
       formRef.current = form;
+    } else {
+      formRef.current = getFormInstance<FormData, FieldValue, FieldKey>();
     }
-    formRef.current = getFormInstance<FormData, FieldValue, FieldKey>();
   }
   return [formRef.current];
 }

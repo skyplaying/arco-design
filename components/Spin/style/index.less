@@ -5,6 +5,10 @@
 .@{spin-prefix-cls} {
   display: inline-block;
 
+  &-block {
+    display: block;
+  }
+
   &-with-tip {
     text-align: center;
   }
@@ -38,7 +42,7 @@
       top: 0;
       right: 0;
       bottom: 0;
-      background-color: var(--color-spin-layer-bg);
+      background-color: var(~'@{arco-cssvars-prefix}-color-spin-layer-bg');
       opacity: 0;
       transition: opacity @transition-duration-1 @transition-timing-function-linear;
       pointer-events: none;
@@ -120,5 +124,5 @@
     @{percent} {
       transform: ~'translate3D(@{xOffset}, 0, @{zOffset}) scale(@{scaleOffset})'
     }
-  })
+  });
 }

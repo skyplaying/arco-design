@@ -1,3 +1,19 @@
+## 2.58.1
+
+2024-01-05
+
+### 🐛 BugFix
+
+- Fixed the issue where the `Space` component wrapping Fragment could not be parsed correctly.([#2480](https://github.com/arco-design/arco-design/pull/2480))
+
+## 2.40.0
+
+2022-09-16
+
+### 💎 Enhancement
+
+- Optimize the problem that the DOM node of `Space` is remounted when the specified `key` value has not changed.([#1393](https://github.com/arco-design/arco-design/pull/1393))
+
 ## 2.22.0
 
 2021-09-10

@@ -15,7 +15,6 @@ When the content is too long, you can set the expanded row by `expandedRowRender
 
 ```js
 import { Table } from '@arco-design/web-react';
-
 const columns = [
   {
     title: 'Name',
@@ -34,7 +33,6 @@ const columns = [
     dataIndex: 'email',
   },
 ];
-
 const data = [
   {
     key: '1',
@@ -73,24 +71,27 @@ const data = [
   },
 ];
 
-ReactDOM.render(
-  <Table
-    columns={columns}
-    data={data}
-    expandedRowRender={(record) => {
-      if (record.key !== '4') {
+const App = () => {
+  return (
+    <Table
+      columns={columns}
+      data={data}
+      expandedRowRender={(record) => {
         return `This is No.${record.key} description.`;
-      }
-      return null;
-    }}
-    onExpand={(detail, expanded) => {
-      console.log(detail, expanded);
-    }}
-    onExpandedRowsChange={(expandedRows) => {
-      console.log(expandedRows);
-    }}
-    expandProps={{ expandRowByClick: true }}
-  />,
-  CONTAINER
-);
+      }}
+      onExpand={(detail, expanded) => {
+        console.log(detail, expanded);
+      }}
+      onExpandedRowsChange={(expandedRows) => {
+        console.log(expandedRows);
+      }}
+      expandProps={{
+        expandRowByClick: true,
+        rowExpandable: (record) => record.key !== '4',
+      }}
+    />
+  );
+};
+
+export default App;
 ```

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef, isValidElement } from 'react';
 import IconFile from '../../../icon/react-icon/IconFile';
 import IconFilePdf from '../../../icon/react-icon/IconFilePdf';
 import IconFileImage from '../../../icon/react-icon/IconFileImage';
@@ -13,6 +13,7 @@ import IconExclamationCircleFill from '../../../icon/react-icon/IconExclamationC
 import IconDelete from '../../../icon/react-icon/IconDelete';
 import IconHover from '../../_class/icon-hover';
 import { ConfigProviderProps } from '../../ConfigProvider';
+import useKeyboardEvent from '../../_util/hooks/useKeyboardEvent';
 
 const getIconType = (file: UploadItem) => {
   let type = '';
@@ -48,10 +49,12 @@ const getIconType = (file: UploadItem) => {
 };
 
 const TextItem = (
-  props: UploadListProps & { file: UploadItem; locale: ConfigProviderProps['locale'] }
+  props: UploadListProps & { file: UploadItem; locale: ConfigProviderProps['locale'] },
+  ref
 ) => {
   const { prefixCls, disabled, file, locale } = props;
   const cls = `${prefixCls}-list-item-text`;
+  const getKeyboardEvents = useKeyboardEvent();
 
   const Icon = getIconType(file);
 
@@ -77,11 +80,15 @@ const TextItem = (
   }
 
   return (
-    <div className={`${prefixCls}-list-item ${prefixCls}-list-item-${file.status}`}>
+    <div className={`${prefixCls}-list-item ${prefixCls}-list-item-${file.status}`} ref={ref}>
       <div className={cls}>
         {props.listType === 'picture-list' && (
           <div className={`${cls}-thumbnail`}>
-            <img src={url} />
+            {isFunction(showUploadList.imageRender) ? (
+              showUploadList.imageRender(file)
+            ) : (
+              <img src={url} />
+            )}
           </div>
         )}
         <div className={`${cls}-content`}>
@@ -102,7 +109,11 @@ const TextItem = (
             )}
             {file.status === STATUS.fail && actionIcons.errorIcon !== null && (
               <Tooltip
-                content={file.response || locale.Upload.error}
+                content={
+                  (typeof file.response === 'object'
+                    ? isValidElement(file.response) && file.response
+                    : file.response) || locale.Upload.error
+                }
                 {...triggerProps}
                 disabled={file.status !== STATUS.fail}
               >
@@ -130,13 +141,20 @@ const TextItem = (
       </div>
       <div className={`${prefixCls}-list-item-operation`}>
         {!disabled && actionIcons.removeIcon !== null && (
-          <IconHover>
-            <span
-              className={`${prefixCls}-list-remove-icon`}
-              onClick={() => {
+          <IconHover
+            className={`${prefixCls}-list-remove-icon-hover`}
+            onClick={() => {
+              props.onRemove && props.onRemove(file);
+            }}
+            tabIndex={0}
+            aria-label={locale.Upload.delete}
+            {...getKeyboardEvents({
+              onPressEnter: () => {
                 props.onRemove && props.onRemove(file);
-              }}
-            >
+              },
+            })}
+          >
+            <span className={`${prefixCls}-list-remove-icon`}>
               {actionIcons.removeIcon || <IconDelete />}
             </span>
           </IconHover>
@@ -146,4 +164,7 @@ const TextItem = (
   );
 };
 
-export default TextItem;
+export default forwardRef<
+  HTMLDivElement,
+  UploadListProps & { file: UploadItem; locale: ConfigProviderProps['locale'] }
+>(TextItem);

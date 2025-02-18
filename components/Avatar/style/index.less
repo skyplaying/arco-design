@@ -44,7 +44,7 @@
   }
 
   &-image {
-    display: inline-block;
+    display: inline-flex;
     width: 100%;
     height: 100%;
 
@@ -107,6 +107,15 @@
   &-with-trigger-icon:hover &-trigger-icon-button {
     background-color: @avatar-color-trigger-button-bg_hover;
   }
+
+  &-rtl {
+    direction: rtl;
+  }
+
+  &-rtl &-trigger-icon-button {
+    right: unset;
+    left: -@avatar-spacing-trigger-button-right;
+  }
 }
 
 .@{avatar-prefix-cls} {
@@ -119,10 +128,18 @@
       color: @avatar-color-max-count-text;
       font-size: @avatar-font-size-max-count;
     }
+
+    &-rtl {
+      direction: rtl;
+    }
   }
 
   &-group & {
     border: @avatar-group-item-border-width solid @avatar-color-group-item-border;
+  }
+
+  &-group &:not(:first-child) {
+    margin-left: @avatar-group-item-margin-left;
   }
 
   &-group-popover &:not(:first-child) {

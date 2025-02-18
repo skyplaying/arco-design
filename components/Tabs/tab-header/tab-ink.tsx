@@ -5,7 +5,7 @@ import { getRectDiff } from '../utils';
 import throttleByRaf from '../../_util/throttleByRaf';
 
 const getInkStyle = (direction, curTitle, headerRef) => {
-  let style: CSSProperties = {};
+  let style: CSSProperties = { left: '', width: '', top: '', height: '' };
 
   if (curTitle) {
     const diffStyle = getRectDiff(curTitle, headerRef);
@@ -36,23 +36,23 @@ const TabInk = ({
   getTitleRef,
   activeTab,
   getHeaderRef,
+  inkBarSize,
 }) => {
   const inkRef = useRef<HTMLDivElement>();
   const inkStyleRef = useRef<CSSProperties>();
 
   useEffect(() => {
     const setInkStyle = throttleByRaf(() => {
-      const newStyle = getInkStyle(
-        direction,
-        getTitleRef(activeTab),
-        getHeaderRef('headerRef').current
-      );
+      const curTitle = getTitleRef(activeTab);
+      const newStyle = getInkStyle(direction, curTitle, getHeaderRef('headerRef').current);
 
       if (newStyle && !isEqualWith(inkStyleRef.current, newStyle)) {
         inkStyleRef.current = newStyle;
-        Object.keys(newStyle).forEach((key) => {
-          inkRef.current.style[key] = newStyle[key];
-        });
+        if (inkRef.current?.style) {
+          Object.keys(newStyle).forEach((key) => {
+            inkRef.current.style[key] = newStyle[key];
+          });
+        }
       }
     });
 
@@ -68,9 +68,12 @@ const TabInk = ({
       className={cs(`${prefixCls}-header-ink`, {
         [`${prefixCls}-header-ink-no-animation`]: !animation,
         [`${prefixCls}-header-ink-disabled`]: disabled,
+        [`${prefixCls}-header-ink-custom`]: inkBarSize,
       })}
       ref={inkRef}
-    />
+    >
+      {inkBarSize && <div style={inkBarSize} className={`${prefixCls}-header-ink-inner`} />}
+    </div>
   );
 };
 

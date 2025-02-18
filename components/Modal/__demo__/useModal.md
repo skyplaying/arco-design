@@ -17,16 +17,15 @@ useModal。
 import { createContext } from 'react';
 import { Modal, Button, Space } from '@arco-design/web-react';
 
-function Demo() {
-  const [modal, contextHolder] = Modal.useModal();
+const ConfigContext = createContext({});
 
-  const ConfigContext = createContext({});
+function App() {
+  const [modal, contextHolder] = Modal.useModal();
 
   const config = {
     title: 'Profile',
     content: <ConfigContext.Consumer>{(name) => `Current user: ${name}`}</ConfigContext.Consumer>,
   };
-
   return (
     <ConfigContext.Provider value="PJY">
       {contextHolder}
@@ -54,5 +53,5 @@ function Demo() {
   );
 }
 
-ReactDOM.render(<Demo />, CONTAINER);
+export default App;
 ```

@@ -32,9 +32,7 @@ export type ModeType = 'date' | 'month' | 'week' | 'year' | 'quarter';
 
 export type PrivateCType = {
   setPageShowDate?: (d: Dayjs) => void;
-  getHeaderOperations?: (
-    mode?: ModeType
-  ) => {
+  getHeaderOperations?: (mode?: ModeType) => {
     onPrev?: () => void;
     onNext?: () => void;
     onSuperPrev?: () => void;
@@ -62,7 +60,6 @@ export interface PickerProps {
   /**
    * @zh 每周的第一天开始于周几，0 - 周日，1 - 周一，以此类推。
    * @en The first day of the week starts on the day of the week, `0`-Sunday, `1`-Monday, and so on.
-   * @defaultValue 0
    * @version 2 - 6 in `2.20.0`
    */
   dayStartOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -93,10 +90,23 @@ export interface PickerProps {
    */
   shortcutsPlacementLeft?: boolean;
   /**
-   * @zh 是否为报错状态
-   * @en error style
+   * @zh 是否是错误状态。(废弃，下个大版本移除，使用 status='error' 替代)
+   * @en Whether the textarea is error.(Deprecated, removed in the next major version, use status='error' instead)
+   * @deprecated
    */
   error?: boolean;
+  /**
+   * @zh 状态
+   * @en Status
+   * @version 2.45.0
+   */
+  status?: 'error' | 'warning';
+  /**
+   * @zh 前缀
+   * @en prefix
+   * @version 2.43.0
+   */
+  prefix?: ReactNode;
   /**
    * @zh 是否在隐藏的时候销毁 DOM 结构
    * @en Whether to destroy popup when hidden
@@ -105,7 +115,7 @@ export interface PickerProps {
   /**
    * @zh 日期选择器的尺寸
    * @en The size of input box
-   * @defaultValue true
+   * @defaultValue default
    */
   size?: 'mini' | 'small' | 'default' | 'large';
   /**
@@ -138,6 +148,12 @@ export interface PickerProps {
    * @en Customize the contents of the date cell.
    */
   dateRender?: (currentDate: Dayjs) => ReactNode;
+  /**
+   * @zh 自定义渲染面板
+   * @en Customize the panel node.
+   * @version 2.34.0
+   */
+  panelRender?: (panelNode: ReactNode) => ReactNode;
   /**
    * @zh 是否可输入。
    * @en Whether input box can be entered.
@@ -182,7 +198,7 @@ export interface PickerProps {
    * @zh 不可选取的日期
    * @en Specify the date that cannot be selected
    */
-  disabledDate?: (current?: Dayjs) => boolean;
+  disabledDate?: (current: Dayjs) => boolean;
   /**
    * @zh 额外的页脚
    * @en Extra footer
@@ -222,6 +238,22 @@ export interface PickerProps {
    * @version 2.20.0
    */
   hideNotInViewDates?: boolean;
+  /**
+   * @zh 设置时区偏移，如果需要 utc 时间则设置为 0。
+   * @en Set the timezone offset, set to 0 if utc time is required.
+   */
+  utcOffset?: number;
+  /**
+   * @zh 设置时区, 如果设置了 `utcOffset`，则以 `utcOffset` 为准。
+   * @en timezone name, if `utcOffset` is set, `utcOffset` takes effect.
+   */
+  timezone?: string;
+  /**
+   * @zh 原生输入框属性
+   * @en Native input attributes
+   * @version 2.60.0
+   */
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
 /**
@@ -231,8 +263,8 @@ export interface PickerProps {
  */
 export interface BaseDatePickerProps {
   /**
-   * @zh 展示日期的格式，参考[dayjs](https://github.com/iamkun/dayjs)
-   * @en Date format, refer to [dayjs](https://github.com/iamkun/dayjs)
+   * @zh 展示日期的格式，参考[dayjs](https://github.com/iamkun/dayjs)。使用 `string` 时，可以手动键入和编辑日期。使用 `(value: Dayjs) => string` 时，只能在 Picker 中选取日期。
+   * @en Date format, refer to [dayjs](https://github.com/iamkun/dayjs). When using a `string`, manual editing is allowed. When using `(value: Dayjs) => string`, value must be picked from Picker.
    * @defaultValue YYYY-MM-DD
    */
   format?: string | ((value: Dayjs) => string);
@@ -368,7 +400,7 @@ export interface BaseQuarterPickerProps {
 export type QuarterPickerProps = BaseQuarterPickerProps & PickerProps;
 
 export type TimePickerRangeProps = Omit<TimePickerProps, 'defaultValue'> & {
-  defaultValue?: Dayjs[];
+  defaultValue?: CalendarValue[];
 };
 
 /**
@@ -384,8 +416,9 @@ export interface BaseRangePickerProps {
    * @zh 展示日期的格式，参考[dayjs](https://github.com/iamkun/dayjs)
    * @en Date format, refer to [dayjs](https://github.com/iamkun/dayjs)
    * @defaultValue YYYY-MM-DD
+   * @version string[] in 2.55.0
    */
-  format?: string;
+  format?: string | string[];
   /**
    * @zh 日历组件值发生改变时的回调
    * @en Callback when the selected value changes
@@ -467,12 +500,24 @@ export interface BaseRangePickerProps {
    * @version 2.23.0
    */
   clearRangeOnReselect?: boolean;
+  /**
+   * @zh 原生输入框属性
+   * @en Native input attributes
+   * @version 2.60.0
+   */
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>[];
 }
 
 export type RangePickerProps = BaseRangePickerProps &
   Omit<
     PickerProps,
-    'onChange' | 'onSelect' | 'onOk' | 'defaultPickerValue' | 'pickerValue' | 'onPickerValueChange'
+    | 'onChange'
+    | 'onSelect'
+    | 'onOk'
+    | 'defaultPickerValue'
+    | 'pickerValue'
+    | 'onPickerValueChange'
+    | 'inputProps'
   >;
 
 export interface ShortcutsProps {
@@ -487,10 +532,22 @@ export interface ShortcutsProps {
   showTime?: boolean | TimePickerProps;
 }
 
+export type DatePickerHandle = {
+  focus: () => void;
+  blur: () => void;
+};
+
+export type RangePickerHandle = {
+  focus: (index?: number) => void;
+  blur: () => void;
+};
+
 export interface DatePickerDecorator extends React.ComponentClass<DatePickerProps> {
   MonthPicker: React.ComponentClass<MonthPickerProps>;
   YearPicker: React.ComponentClass<YearPickerProps>;
   WeekPicker: React.ComponentClass<WeekPickerProps>;
   QuarterPicker: React.ComponentClass<QuarterPickerProps>;
-  RangePicker: React.ComponentClass<RangePickerProps>;
+  RangePicker: React.ForwardRefExoticComponent<
+    RangePickerProps & React.RefAttributes<RangePickerHandle>
+  >;
 }

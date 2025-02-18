@@ -1,3 +1,518 @@
+## 2.64.1
+
+2024-10-28
+
+### 🐛 问题修复
+
+- `Table` 组件修复开启虚拟列表且数据量少时，固定列失效的问题([#2847](https://github.com/arco-design/arco-design/pull/2847))
+
+## 2.61.1
+
+2024-03-22
+
+### 🐛 问题修复
+
+- 修复rtl切换时fixedClassName错误的问题([#2602](https://github.com/arco-design/arco-design/pull/2602))
+- 修复 `Table` 组件动态变化 scrollY 可能报错的问题([#2599](https://github.com/arco-design/arco-design/pull/2599))
+
+## 2.61.0
+
+2024-03-15
+
+### 🐛 问题修复
+
+- 修复 `Table` 由于 ReactKey 缺失导致的控制台警告。([#2592](https://github.com/arco-design/arco-design/pull/2592))
+
+## 2.60.2
+
+2024-03-01
+
+### 💎 功能优化
+
+- `Table` 组件虚拟滚动开启时支持展开行和树形数据。([#2553](https://github.com/arco-design/arco-design/pull/2553))
+
+## 2.60.0
+
+2024-02-23
+
+### 🐛 问题修复
+
+- 修复`Table`组件`scrollbar-color`属性导致宽度计算错误的问题。([#2533](https://github.com/arco-design/arco-design/pull/2533))
+
+### 🆎 类型修正
+
+- `Table` 组件 column 属性 TS 定义调整([#2531](https://github.com/arco-design/arco-design/pull/2531))
+
+## 2.58.1
+
+2024-01-05
+
+### 🐛 问题修复
+
+- 修复`Table`组件`loading`配置不生效的问题([#2474](https://github.com/arco-design/arco-design/pull/2474))
+
+## 2.56.1
+
+2023-11-24
+
+### 🐛 问题修复
+
+- 兼容`Table`组件在同一个生命周期内 `column` 中的 `sortOrder` 开始不受控，之后又受控的情况。([#2379](https://github.com/arco-design/arco-design/pull/2379))
+
+## 2.56.0
+
+2023-11-17
+
+### 🐛 问题修复
+
+- 优化 `Table` 组件 `data` 和 `columns` 空数据的定义方式，避免无限重绘。([#2370](https://github.com/arco-design/arco-design/pull/2370))
+
+## 2.55.2
+
+2023-11-10
+
+### 🐛 问题修复
+
+- 修复 `Table` 的 `columns` 中未指定 `dataIndex` 也未指定`key`时， `col key` 可能会重复的问题。([#2353](https://github.com/arco-design/arco-design/pull/2353))
+- 修复`Table`开启虚拟滚动后，横向滚动样式问题 。([#2353](https://github.com/arco-design/arco-design/pull/2353))
+- 修复`Table` 的 `scroll.x={max-content}`，`scroll.y={true}`且数据为空时，表头样式错乱的问题 。([#2353](https://github.com/arco-design/arco-design/pull/2353))
+
+## 2.55.1
+
+2023-11-03
+
+### 🐛 问题修复
+
+- 修复 `Table` 在动态更新 `scrollY`  时表头横向滚动失效的问题。([#2330](https://github.com/arco-design/arco-design/pull/2330))
+
+## 2.55.0
+
+2023-10-27
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件 `data` 属性为二维数组时，`render` 参数可能为空的问题。([#2319](https://github.com/arco-design/arco-design/pull/2319))
+- 修复 `Table` 组件在`columns`中同时存在`dataIndex`和`key`属性时，排序和筛选功能失效的问题。([#2311](https://github.com/arco-design/arco-design/pull/2311))
+
+## 2.54.2
+
+2023-10-20
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件在 `scroll={x: 'max-content', y: true}` 时，表头和内容无法对齐的问题([#2303](https://github.com/arco-design/arco-design/pull/2303))
+
+## 2.53.0
+
+2023-09-08
+
+### 🆕 功能升级
+
+- `Table` 组件支持在虚拟列表的场景下通过 `ref.scrollIntoView` 滚动到指定区域。([#2226](https://github.com/arco-design/arco-design/pull/2226))
+- `Table` 组件 `onChange` 回调增加参数 `extra.currentAllData`。([#2220](https://github.com/arco-design/arco-design/pull/2220))
+
+## 2.52.1
+
+2023-08-25
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件的 render 属性第二个参数可能为 `undefined` 的 bug (该问题在 `2.50.2` 移除了对外回调参数附带了的内部属性 __ORIGIN_DATA__ 引入)([#2188](https://github.com/arco-design/arco-design/pull/2188) [@Ryuurock](https://github.com/Ryuurock))
+
+### 💅 样式更新
+
+- 修复 `Table` 组件设置 scrollX 时空白状态可能会出现滚动条样式的问题。([#2171](https://github.com/arco-design/arco-design/pull/2171) [@whyour](https://github.com/whyour))
+
+## 2.51.0
+
+2023-07-28
+
+### 💎 功能优化
+
+- 优化表格宽度在特定场景下出现不必要滚动条的问题。([#2066](https://github.com/arco-design/arco-design/pull/2066) [@hkhere](https://github.com/hkhere))
+
+## 2.50.1
+
+2023-07-14
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件的 `sortOrder` 属性受控时，组件内部状态同步不正确问题([#2079](https://github.com/arco-design/arco-design/pull/2079))
+
+## 2.50.0
+
+2023-06-30
+
+### 🐛 问题修复
+
+- 修复 `Table` 开启虚拟滚动且数据量较小时可能出现的表头对齐问题。([#2056](https://github.com/arco-design/arco-design/pull/2056))
+
+## 2.49.0
+
+2023-06-02
+
+### 🐛 问题修复
+
+- 当 `Table` 组件没有数据但是 `pagination.total > 0` 时，应该显示分页。([#2005](https://github.com/arco-design/arco-design/pull/2005))
+
+## 2.47.2
+
+2023-05-06
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件 `defaultExpandAllRows` 属性不生效的问题。([#1953](https://github.com/arco-design/arco-design/pull/1953))
+
+## 2.47.1
+
+2023-04-21
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件分页隐藏逻辑。([#1937](https://github.com/arco-design/arco-design/pull/1937))
+
+## 2.47.0
+
+2023-04-14
+
+### 🆕 功能升级
+
+- Table组件新增多列排序功能([#1910](https://github.com/arco-design/arco-design/pull/1910))
+
+### 🐛 问题修复
+
+- 修复树形数据展示且内容为非文本时的缩进问题([#1913](https://github.com/arco-design/arco-design/pull/1913))
+
+## 2.46.2
+
+2023-03-31
+
+### 💎 功能优化
+
+- `Table` 在固定列时，`column.width` 可以设置为带像素的字符串。([#1883](https://github.com/arco-design/arco-design/pull/1883))
+
+## 2.46.1
+
+2023-03-24
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件组合表头和 colSpan 一起使用时，colSpan 被覆盖的 bug。([#1865](https://github.com/arco-design/arco-design/pull/1865))
+
+## 2.46.0
+
+2023-03-17
+
+### 🆕 功能升级
+
+- `Table` 组件新增参数 `virtualListProps`。([#1848](https://github.com/arco-design/arco-design/pull/1848))
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件在多表头多列 fixed 场景下滚动时出现表头和内容无法对齐的问题。([#1852](https://github.com/arco-design/arco-design/pull/1852))
+- 修复Table 组件在多表头多列fixed场景下scroll 时出现表头和内容无法对齐的问题([#1840](https://github.com/arco-design/arco-design/pull/1840))
+
+## 2.45.1
+
+2023-03-01
+
+### 💅 样式更新
+
+- 修复 `Table` 组件在暗黑模式下固定列背景色存在透明度导致的样式问题([#1816](https://github.com/arco-design/arco-design/pull/1816))
+
+## 2.45.0
+
+2023-02-17
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件 `data` 动态加载时固定列事件没触发的 bug。([#1787](https://github.com/arco-design/arco-design/pull/1787))
+
+## 2.44.0
+
+2023-01-13
+
+### 💅 样式更新
+
+- 修复 `Table` 组件总结行在 `fixed=top` 时有问题的 bug。([#1719](https://github.com/arco-design/arco-design/pull/1719))
+
+## 2.42.0
+
+2022-11-25
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件 data 为 `number[]` 或 `string[]` 时，报错的问题。([#1611](https://github.com/arco-design/arco-design/pull/1611))
+- 修复 `Table` 组件开启虚拟滚动时，动态改变 `scroll` 会导致固定列高亮丢失样式的 bug。([#1600](https://github.com/arco-design/arco-design/pull/1600))
+
+## 2.41.2
+
+2022-11-11
+
+### 💎 功能优化
+
+- 减少 `Table` 组件 `column.render` 不合预期的渲染次数。([#1562](https://github.com/arco-design/arco-design/pull/1562))
+
+## 2.41.0
+
+2022-10-28
+
+### 💅 样式更新
+
+- 修复 `Table` 组件当 `scroll.x` 过小时总结列高度塌陷的样式问题。([#1492](https://github.com/arco-design/arco-design/pull/1492))
+
+## 2.40.2
+
+2022-09-30
+
+### 💅 样式更新
+
+- 修复 `Table` 组件展开行嵌套子表格时，子表格开启固定列会出现单元格透明的问题。([#1433](https://github.com/arco-design/arco-design/pull/1433))
+
+## 2.40.1
+
+2022-09-23
+
+### 🐛 问题修复
+
+- 修复 Table 在关闭 `checkStrictly` 后，传入不存在的 `selectedKey` 导致页面报错的 bug([#1420](https://github.com/arco-design/arco-design/pull/1420))
+
+## 2.39.2
+
+2022-08-26
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件更新 `data` 之后，下次选中 `selectedRows` 未及时更新的问题。([#1341](https://github.com/arco-design/arco-design/pull/1341))
+
+## 2.39.0
+
+2022-08-12
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件在 data 格式为 `[['1']], ['2']]` 时不能正确渲染的问题。([#1270](https://github.com/arco-design/arco-design/pull/1270))
+
+## 2.38.0
+
+2022-07-29
+
+### 🐛 问题修复
+
+- 修复在 `Table` 单独传入 `pagination` 后，分页器的 `onChange` 回调不触发的 bug([#1217](https://github.com/arco-design/arco-design/pull/1217))
+
+## 2.37.2
+
+2022-07-22
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件 `onChange` 回调参数更新不及时的bug([#1155](https://github.com/arco-design/arco-design/pull/1155))
+
+## 2.37.0
+
+2022-07-08
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件同时开启 `column.sorter` 和 `column.ellipsis` 时，ellipsis 不生效的 bug。([#1108](https://github.com/arco-design/arco-design/pull/1108))
+- 修复 `Table` 组件左边框在无数据时消失的样式问题。([#1106](https://github.com/arco-design/arco-design/pull/1106))
+- 修复 `Table` 组件 data 为 null 时报错的 bug。([#1104](https://github.com/arco-design/arco-design/pull/1104))
+
+## 2.36.0
+
+2022-06-24
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件对外输出的 data 和 record 包含内部数据的 bug。([#1047](https://github.com/arco-design/arco-design/pull/1047))
+
+## 2.35.1
+
+2022-06-17
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件在树形数据时会改变原始 data 的 bug。([#990](https://github.com/arco-design/arco-design/pull/990))
+
+## 2.35.0
+
+2022-06-10
+
+### 🆕 功能升级
+
+- `Table` 组件开启 `virtualized` 后支持固定列。([#971](https://github.com/arco-design/arco-design/pull/971))
+
+## 2.33.1
+
+2022-05-20
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件表头分组时，内部的表头单元格也有圆角的样式问题。([#872](https://github.com/arco-design/arco-design/pull/872))
+
+## 2.33.0
+
+2022-05-13
+
+### 🆕 功能升级
+
+- `Table` 组件新增 `rowSelection.checkStrictly` 支持父子选择关联。([#849](https://github.com/arco-design/arco-design/pull/849))
+
+## 2.32.2
+
+2022-04-29
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件的外层 `ConfigProvider` 设置 `pagination` 后无法生效的bug。([#827](https://github.com/arco-design/arco-design/pull/827))
+
+## 2.32.1
+
+2022-04-22
+
+### 🆎 类型修正
+
+- 优化 `Table` 组件 `rowKey` 的 `TS` 定义为 `React.Key | ((record: T) => React.Key)` ([#799](https://github.com/arco-design/arco-design/pull/799))
+
+## 2.31.1
+
+2022-03-28
+
+### 💅 样式更新
+
+- 修复 `Table` 组件开启虚拟列表时复选框列宽度异常的问题。([#696](https://github.com/arco-design/arco-design/pull/696))
+
+## 2.31.0
+
+2022-03-25
+
+### 🆕 功能升级
+
+- `Table` 组件支持排序树形数据。([#678](https://github.com/arco-design/arco-design/pull/678))
+
+## 2.30.2
+
+2022-03-18
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件开启 `virtualized` 之后 `column.align` 不生效的 bug。([#650](https://github.com/arco-design/arco-design/pull/650))
+
+### 💅 样式更新
+
+- 修复 `Table` 组件 `expandProps.width` 设置小于 40 不生效的问题。([#656](https://github.com/arco-design/arco-design/pull/656))
+
+## 2.30.0
+
+2022-03-04
+
+### 🐛 问题修复
+
+- `placeholder` 属性在`Table` 数据为空字符或者 null 生效([#609](https://github.com/arco-design/arco-design/pull/609))
+
+## 2.29.0
+
+2022-02-11
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件 `onDropdownVisibleChange` 在点击确定按钮时不触发的 bug。([#521](https://github.com/arco-design/arco-design/pull/521))
+
+## 2.28.2
+
+2022-01-21
+
+### 💎 优化
+
+- 优化 `Table` 组件 `expandedRowRender` 会执行多次导致卡顿的问题。([#473](https://github.com/arco-design/arco-design/pull/473))
+- 优化 `Table` 在开启 `virtualized` 之后，大于 10000 条数据时全选会卡的性能问题。([#472](https://github.com/arco-design/arco-design/pull/472))
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件 `size` 没有作用到分页的 bug。([#475](https://github.com/arco-design/arco-design/pull/475))
+
+## 2.28.1
+
+2022-01-14
+
+### 🐛 问题修复
+
+- 如果表格没有数据，分页不应该展示 。([#435](https://github.com/arco-design/arco-design/pull/435))
+
+### 💅 样式更新
+
+- 修复 `Table` 组件在尺寸为 `mini` 时，在数据只有一条时的样式问题。([#449](https://github.com/arco-design/arco-design/pull/449))
+
+## 2.28.0
+
+2022-01-07
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件在异步更新 `column.className` 时，类名有问题的 bug。([#398](https://github.com/arco-design/arco-design/pull/398))
+
+## 2.27.2
+
+2021-12-31
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件筛选在受控模式下，`filteredValue` 设置为 `undefined` 不能重置的 bug。([#382](https://github.com/arco-design/arco-design/pull/382))
+
+## 2.27.0
+
+2021-12-17
+
+### 🆕 功能升级
+
+- `Table` 组件新增参数 `expandProps.strictTreeData`。([#334](https://github.com/arco-design/arco-design/pull/334))
+
+### 🐛 问题修复
+
+- 修复 `Table` 组件 `column.cellStyle` 生效位置不正确的 bug。([#332](https://github.com/arco-design/arco-design/pull/332))
+- 修复 `Table` 当数据量变化时，当前页计算出错的 bug。([#329](https://github.com/arco-design/arco-design/pull/329))
+
+## 2.26.2
+
+2021-12-10
+
+### 💅 样式更新
+
+- 修复 `Table` 组件树形数据时，`column.render` 返回 `div` 会导致折行的问题。([#302](https://github.com/arco-design/arco-design/pull/302))
+
+## 2.26.0
+
+2021-12-03
+
+### 💅 样式更新
+
+- 修复 `Table` 组件复选框列在固定表头时没有对齐的样式问题。([#261](https://github.com/arco-design/arco-design/pull/261))
+
+## 2.25.0
+
+2021-11-19
+
+### 💅 样式更新
+
+- 修复 `Table` 组件在开启 `virtualized` 之后，当滚动条始终显示时表头出现错位的样式问题。([#182](https://github.com/arco-design/arco-design/pull/182))
+
+## 2.24.1
+
+2021-11-12
+
+### 💅 样式更新
+
+- 修复 `Table` 组件在列存在筛选时，单元格 align = 'right' 时会重叠的样式问题。([#140](https://github.com/arco-design/arco-design/pull/140))
+
+## 2.24.0
+
+2021-11-05
+
+### 💅 样式更新
+
+- 修复 `Table` 组件在表头分组时，`border={{ border: true, headerCell: true }}` 时，表头边框线断裂的问题。([#120](https://github.com/arco-design/arco-design/pull/120))
+
 ## 2.23.4
 
 2021-10-26

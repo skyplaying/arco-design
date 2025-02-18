@@ -1,6 +1,7 @@
-class RequestAnimationFrameMockSession {
-  baba = '123';
+const originRequestAnimationFrame = window.requestAnimationFrame;
+const originCancelAnimationFrame = window.cancelAnimationFrame;
 
+class RequestAnimationFrameMockSession {
   handleCounter = 0;
 
   queue = new Map();
@@ -29,17 +30,20 @@ class RequestAnimationFrameMockSession {
     while (this.queue.size > 0) this.triggerNextAnimationFrame(time);
   }
 
-  reset() {
+  resetQueue() {
     this.queue.clear();
     this.handleCounter = 0;
+  }
+
+  reset() {
+    window.requestAnimationFrame = originRequestAnimationFrame;
+    window.cancelAnimationFrame = originCancelAnimationFrame;
   }
 }
 
 export const requestAnimationFrameMock = new RequestAnimationFrameMockSession();
 
-window.requestAnimationFrame = requestAnimationFrameMock.requestAnimationFrame.bind(
-  requestAnimationFrameMock
-);
-window.cancelAnimationFrame = requestAnimationFrameMock.cancelAnimationFrame.bind(
-  requestAnimationFrameMock
-);
+window.requestAnimationFrame =
+  requestAnimationFrameMock.requestAnimationFrame.bind(requestAnimationFrameMock);
+window.cancelAnimationFrame =
+  requestAnimationFrameMock.cancelAnimationFrame.bind(requestAnimationFrameMock);

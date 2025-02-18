@@ -1,5 +1,5 @@
 ---
-order: 1
+order: 2
 title:
   zh-CN: 月份选择器
   en-US: MonthPicker
@@ -15,8 +15,13 @@ The basic usage of MonthPicker.
 
 ```js
 import { DatePicker } from '@arco-design/web-react';
-
 const { MonthPicker } = DatePicker;
 
-ReactDOM.render(<MonthPicker style={{ width: 200 }} />, CONTAINER);
+const App = () => {
+  return (
+    <MonthPicker style={{ width: 200 }}/>
+  );
+};
+
+export default App;
 ```

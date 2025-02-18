@@ -1,3 +1,110 @@
+## 2.53.2
+
+2023-09-22
+
+### 🐛 问题修复
+
+- 修复 `Modal` 组件隐藏时重渲染组件可能触发子组件 ref 丢失的 bug。([#2251](https://github.com/arco-design/arco-design/pull/2251))
+
+## 2.53.1
+
+2023-09-15
+
+### 💎 功能优化
+
+- 导出 `ModalHookReturnType` 类型。([#2235](https://github.com/arco-design/arco-design/pull/2235))
+
+## 2.51.0
+
+2023-07-28
+
+### 🐛 问题修复
+
+- 修复 `Modal` 组件设置 `unmountOnExit=true` 并关闭弹窗后，弹窗外层节点未被 `unmount` 的 bug。([#2096](https://github.com/arco-design/arco-design/pull/2096) '')
+
+## 2.48.1
+
+2023-05-19
+
+### 🐛 问题修复
+
+- 修复 `Modal` 第一次挂载时，内部弹出型组件 `Modal` 计算错误的 bug.([#1977](https://github.com/arco-design/arco-design/pull/1977))
+
+## 2.42.1
+
+2022-12-02
+
+### 🐛 问题修复
+
+- 修复 `Modal.useModal` 返回的 `modal.confirm` 在 `useCallback` 中调用时，不显示弹出层的 bug。([#1628](https://github.com/arco-design/arco-design/pull/1628))
+- 修复通过 `Modal.useModal` 创建的弹出层在通过 `update` 方法更新 title 时，icon 丢失的 bug。([#1628](https://github.com/arco-design/arco-design/pull/1628))
+- 修复通过 `Modal.useModal` 创建的弹出层在 onOK 设置为 Promise 时，Promise 中通过 `update` 更新弹出层内容不生效的 bug。([#1628](https://github.com/arco-design/arco-design/pull/1628))
+
+## 2.42.0
+
+2022-11-25
+
+### 🐛 问题修复
+
+- 修复 `Modal` 组件通过 `update` 方法更新弹窗内容时丢失创建弹出层时传入的 config 的 bug.([#1609](https://github.com/arco-design/arco-design/pull/1609))
+- 修复 `Modal` 组件通过静态方法创建弹出层时设置 `title={null}` & `icon={null}` 时，`.arco-modal-title` 节点仍然被渲染的 bug。([#1609](https://github.com/arco-design/arco-design/pull/1609))
+
+## 2.40.2
+
+2022-09-30
+
+### 🐛 问题修复
+
+- 修复 `Modal` 组件在 React 18  下卸载时控制台出现 warning 的 bug([#1440](https://github.com/arco-design/arco-design/pull/1440))
+
+## 2.40.1
+
+2022-09-23
+
+### 🐛 问题修复
+
+- 修复 `useModal` 的 `holderRef` 可能不存在的 bug([#1418](https://github.com/arco-design/arco-design/pull/1418))
+
+## 2.39.3
+
+2022-09-02
+
+### 🐛 问题修复
+
+- 修复 `Modal` 组件在 `iframe` 内强制锁定焦点导致父页面无法获取焦点的 bug。([#1359](https://github.com/arco-design/arco-design/pull/1359))
+
+## 2.39.1
+
+2022-08-19
+
+### 🐛 问题修复
+
+- 修复通过 `useModal` 创建弹窗实例时返回的方法 `update`为 `undefined` 的bug([#1300](https://github.com/arco-design/arco-design/pull/1300))
+
+## 2.35.0
+
+2022-06-10
+
+### 🐛 问题修复
+
+- 修复 `Modal` 组件通过 `useModal` 创建弹出框时传入的 `simple` 属性不生效的 bug。([#980](https://github.com/arco-design/arco-design/pull/980))
+
+## 2.32.0
+
+2022-04-15
+
+### 🐛 问题修复
+
+- 优化`Modal`在弹窗内弹窗, 使用 ESC 时会关闭所有弹窗的行为([#629](https://github.com/arco-design/arco-design/pull/629))
+
+## 2.27.1
+
+2021-12-24
+
+### 🐛 问题修复
+
+- 修复 `Modal`  组件在默认打开状态时国际化不起作用的问题([#339](https://github.com/arco-design/arco-design/pull/339))
+
 ## 2.23.0
 
 2021-09-27

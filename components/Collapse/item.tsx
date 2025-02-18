@@ -5,10 +5,12 @@ import { CollapseContext } from './collapse';
 import { ConfigContext } from '../ConfigProvider';
 import IconHover from '../_class/icon-hover';
 import { CollapseItemProps } from './interface';
+import useKeyboardEvent from '../_util/hooks/useKeyboardEvent';
 
 function Item(props: PropsWithChildren<CollapseItemProps>, ref) {
   const { getPrefixCls } = useContext(ConfigContext);
   const ctx = useContext(CollapseContext);
+  const getEventListeners = useKeyboardEvent();
   const {
     children,
     name,
@@ -26,8 +28,20 @@ function Item(props: PropsWithChildren<CollapseItemProps>, ref) {
 
   const prefixCls = getPrefixCls('collapse-item');
 
-  const isExpanded = ctx.activeKeys.indexOf(name) > -1;
+  const isExpanded = ctx.activeKeys?.indexOf(name) > -1;
   const icon = showExpandIcon ? ('expandIcon' in props ? expandIcon : ctx.expandIcon) : null;
+  const clickEventHandler = (e, regionLevel: 0 | 1 | 2) => {
+    if (disabled) return;
+    const { triggerRegion } = ctx;
+    const triggerRegionLevel = triggerRegion === 'icon' ? 0 : triggerRegion === 'header' ? 1 : 2;
+    if (
+      regionLevel === triggerRegionLevel ||
+      // When triggerRegion is set to header, clicking icon should trigger onChange as well
+      (triggerRegion === 'header' && [0, 1].includes(regionLevel))
+    ) {
+      ctx.onToggle(name, e);
+    }
+  };
 
   return (
     <div
@@ -45,12 +59,20 @@ function Item(props: PropsWithChildren<CollapseItemProps>, ref) {
       style={style}
     >
       <div
+        role="button"
+        aria-disabled={disabled}
+        aria-expanded={isExpanded}
+        data-active-region={ctx.triggerRegion}
+        tabIndex={disabled ? -1 : 0}
         className={cs(`${prefixCls}-header`, `${prefixCls}-header-${ctx.expandIconPosition}`, {
           [`${prefixCls}-header-disabled`]: disabled,
         })}
-        onClick={(e) => {
-          !disabled && ctx.onToggle(name, e);
-        }}
+        onClick={(e) => clickEventHandler(e, 2)}
+        {...getEventListeners({
+          onPressEnter: (e) => {
+            !disabled && ctx.onToggle(name, e);
+          },
+        })}
       >
         {icon && (
           <IconHover
@@ -60,6 +82,7 @@ function Item(props: PropsWithChildren<CollapseItemProps>, ref) {
               [`${prefixCls}-icon-hover-right`]: ctx.expandIconPosition === 'right',
               [`${prefixCls}-header-icon-right`]: ctx.expandIconPosition === 'right',
             })}
+            onClick={(e) => clickEventHandler(e, 0)}
           >
             <span
               className={cs(`${prefixCls}-header-icon`, {
@@ -70,7 +93,9 @@ function Item(props: PropsWithChildren<CollapseItemProps>, ref) {
             </span>
           </IconHover>
         )}
-        <div className={`${prefixCls}-header-title`}>{header}</div>
+        <div className={`${prefixCls}-header-title`} onClick={(e) => clickEventHandler(e, 1)}>
+          {header}
+        </div>
         {extra && (
           <div
             className={`${prefixCls}-header-extra`}
@@ -114,6 +139,7 @@ function Item(props: PropsWithChildren<CollapseItemProps>, ref) {
         }}
       >
         <div
+          role="region"
           className={cs(`${prefixCls}-content`, {
             [`${prefixCls}-content-expanded`]: isExpanded,
           })}
